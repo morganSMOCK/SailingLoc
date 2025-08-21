@@ -24,15 +24,32 @@ export class AuthService {
         body: JSON.stringify(userData)
       });
 
-      const data = await response.json();
+      console.log('📡 Réponse HTTP:', {
+        status: response.status,
+        statusText: response.statusText,
+        ok: response.ok,
+        url: response.url
+      });
+      
+      let data;
+      try {
+        data = await response.json();
+        console.log('📊 Données JSON reçues:', data);
+      } catch (jsonError) {
+        console.error('❌ Erreur parsing JSON:', jsonError);
+        const textResponse = await response.text();
+        console.log('📄 Réponse texte:', textResponse);
+        throw new Error(`Réponse invalide du serveur: ${response.status}`);
+      }
       
       if (!response.ok) {
+        console.error('❌ Réponse HTTP non-OK:', response.status, data);
         throw new Error(data.message || 'Erreur lors de l\'inscription');
       }
 
       return data;
     } catch (error) {
-      console.error('Erreur lors de l\'inscription:', error);
+      console.error('❌ Erreur AuthService.register:', error);
       throw error;
     }
   }
@@ -45,9 +62,12 @@ export class AuthService {
    */
   async login(email, password) {
     try {
-      console.log('🔐 AuthService.login appelé avec:', { email, password: '***' });
+      const loginUrl = `${this.authEndpoint}/login`;
+      console.log('🔐 AuthService.login appelé');
+      console.log('📍 URL:', loginUrl);
+      console.log('📊 Données:', { email, password: password ? '***' : 'vide' });
       
-      const response = await fetch(`${this.authEndpoint}/login`, {
+      const response = await fetch(loginUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -55,18 +75,32 @@ export class AuthService {
         body: JSON.stringify({ email, password })
       });
 
-      console.log('📡 Réponse HTTP status:', response.status);
+      console.log('📡 Réponse HTTP:', {
+        status: response.status,
+        statusText: response.statusText,
+        ok: response.ok,
+        url: response.url
+      });
       
-      const data = await response.json();
-      console.log('📊 Données reçues:', data);
+      let data;
+      try {
+        data = await response.json();
+        console.log('📊 Données JSON reçues:', data);
+      } catch (jsonError) {
+        console.error('❌ Erreur parsing JSON:', jsonError);
+        const textResponse = await response.text();
+        console.log('📄 Réponse texte:', textResponse);
+        throw new Error(`Réponse invalide du serveur: ${response.status}`);
+      }
       
       if (!response.ok) {
+        console.error('❌ Réponse HTTP non-OK:', response.status, data);
         throw new Error(data.message || 'Erreur lors de la connexion');
       }
 
       return data;
     } catch (error) {
-      console.error('Erreur lors de la connexion:', error);
+      console.error('❌ Erreur AuthService.login:', error);
       throw error;
     }
   }
@@ -79,7 +113,12 @@ export class AuthService {
     try {
       const token = this.getAuthToken();
       
-      const response = await fetch(`${this.authEndpoint}/logout`, {
+      const registerUrl = `${this.authEndpoint}/register`;
+      console.log('📝 AuthService.register appelé');
+      console.log('📍 URL:', registerUrl);
+      console.log('📊 Données:', { ...userData, password: userData.password ? '***' : 'vide' });
+      
+      const response = await fetch(registerUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

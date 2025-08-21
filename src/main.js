@@ -394,6 +394,8 @@ class SailingLocApp {
     const email = document.getElementById('login-email').value;
     const password = document.getElementById('login-password').value;
     
+    console.log('🔐 Tentative de connexion:', { email, password: password ? '***' : 'vide' });
+    
     if (!email || !password) {
       this.uiManager.showNotification('Veuillez remplir tous les champs', 'error');
       return;
@@ -402,11 +404,12 @@ class SailingLocApp {
     try {
       this.uiManager.showLoading('login-form');
       
-      console.log('🔐 Tentative de connexion pour:', email);
+      console.log('🔐 Appel AuthService.login...');
       const response = await this.authService.login(email, password);
-      console.log('📡 Réponse de connexion:', response);
+      console.log('📡 Réponse complète:', response);
       
       if (response.success) {
+        console.log('✅ Connexion réussie, données utilisateur:', response.data.user);
         this.currentUser = response.data.user;
         this.storageManager.setToken(response.data.token);
         this.storageManager.setUser(response.data.user);
@@ -419,12 +422,13 @@ class SailingLocApp {
         document.getElementById('login-form').reset();
         
       } else {
+        console.error('❌ Échec de connexion:', response.message);
         this.uiManager.showNotification(response.message || 'Email ou mot de passe incorrect', 'error');
       }
       
     } catch (error) {
       console.error('Erreur de connexion:', error);
-      this.uiManager.showNotification(`Erreur de connexion: ${error.message}`, 'error');
+      this.uiManager.showNotification(`Erreur de connexion: ${error.message || 'Problème de réseau'}`, 'error');
     } finally {
       this.uiManager.hideLoading('login-form');
     }
@@ -445,12 +449,28 @@ class SailingLocApp {
       role: document.getElementById('register-role').value
     };
     
+    console.log('📝 Tentative d\'inscription:', { ...formData, password: formData.password ? '***' : 'vide' });
+    
+    // Validation côté client
+    if (!formData.firstName || !formData.lastName || !formData.email || !formData.password || !formData.role) {
+      this.uiManager.showNotification('Veuillez remplir tous les champs obligatoires', 'error');
+      return;
+    }
+    
+    if (formData.password.length < 6) {
+      this.uiManager.showNotification('Le mot de passe doit contenir au moins 6 caractères', 'error');
+      return;
+    }
+    
     try {
       this.uiManager.showLoading('register-form');
       
+      console.log('📝 Appel AuthService.register...');
       const response = await this.authService.register(formData);
+      console.log('📡 Réponse inscription:', response);
       
       if (response.success) {
+        console.log('✅ Inscription réussie, données utilisateur:', response.data.user);
         this.currentUser = response.data.user;
         this.storageManager.setToken(response.data.token);
         this.storageManager.setUser(response.data.user);
@@ -463,12 +483,13 @@ class SailingLocApp {
         document.getElementById('register-form').reset();
         
       } else {
+        console.error('❌ Échec d\'inscription:', response.message);
         this.uiManager.showNotification(response.message || 'Erreur d\'inscription', 'error');
       }
       
     } catch (error) {
       console.error('Erreur d\'inscription:', error);
-      this.uiManager.showNotification('Erreur d\'inscription', 'error');
+      this.uiManager.showNotification(`Erreur d'inscription: ${error.message || 'Problème de réseau'}`, 'error');
     } finally {
       this.uiManager.hideLoading('register-form');
     }
