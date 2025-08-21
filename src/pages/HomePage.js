@@ -56,7 +56,7 @@ export class HomePage {
       </section>
 
       <!-- Section Bateaux populaires -->
-      <section class="featured-boats-section">
+      <section id="boats" class="featured-boats-section">
         <div class="container">
           <div class="section-header">
             <h2>Bateaux Populaires</h2>
@@ -79,7 +79,7 @@ export class HomePage {
       </section>
 
       <!-- Section Services -->
-      <section class="services-section">
+      <section id="services" class="services-section">
         <div class="container">
           <div class="section-header">
             <h2>Nos Services</h2>
@@ -115,7 +115,7 @@ export class HomePage {
       </section>
 
       <!-- Section Contact -->
-      <section class="contact-section">
+      <section id="contact" class="contact-section">
         <div class="container">
           <div class="section-header">
             <h2>Contactez-nous</h2>
