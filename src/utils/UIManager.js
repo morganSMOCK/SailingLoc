@@ -1,76 +1,117 @@
-// Gestionnaire d'interface utilisateur - Partie Vue dans l'architecture MVC
+/**
+ * Gestionnaire d'interface utilisateur
+ * Gère les interactions UI, modales, notifications, animations, etc.
+ */
 export class UIManager {
   constructor() {
-    this.loadingElement = null;
+    // Configuration des notifications
     this.notificationContainer = null;
-    this.initNotificationContainer();
+    this.notificationQueue = [];
+    this.maxNotifications = 5;
+    
+    // Configuration des modales
+    this.activeModals = new Set();
+    
+    // Configuration du loading
+    this.loadingElements = new Map();
+    
+    // Initialisation
+    this.init();
   }
 
-  // Initialiser le conteneur de notifications
-  initNotificationContainer() {
-    // Créer le conteneur de notifications s'il n'existe pas
+  /**
+   * Initialisation du gestionnaire UI
+   */
+  init() {
+    this.createNotificationContainer();
+    this.setupGlobalEventListeners();
+    this.setupKeyboardShortcuts();
+  }
+
+  /**
+   * Création du conteneur de notifications
+   */
+  createNotificationContainer() {
     this.notificationContainer = document.getElementById('notifications');
+    
     if (!this.notificationContainer) {
       this.notificationContainer = document.createElement('div');
       this.notificationContainer.id = 'notifications';
-      this.notificationContainer.className = 'notifications-container';
+      this.notificationContainer.className = 'notifications';
       document.body.appendChild(this.notificationContainer);
     }
   }
 
-  // Afficher un indicateur de chargement
-  showLoading(message = 'Chargement...') {
-    this.hideLoading(); // Supprimer tout loading existant
+  /**
+   * Configuration des écouteurs d'événements globaux
+   */
+  setupGlobalEventListeners() {
+    // Fermeture des modales avec Escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        this.closeTopModal();
+      }
+    });
 
-    this.loadingElement = document.createElement('div');
-    this.loadingElement.className = 'loading-overlay';
-    this.loadingElement.innerHTML = `
-      <div class="loading-content">
-        <div class="loading-spinner"></div>
-        <p class="loading-message">${message}</p>
-      </div>
-    `;
+    // Gestion du redimensionnement de fenêtre
+    window.addEventListener('resize', () => {
+      this.handleWindowResize();
+    });
 
-    document.body.appendChild(this.loadingElement);
-    
-    // Empêcher le scroll du body
-    document.body.style.overflow = 'hidden';
+    // Gestion du scroll pour les effets
+    window.addEventListener('scroll', () => {
+      this.handleScroll();
+    });
   }
 
-  // Masquer l'indicateur de chargement
-  hideLoading() {
-    if (this.loadingElement) {
-      this.loadingElement.remove();
-      this.loadingElement = null;
-      document.body.style.overflow = '';
+  /**
+   * Configuration des raccourcis clavier
+   */
+  setupKeyboardShortcuts() {
+    document.addEventListener('keydown', (e) => {
+      // Ctrl/Cmd + K pour ouvrir la recherche
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        this.focusSearchInput();
+      }
+    });
+  }
+
+  /**
+   * Affichage d'une notification
+   * @param {string} message - Message à afficher
+   * @param {string} type - Type de notification (success, error, warning, info)
+   * @param {number} duration - Durée d'affichage en ms (0 = permanent)
+   * @param {Object} options - Options supplémentaires
+   */
+  showNotification(message, type = 'info', duration = 5000, options = {}) {
+    const notification = {
+      id: Date.now() + Math.random(),
+      message,
+      type,
+      duration,
+      ...options
+    };
+
+    // Ajouter à la queue si trop de notifications
+    if (this.notificationContainer.children.length >= this.maxNotifications) {
+      this.notificationQueue.push(notification);
+      return;
     }
+
+    this.renderNotification(notification);
   }
 
-  // Afficher une notification de succès
-  showSuccess(message, duration = 5000) {
-    this.showNotification(message, 'success', duration);
-  }
+  /**
+   * Rendu d'une notification
+   * @param {Object} notification - Données de la notification
+   */
+  renderNotification(notification) {
+    const notificationElement = document.createElement('div');
+    notificationElement.className = `notification notification-${notification.type}`;
+    notificationElement.setAttribute('data-notification-id', notification.id);
 
-  // Afficher une notification d'erreur
-  showError(message, duration = 7000) {
-    this.showNotification(message, 'error', duration);
-  }
-
-  // Afficher une notification d'information
-  showInfo(message, duration = 5000) {
-    this.showNotification(message, 'info', duration);
-  }
-
-  // Afficher une notification d'avertissement
-  showWarning(message, duration = 6000) {
-    this.showNotification(message, 'warning', duration);
-  }
-
-  // Afficher une notification générique
-  showNotification(message, type = 'info', duration = 5000) {
-    const notification = document.createElement('div');
-    notification.className = `notification notification-${type}`;
-    
+    // Icône selon le type
     const icons = {
       success: '✅',
       error: '❌',
@@ -78,320 +119,332 @@ export class UIManager {
       info: 'ℹ️'
     };
 
-    notification.innerHTML = `
+    notificationElement.innerHTML = `
       <div class="notification-content">
-        <span class="notification-icon">${icons[type] || icons.info}</span>
-        <span class="notification-message">${message}</span>
-        <button class="notification-close" onclick="this.parentElement.parentElement.remove()">×</button>
+        <span class="notification-icon">${icons[notification.type] || icons.info}</span>
+        <span class="notification-message">${notification.message}</span>
+        <button class="notification-close" aria-label="Fermer">×</button>
       </div>
+      ${notification.duration > 0 ? `<div class="notification-progress"></div>` : ''}
     `;
 
-    this.notificationContainer.appendChild(notification);
+    // Écouteur pour fermer la notification
+    const closeBtn = notificationElement.querySelector('.notification-close');
+    closeBtn.addEventListener('click', () => {
+      this.hideNotification(notification.id);
+    });
 
     // Animation d'entrée
-    setTimeout(() => {
-      notification.classList.add('notification-show');
-    }, 100);
+    notificationElement.style.transform = 'translateX(100%)';
+    notificationElement.style.opacity = '0';
+    
+    this.notificationContainer.appendChild(notificationElement);
 
-    // Suppression automatique
-    if (duration > 0) {
+    // Animation d'apparition
+    requestAnimationFrame(() => {
+      notificationElement.style.transform = 'translateX(0)';
+      notificationElement.style.opacity = '1';
+    });
+
+    // Barre de progression et suppression automatique
+    if (notification.duration > 0) {
+      const progressBar = notificationElement.querySelector('.notification-progress');
+      if (progressBar) {
+        progressBar.style.animationDuration = `${notification.duration}ms`;
+      }
+
       setTimeout(() => {
-        this.removeNotification(notification);
-      }, duration);
+        this.hideNotification(notification.id);
+      }, notification.duration);
     }
-
-    return notification;
   }
 
-  // Supprimer une notification
-  removeNotification(notification) {
-    if (notification && notification.parentElement) {
-      notification.classList.add('notification-hide');
+  /**
+   * Masquage d'une notification
+   * @param {string} notificationId - ID de la notification
+   */
+  hideNotification(notificationId) {
+    const notification = this.notificationContainer.querySelector(
+      `[data-notification-id="${notificationId}"]`
+    );
+
+    if (notification) {
+      // Animation de sortie
+      notification.style.transform = 'translateX(100%)';
+      notification.style.opacity = '0';
+
       setTimeout(() => {
         if (notification.parentElement) {
           notification.remove();
+          
+          // Afficher la prochaine notification en queue
+          if (this.notificationQueue.length > 0) {
+            const nextNotification = this.notificationQueue.shift();
+            this.renderNotification(nextNotification);
+          }
         }
       }, 300);
     }
   }
 
-  // Ouvrir une modale
-  openModal(modalId) {
+  /**
+   * Affichage d'une modale
+   * @param {string} modalId - ID de la modale
+   * @param {Object} options - Options d'affichage
+   */
+  showModal(modalId, options = {}) {
     const modal = document.getElementById(modalId);
-    if (modal) {
+    
+    if (!modal) {
+      console.error(`Modale ${modalId} non trouvée`);
+      return;
+    }
+
+    // Ajouter à la liste des modales actives
+    this.activeModals.add(modalId);
+
+    // Configuration par défaut
+    const config = {
+      closeOnBackdrop: true,
+      closeOnEscape: true,
+      focus: true,
+      ...options
+    };
+
+    // Affichage de la modale
+    modal.style.display = 'flex';
+    modal.classList.add('modal-active');
+    
+    // Animation d'ouverture
+    requestAnimationFrame(() => {
       modal.classList.add('modal-open');
-      document.body.style.overflow = 'hidden';
-      
-      // Focus sur le premier élément focusable
-      const focusableElement = modal.querySelector('input, button, select, textarea');
-      if (focusableElement) {
-        setTimeout(() => focusableElement.focus(), 100);
-      }
-    }
-  }
-
-  // Fermer une modale
-  closeModal(modalId) {
-    const modal = document.getElementById(modalId);
-    if (modal) {
-      modal.classList.remove('modal-open');
-      document.body.style.overflow = '';
-    }
-  }
-
-  // Fermer toutes les modales
-  closeAllModals() {
-    const modals = document.querySelectorAll('.modal.modal-open');
-    modals.forEach(modal => {
-      modal.classList.remove('modal-open');
     });
-    document.body.style.overflow = '';
+
+    // Focus sur le premier élément focusable
+    if (config.focus) {
+      setTimeout(() => {
+        const focusableElement = modal.querySelector('input, button, textarea, select');
+        if (focusableElement) {
+          focusableElement.focus();
+        }
+      }, 100);
+    }
+
+    // Désactiver le scroll du body
+    document.body.classList.add('modal-open');
+
+    // Écouteur pour fermeture sur backdrop
+    if (config.closeOnBackdrop) {
+      modal.addEventListener('click', this.handleModalBackdropClick.bind(this));
+    }
   }
 
-  // Afficher une boîte de dialogue de confirmation
-  showConfirmDialog(message, onConfirm, onCancel = null) {
-    const dialog = document.createElement('div');
-    dialog.className = 'modal modal-open';
-    dialog.innerHTML = `
-      <div class="modal-content modal-confirm">
-        <div class="modal-header">
-          <h3>Confirmation</h3>
-        </div>
-        <div class="modal-body">
-          <p>${message}</p>
-        </div>
-        <div class="modal-footer">
-          <button class="btn btn-outline" id="cancelBtn">Annuler</button>
-          <button class="btn btn-primary" id="confirmBtn">Confirmer</button>
+  /**
+   * Masquage d'une modale
+   * @param {string} modalId - ID de la modale
+   */
+  hideModal(modalId) {
+    const modal = document.getElementById(modalId);
+    
+    if (!modal) {
+      return;
+    }
+
+    // Retirer de la liste des modales actives
+    this.activeModals.delete(modalId);
+
+    // Animation de fermeture
+    modal.classList.remove('modal-open');
+    
+    setTimeout(() => {
+      modal.style.display = 'none';
+      modal.classList.remove('modal-active');
+      
+      // Réactiver le scroll si aucune modale n'est ouverte
+      if (this.activeModals.size === 0) {
+        document.body.classList.remove('modal-open');
+      }
+    }, 300);
+
+    // Nettoyer les écouteurs
+    modal.removeEventListener('click', this.handleModalBackdropClick.bind(this));
+  }
+
+  /**
+   * Fermeture de la modale du dessus
+   */
+  closeTopModal() {
+    if (this.activeModals.size > 0) {
+      const lastModal = Array.from(this.activeModals).pop();
+      this.hideModal(lastModal);
+    }
+  }
+
+  /**
+   * Gestion du clic sur le backdrop d'une modale
+   * @param {Event} e - Événement de clic
+   */
+  handleModalBackdropClick(e) {
+    if (e.target.classList.contains('modal')) {
+      const modalId = e.target.id;
+      this.hideModal(modalId);
+    }
+  }
+
+  /**
+   * Affichage d'un indicateur de chargement
+   * @param {string} elementId - ID de l'élément ou sélecteur
+   * @param {string} message - Message de chargement
+   */
+  showLoading(elementId, message = 'Chargement...') {
+    const element = typeof elementId === 'string' 
+      ? document.getElementById(elementId) || document.querySelector(elementId)
+      : elementId;
+    
+    if (!element) {
+      console.error(`Élément ${elementId} non trouvé pour le loading`);
+      return;
+    }
+
+    // Sauvegarder le contenu original
+    if (!this.loadingElements.has(element)) {
+      this.loadingElements.set(element, {
+        originalContent: element.innerHTML,
+        originalDisabled: element.disabled
+      });
+    }
+
+    // Créer l'indicateur de chargement
+    const loadingHTML = `
+      <div class="loading-overlay">
+        <div class="loading-spinner">
+          <div class="spinner"></div>
+          <span class="loading-message">${message}</span>
         </div>
       </div>
     `;
 
-    document.body.appendChild(dialog);
-    document.body.style.overflow = 'hidden';
-
-    // Gestionnaires d'événements
-    const confirmBtn = dialog.querySelector('#confirmBtn');
-    const cancelBtn = dialog.querySelector('#cancelBtn');
-
-    confirmBtn.addEventListener('click', () => {
-      dialog.remove();
-      document.body.style.overflow = '';
-      if (onConfirm) onConfirm();
-    });
-
-    cancelBtn.addEventListener('click', () => {
-      dialog.remove();
-      document.body.style.overflow = '';
-      if (onCancel) onCancel();
-    });
-
-    // Fermer en cliquant à l'extérieur
-    dialog.addEventListener('click', (e) => {
-      if (e.target === dialog) {
-        dialog.remove();
-        document.body.style.overflow = '';
-        if (onCancel) onCancel();
-      }
-    });
-
-    return dialog;
-  }
-
-  // Valider un formulaire
-  validateForm(formElement) {
-    const errors = [];
-    const requiredFields = formElement.querySelectorAll('[required]');
-
-    requiredFields.forEach(field => {
-      if (!field.value.trim()) {
-        errors.push(`Le champ "${field.labels[0]?.textContent || field.name}" est requis`);
-        field.classList.add('field-error');
-      } else {
-        field.classList.remove('field-error');
-      }
-
-      // Validation spécifique par type
-      if (field.type === 'email' && field.value) {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(field.value)) {
-          errors.push('Format d\'email invalide');
-          field.classList.add('field-error');
-        }
-      }
-
-      if (field.type === 'tel' && field.value) {
-        const phoneRegex = /^[0-9+\-\s()]+$/;
-        if (!phoneRegex.test(field.value)) {
-          errors.push('Format de téléphone invalide');
-          field.classList.add('field-error');
-        }
-      }
-
-      if (field.type === 'password' && field.value) {
-        if (field.value.length < 6) {
-          errors.push('Le mot de passe doit contenir au moins 6 caractères');
-          field.classList.add('field-error');
-        }
-      }
-    });
-
-    return {
-      isValid: errors.length === 0,
-      errors
-    };
-  }
-
-  // Afficher les erreurs de validation
-  showValidationErrors(errors, formElement) {
-    // Supprimer les erreurs existantes
-    const existingErrors = formElement.querySelectorAll('.validation-error');
-    existingErrors.forEach(error => error.remove());
-
-    // Afficher les nouvelles erreurs
-    if (errors.length > 0) {
-      const errorContainer = document.createElement('div');
-      errorContainer.className = 'validation-error';
-      errorContainer.innerHTML = `
-        <ul>
-          ${errors.map(error => `<li>${error}</li>`).join('')}
-        </ul>
-      `;
-
-      formElement.insertBefore(errorContainer, formElement.firstChild);
+    // Appliquer le loading
+    if (element.tagName === 'BUTTON') {
+      element.disabled = true;
+      element.innerHTML = `<span class="spinner-small"></span> ${message}`;
+    } else {
+      element.style.position = 'relative';
+      element.insertAdjacentHTML('beforeend', loadingHTML);
     }
   }
 
-  // Formater une date pour l'affichage
-  formatDate(date, options = {}) {
-    const defaultOptions = {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      ...options
-    };
-
-    return new Date(date).toLocaleDateString('fr-FR', defaultOptions);
-  }
-
-  // Formater une date et heure
-  formatDateTime(date, options = {}) {
-    const defaultOptions = {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      ...options
-    };
-
-    return new Date(date).toLocaleDateString('fr-FR', defaultOptions);
-  }
-
-  // Formater un prix
-  formatPrice(amount, currency = 'EUR') {
-    return new Intl.NumberFormat('fr-FR', {
-      style: 'currency',
-      currency: currency
-    }).format(amount);
-  }
-
-  // Créer un élément de pagination
-  createPagination(currentPage, totalPages, onPageChange) {
-    const pagination = document.createElement('div');
-    pagination.className = 'pagination';
-
-    // Bouton précédent
-    if (currentPage > 1) {
-      const prevBtn = document.createElement('button');
-      prevBtn.className = 'btn btn-outline';
-      prevBtn.textContent = 'Précédent';
-      prevBtn.addEventListener('click', () => onPageChange(currentPage - 1));
-      pagination.appendChild(prevBtn);
-    }
-
-    // Numéros de page
-    const startPage = Math.max(1, currentPage - 2);
-    const endPage = Math.min(totalPages, currentPage + 2);
-
-    for (let i = startPage; i <= endPage; i++) {
-      const pageBtn = document.createElement('button');
-      pageBtn.className = `btn ${i === currentPage ? 'btn-primary' : 'btn-outline'}`;
-      pageBtn.textContent = i;
-      pageBtn.addEventListener('click', () => onPageChange(i));
-      pagination.appendChild(pageBtn);
-    }
-
-    // Bouton suivant
-    if (currentPage < totalPages) {
-      const nextBtn = document.createElement('button');
-      nextBtn.className = 'btn btn-outline';
-      nextBtn.textContent = 'Suivant';
-      nextBtn.addEventListener('click', () => onPageChange(currentPage + 1));
-      pagination.appendChild(nextBtn);
-    }
-
-    return pagination;
-  }
-
-  // Animer un élément
-  animateElement(element, animation, duration = 300) {
-    element.style.animation = `${animation} ${duration}ms ease-in-out`;
+  /**
+   * Masquage d'un indicateur de chargement
+   * @param {string} elementId - ID de l'élément ou sélecteur
+   */
+  hideLoading(elementId) {
+    const element = typeof elementId === 'string' 
+      ? document.getElementById(elementId) || document.querySelector(elementId)
+      : elementId;
     
-    return new Promise(resolve => {
-      setTimeout(() => {
-        element.style.animation = '';
-        resolve();
-      }, duration);
-    });
-  }
+    if (!element) {
+      return;
+    }
 
-  // Faire défiler vers un élément
-  scrollToElement(element, offset = 0) {
-    const elementPosition = element.offsetTop - offset;
-    window.scrollTo({
-      top: elementPosition,
-      behavior: 'smooth'
-    });
-  }
+    const savedData = this.loadingElements.get(element);
+    
+    if (savedData) {
+      // Restaurer le contenu original
+      element.innerHTML = savedData.originalContent;
+      element.disabled = savedData.originalDisabled;
+      
+      // Nettoyer la sauvegarde
+      this.loadingElements.delete(element);
+    }
 
-  // Copier du texte dans le presse-papiers
-  async copyToClipboard(text) {
-    try {
-      await navigator.clipboard.writeText(text);
-      this.showSuccess('Copié dans le presse-papiers');
-      return true;
-    } catch (error) {
-      console.error('Erreur lors de la copie:', error);
-      this.showError('Impossible de copier le texte');
-      return false;
+    // Supprimer l'overlay de chargement
+    const loadingOverlay = element.querySelector('.loading-overlay');
+    if (loadingOverlay) {
+      loadingOverlay.remove();
     }
   }
 
-  // Débouncer une fonction
-  debounce(func, wait) {
-    let timeout;
-    return function executedFunction(...args) {
-      const later = () => {
-        clearTimeout(timeout);
-        func(...args);
-      };
-      clearTimeout(timeout);
-      timeout = setTimeout(later, wait);
+  /**
+   * Animation de scroll fluide vers un élément
+   * @param {string|HTMLElement} target - Élément cible ou sélecteur
+   * @param {Object} options - Options de scroll
+   */
+  scrollTo(target, options = {}) {
+    const element = typeof target === 'string' 
+      ? document.querySelector(target) 
+      : target;
+    
+    if (!element) {
+      console.error(`Élément ${target} non trouvé pour le scroll`);
+      return;
+    }
+
+    const config = {
+      behavior: 'smooth',
+      block: 'start',
+      inline: 'nearest',
+      offset: 0,
+      ...options
     };
+
+    // Calcul de la position avec offset
+    const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+    const offsetPosition = elementPosition - config.offset;
+
+    window.scrollTo({
+      top: offsetPosition,
+      behavior: config.behavior
+    });
   }
 
-  // Throttler une fonction
-  throttle(func, limit) {
-    let inThrottle;
-    return function() {
-      const args = arguments;
-      const context = this;
-      if (!inThrottle) {
-        func.apply(context, args);
-        inThrottle = true;
-        setTimeout(() => inThrottle = false, limit);
+  /**
+   * Gestion du redimensionnement de fenêtre
+   */
+  handleWindowResize() {
+    // Ajuster les modales si nécessaire
+    this.activeModals.forEach(modalId => {
+      const modal = document.getElementById(modalId);
+      if (modal) {
+        // Logique d'ajustement si nécessaire
       }
-    };
+    });
+  }
+
+  /**
+   * Gestion du scroll pour les effets
+   */
+  handleScroll() {
+    const scrollY = window.scrollY;
+    
+    // Effet parallaxe sur le hero
+    const hero = document.querySelector('.hero');
+    if (hero) {
+      const heroImage = hero.querySelector('.hero-image');
+      if (heroImage) {
+        heroImage.style.transform = `translateY(${scrollY * 0.5}px)`;
+      }
+    }
+
+    // Navbar transparente
+    const navbar = document.querySelector('.navbar');
+    if (navbar) {
+      if (scrollY > 100) {
+        navbar.classList.add('scrolled');
+      } else {
+        navbar.classList.remove('scrolled');
+      }
+    }
+  }
+
+  /**
+   * Focus sur le champ de recherche
+   */
+  focusSearchInput() {
+    const searchInput = document.getElementById('search-location');
+    if (searchInput) {
+      searchInput.focus();
+      searchInput.select();
+    }
   }
 }

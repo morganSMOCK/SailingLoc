@@ -1,11 +1,40 @@
-// Gestionnaire de stockage local - Utilitaire pour l'architecture MVC
+/**
+ * Gestionnaire de stockage local
+ * Gère la persistance des données côté client (localStorage, sessionStorage)
+ */
 export class StorageManager {
   constructor() {
+    // Préfixe pour éviter les conflits avec d'autres applications
     this.prefix = 'sailingloc_';
+    
+    // Vérification de la disponibilité du localStorage
+    this.isStorageAvailable = this.checkStorageAvailability();
   }
 
-  // Sauvegarder le token d'authentification
+  /**
+   * Vérification de la disponibilité du localStorage
+   * @returns {boolean} True si le localStorage est disponible
+   */
+  checkStorageAvailability() {
+    try {
+      const test = '__storage_test__';
+      localStorage.setItem(test, test);
+      localStorage.removeItem(test);
+      return true;
+    } catch (error) {
+      console.warn('localStorage non disponible:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Sauvegarde du token d'authentification
+   * @param {string} token - Token JWT
+   * @returns {boolean} Succès de l'opération
+   */
   setToken(token) {
+    if (!this.isStorageAvailable) return false;
+    
     try {
       localStorage.setItem(`${this.prefix}token`, token);
       return true;
@@ -15,8 +44,13 @@ export class StorageManager {
     }
   }
 
-  // Récupérer le token d'authentification
+  /**
+   * Récupération du token d'authentification
+   * @returns {string|null} Token JWT ou null
+   */
   getToken() {
+    if (!this.isStorageAvailable) return null;
+    
     try {
       return localStorage.getItem(`${this.prefix}token`);
     } catch (error) {
@@ -25,8 +59,13 @@ export class StorageManager {
     }
   }
 
-  // Supprimer le token d'authentification
+  /**
+   * Suppression du token d'authentification
+   * @returns {boolean} Succès de l'opération
+   */
   removeToken() {
+    if (!this.isStorageAvailable) return false;
+    
     try {
       localStorage.removeItem(`${this.prefix}token`);
       return true;
@@ -36,8 +75,14 @@ export class StorageManager {
     }
   }
 
-  // Sauvegarder les données utilisateur
-  setUserData(userData) {
+  /**
+   * Sauvegarde des données utilisateur
+   * @param {Object} userData - Données de l'utilisateur
+   * @returns {boolean} Succès de l'opération
+   */
+  setUser(userData) {
+    if (!this.isStorageAvailable) return false;
+    
     try {
       localStorage.setItem(`${this.prefix}user`, JSON.stringify(userData));
       return true;
@@ -47,8 +92,13 @@ export class StorageManager {
     }
   }
 
-  // Récupérer les données utilisateur
-  getUserData() {
+  /**
+   * Récupération des données utilisateur
+   * @returns {Object|null} Données utilisateur ou null
+   */
+  getUser() {
+    if (!this.isStorageAvailable) return null;
+    
     try {
       const userData = localStorage.getItem(`${this.prefix}user`);
       return userData ? JSON.parse(userData) : null;
@@ -58,8 +108,13 @@ export class StorageManager {
     }
   }
 
-  // Supprimer les données utilisateur
-  removeUserData() {
+  /**
+   * Suppression des données utilisateur
+   * @returns {boolean} Succès de l'opération
+   */
+  removeUser() {
+    if (!this.isStorageAvailable) return false;
+    
     try {
       localStorage.removeItem(`${this.prefix}user`);
       return true;
@@ -69,8 +124,24 @@ export class StorageManager {
     }
   }
 
-  // Sauvegarder les préférences de recherche
+  /**
+   * Nettoyage complet des données d'authentification
+   * @returns {boolean} Succès de l'opération
+   */
+  clearAuth() {
+    const tokenRemoved = this.removeToken();
+    const userRemoved = this.removeUser();
+    return tokenRemoved && userRemoved;
+  }
+
+  /**
+   * Sauvegarde des préférences de recherche
+   * @param {Object} preferences - Préférences de recherche
+   * @returns {boolean} Succès de l'opération
+   */
   setSearchPreferences(preferences) {
+    if (!this.isStorageAvailable) return false;
+    
     try {
       localStorage.setItem(`${this.prefix}search_prefs`, JSON.stringify(preferences));
       return true;
@@ -80,37 +151,55 @@ export class StorageManager {
     }
   }
 
-  // Récupérer les préférences de recherche
+  /**
+   * Récupération des préférences de recherche
+   * @returns {Object} Préférences de recherche
+   */
   getSearchPreferences() {
+    if (!this.isStorageAvailable) {
+      return this.getDefaultSearchPreferences();
+    }
+    
     try {
       const prefs = localStorage.getItem(`${this.prefix}search_prefs`);
-      return prefs ? JSON.parse(prefs) : {
-        location: '',
-        type: 'all',
-        maxPrice: 1000,
-        minCapacity: 1
-      };
+      return prefs ? JSON.parse(prefs) : this.getDefaultSearchPreferences();
     } catch (error) {
       console.error('Erreur lors de la récupération des préférences:', error);
-      return {
-        location: '',
-        type: 'all',
-        maxPrice: 1000,
-        minCapacity: 1
-      };
+      return this.getDefaultSearchPreferences();
     }
   }
 
-  // Sauvegarder l'historique de recherche
+  /**
+   * Préférences de recherche par défaut
+   * @returns {Object} Préférences par défaut
+   */
+  getDefaultSearchPreferences() {
+    return {
+      location: '',
+      type: 'all',
+      maxPrice: 1000,
+      minCapacity: 1,
+      sortBy: 'price',
+      sortOrder: 'asc'
+    };
+  }
+
+  /**
+   * Ajout d'un terme à l'historique de recherche
+   * @param {string} searchTerm - Terme de recherche
+   * @returns {boolean} Succès de l'opération
+   */
   addToSearchHistory(searchTerm) {
+    if (!this.isStorageAvailable || !searchTerm.trim()) return false;
+    
     try {
       let history = this.getSearchHistory();
       
       // Supprimer le terme s'il existe déjà
-      history = history.filter(term => term !== searchTerm);
+      history = history.filter(term => term.toLowerCase() !== searchTerm.toLowerCase());
       
       // Ajouter le nouveau terme au début
-      history.unshift(searchTerm);
+      history.unshift(searchTerm.trim());
       
       // Limiter à 10 éléments
       history = history.slice(0, 10);
@@ -123,8 +212,13 @@ export class StorageManager {
     }
   }
 
-  // Récupérer l'historique de recherche
+  /**
+   * Récupération de l'historique de recherche
+   * @returns {Array} Historique de recherche
+   */
   getSearchHistory() {
+    if (!this.isStorageAvailable) return [];
+    
     try {
       const history = localStorage.getItem(`${this.prefix}search_history`);
       return history ? JSON.parse(history) : [];
@@ -134,8 +228,13 @@ export class StorageManager {
     }
   }
 
-  // Effacer l'historique de recherche
+  /**
+   * Effacement de l'historique de recherche
+   * @returns {boolean} Succès de l'opération
+   */
   clearSearchHistory() {
+    if (!this.isStorageAvailable) return false;
+    
     try {
       localStorage.removeItem(`${this.prefix}search_history`);
       return true;
@@ -145,8 +244,14 @@ export class StorageManager {
     }
   }
 
-  // Sauvegarder les bateaux favoris
+  /**
+   * Ajout d'un bateau aux favoris
+   * @param {string} boatId - ID du bateau
+   * @returns {boolean} Succès de l'opération
+   */
   addToFavorites(boatId) {
+    if (!this.isStorageAvailable || !boatId) return false;
+    
     try {
       let favorites = this.getFavorites();
       
@@ -162,8 +267,14 @@ export class StorageManager {
     }
   }
 
-  // Supprimer des favoris
+  /**
+   * Suppression d'un bateau des favoris
+   * @param {string} boatId - ID du bateau
+   * @returns {boolean} Succès de l'opération
+   */
   removeFromFavorites(boatId) {
+    if (!this.isStorageAvailable || !boatId) return false;
+    
     try {
       let favorites = this.getFavorites();
       favorites = favorites.filter(id => id !== boatId);
@@ -175,8 +286,13 @@ export class StorageManager {
     }
   }
 
-  // Récupérer les favoris
+  /**
+   * Récupération des favoris
+   * @returns {Array} Liste des IDs des bateaux favoris
+   */
   getFavorites() {
+    if (!this.isStorageAvailable) return [];
+    
     try {
       const favorites = localStorage.getItem(`${this.prefix}favorites`);
       return favorites ? JSON.parse(favorites) : [];
@@ -186,14 +302,24 @@ export class StorageManager {
     }
   }
 
-  // Vérifier si un bateau est en favoris
+  /**
+   * Vérification si un bateau est en favoris
+   * @param {string} boatId - ID du bateau
+   * @returns {boolean} True si le bateau est en favoris
+   */
   isFavorite(boatId) {
     const favorites = this.getFavorites();
     return favorites.includes(boatId);
   }
 
-  // Sauvegarder les paramètres de l'application
+  /**
+   * Sauvegarde des paramètres de l'application
+   * @param {Object} settings - Paramètres à sauvegarder
+   * @returns {boolean} Succès de l'opération
+   */
   setAppSettings(settings) {
+    if (!this.isStorageAvailable) return false;
+    
     try {
       const currentSettings = this.getAppSettings();
       const newSettings = { ...currentSettings, ...settings };
@@ -205,31 +331,48 @@ export class StorageManager {
     }
   }
 
-  // Récupérer les paramètres de l'application
+  /**
+   * Récupération des paramètres de l'application
+   * @returns {Object} Paramètres de l'application
+   */
   getAppSettings() {
+    if (!this.isStorageAvailable) {
+      return this.getDefaultAppSettings();
+    }
+    
     try {
       const settings = localStorage.getItem(`${this.prefix}app_settings`);
-      return settings ? JSON.parse(settings) : {
-        theme: 'light',
-        language: 'fr',
-        currency: 'EUR',
-        notifications: true,
-        emailUpdates: true
-      };
+      return settings ? JSON.parse(settings) : this.getDefaultAppSettings();
     } catch (error) {
       console.error('Erreur lors de la récupération des paramètres:', error);
-      return {
-        theme: 'light',
-        language: 'fr',
-        currency: 'EUR',
-        notifications: true,
-        emailUpdates: true
-      };
+      return this.getDefaultAppSettings();
     }
   }
 
-  // Sauvegarder temporairement des données de formulaire
+  /**
+   * Paramètres par défaut de l'application
+   * @returns {Object} Paramètres par défaut
+   */
+  getDefaultAppSettings() {
+    return {
+      theme: 'light',
+      language: 'fr',
+      currency: 'EUR',
+      notifications: true,
+      emailUpdates: true,
+      autoSave: true
+    };
+  }
+
+  /**
+   * Sauvegarde temporaire de données de formulaire
+   * @param {string} formName - Nom du formulaire
+   * @param {Object} data - Données du formulaire
+   * @returns {boolean} Succès de l'opération
+   */
   setFormData(formName, data) {
+    if (!this.isStorageAvailable || !formName) return false;
+    
     try {
       localStorage.setItem(`${this.prefix}form_${formName}`, JSON.stringify(data));
       return true;
@@ -239,8 +382,14 @@ export class StorageManager {
     }
   }
 
-  // Récupérer les données de formulaire temporaires
+  /**
+   * Récupération des données de formulaire temporaires
+   * @param {string} formName - Nom du formulaire
+   * @returns {Object|null} Données du formulaire ou null
+   */
   getFormData(formName) {
+    if (!this.isStorageAvailable || !formName) return null;
+    
     try {
       const data = localStorage.getItem(`${this.prefix}form_${formName}`);
       return data ? JSON.parse(data) : null;
@@ -250,8 +399,14 @@ export class StorageManager {
     }
   }
 
-  // Supprimer les données de formulaire temporaires
+  /**
+   * Suppression des données de formulaire temporaires
+   * @param {string} formName - Nom du formulaire
+   * @returns {boolean} Succès de l'opération
+   */
   removeFormData(formName) {
+    if (!this.isStorageAvailable || !formName) return false;
+    
     try {
       localStorage.removeItem(`${this.prefix}form_${formName}`);
       return true;
@@ -261,8 +416,13 @@ export class StorageManager {
     }
   }
 
-  // Nettoyer toutes les données de l'application
+  /**
+   * Nettoyage de toutes les données de l'application
+   * @returns {boolean} Succès de l'opération
+   */
   clearAllData() {
+    if (!this.isStorageAvailable) return false;
+    
     try {
       const keys = Object.keys(localStorage);
       keys.forEach(key => {
@@ -277,8 +437,15 @@ export class StorageManager {
     }
   }
 
-  // Obtenir la taille utilisée par l'application
+  /**
+   * Calcul de la taille utilisée par l'application
+   * @returns {Object} Taille en bytes, KB et MB
+   */
   getStorageSize() {
+    if (!this.isStorageAvailable) {
+      return { bytes: 0, kb: 0, mb: 0 };
+    }
+    
     try {
       let totalSize = 0;
       const keys = Object.keys(localStorage);
@@ -300,21 +467,16 @@ export class StorageManager {
     }
   }
 
-  // Vérifier si le stockage local est disponible
-  isStorageAvailable() {
-    try {
-      const test = '__storage_test__';
-      localStorage.setItem(test, test);
-      localStorage.removeItem(test);
-      return true;
-    } catch (error) {
-      console.error('Stockage local non disponible:', error);
-      return false;
-    }
-  }
-
-  // Sauvegarder avec expiration
+  /**
+   * Sauvegarde avec expiration
+   * @param {string} key - Clé de stockage
+   * @param {*} value - Valeur à stocker
+   * @param {number} ttl - Durée de vie en millisecondes
+   * @returns {boolean} Succès de l'opération
+   */
   setWithExpiry(key, value, ttl) {
+    if (!this.isStorageAvailable) return false;
+    
     try {
       const now = new Date();
       const item = {
@@ -329,8 +491,14 @@ export class StorageManager {
     }
   }
 
-  // Récupérer avec vérification d'expiration
+  /**
+   * Récupération avec vérification d'expiration
+   * @param {string} key - Clé de stockage
+   * @returns {*|null} Valeur stockée ou null si expirée
+   */
   getWithExpiry(key) {
+    if (!this.isStorageAvailable) return null;
+    
     try {
       const itemStr = localStorage.getItem(`${this.prefix}${key}`);
       
@@ -350,6 +518,52 @@ export class StorageManager {
     } catch (error) {
       console.error('Erreur lors de la récupération avec expiration:', error);
       return null;
+    }
+  }
+
+  /**
+   * Sauvegarde dans sessionStorage (données temporaires de session)
+   * @param {string} key - Clé de stockage
+   * @param {*} value - Valeur à stocker
+   * @returns {boolean} Succès de l'opération
+   */
+  setSessionData(key, value) {
+    try {
+      sessionStorage.setItem(`${this.prefix}${key}`, JSON.stringify(value));
+      return true;
+    } catch (error) {
+      console.error('Erreur lors de la sauvegarde en session:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Récupération depuis sessionStorage
+   * @param {string} key - Clé de stockage
+   * @returns {*|null} Valeur stockée ou null
+   */
+  getSessionData(key) {
+    try {
+      const data = sessionStorage.getItem(`${this.prefix}${key}`);
+      return data ? JSON.parse(data) : null;
+    } catch (error) {
+      console.error('Erreur lors de la récupération en session:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Suppression depuis sessionStorage
+   * @param {string} key - Clé de stockage
+   * @returns {boolean} Succès de l'opération
+   */
+  removeSessionData(key) {
+    try {
+      sessionStorage.removeItem(`${this.prefix}${key}`);
+      return true;
+    } catch (error) {
+      console.error('Erreur lors de la suppression en session:', error);
+      return false;
     }
   }
 }
