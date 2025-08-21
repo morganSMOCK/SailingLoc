@@ -1,14 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const boatController = require('../controllers/boatController');
+const boatController = require('../controllers/boatController.cjs');
 const { 
   authenticateToken, 
   requireOwner, 
   optionalAuth,
   checkResourceOwnership,
   logUserAction 
-} = require('../middleware/auth');
-const Boat = require('../models/Boat');
+} = require('../middleware/auth.cjs');
+const Boat = require('../models/Boat.cjs');
 
 // Routes publiques (avec authentification optionnelle)
 

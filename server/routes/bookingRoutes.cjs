@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const bookingController = require('../controllers/bookingController');
+const bookingController = require('../controllers/bookingController.cjs');
 const { 
   authenticateToken, 
   requireOwner,
   logUserAction,
   rateLimitByUser 
-} = require('../middleware/auth');
+} = require('../middleware/auth.cjs');
 
 // Routes protégées (authentification requise)
 

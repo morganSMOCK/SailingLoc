@@ -1,5 +1,5 @@
-const Booking = require('../models/Booking');
-const Boat = require('../models/Boat');
+const Booking = require('../models/Booking.cjs');
+const Boat = require('../models/Boat.cjs');
 
 // Simulation d'un processus de paiement (sans Stripe pour l'instant)
 exports.createPaymentIntent = async (req, res) => {
