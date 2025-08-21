@@ -86,13 +86,16 @@ export class Router {
 
     if (handler) {
       try {
+        console.log('Loading route:', path);
         this.currentPage = await handler({ params, searchParams });
+        console.log('Route loaded successfully');
       } catch (error) {
         console.error('Erreur lors du chargement de la page:', error);
         this.show404();
       }
     } else {
       // Route 404
+      console.log('Route not found:', path);
       this.show404();
     }
 
