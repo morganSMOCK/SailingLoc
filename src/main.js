@@ -1008,7 +1008,7 @@ class SailingLocApp {
    */
   async loadBoats(filters = {}, page = 1) {
     try {
-      console.log('🚀 Chargement des bateaux...', { filters, page });
+      console.log('🚀 Chargement des bateaux depuis:', this.boatService.boatsEndpoint);
       const boatsGrid = document.getElementById('boats-grid');
       const boatsLoading = document.getElementById('boats-loading');
       
@@ -1021,24 +1021,24 @@ class SailingLocApp {
         ...filters
       };
       
-      console.log('📡 Requête API:', `${this.boatService.boatsEndpoint}`, queryParams);
       const response = await this.boatService.getBoats(queryParams);
-      console.log('📦 Réponse API:', response);
       
       if (response.success) {
-        console.log('✅ Bateaux reçus:', response.data.boats.length);
+        console.log('✅ Bateaux chargés:', response.data.boats.length);
         this.renderBoats(response.data.boats);
         this.renderPagination(response.data.pagination);
         this.currentPage = page;
         this.currentFilters = filters;
       } else {
-        console.error('❌ Erreur API:', response.message);
+        console.error('❌ Erreur API:', response);
         this.uiManager.showNotification('Erreur lors du chargement des bateaux', 'error');
         this.showBoatsError('Aucun bateau trouvé');
       }
       
     } catch (error) {
-      console.error('Erreur lors du chargement des bateaux:', error);
+      console.error('❌ Erreur complète:', error);
+      console.error('❌ Message:', error.message);
+      console.error('❌ Stack:', error.stack);
       this.uiManager.showNotification('Erreur lors du chargement des bateaux', 'error');
       this.showBoatsError('Erreur de connexion au serveur');
     } finally {
