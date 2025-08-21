@@ -26,7 +26,7 @@
   "env": {
     "MONGODB_URI":
     "mongodb+srv://ProjetM1G2:Thc8XKw6dpfs0Aag@projetm1g2.vmsnfdz.mongodb.net/ProjetM1G2?retryWrites=true&w=majority&appName=ProjetM1G2",
-    "JWT_SECRET": "@jwt_secret",
+    "JWT_SECRET": "superSecretKey",
     "STRIPE_SECRET_KEY": "@stripe_secret_key",
     "STRIPE_PUBLISHABLE_KEY": "@stripe_publishable_key",
     "NODE_ENV": "production"
