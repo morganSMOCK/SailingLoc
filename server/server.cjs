@@ -64,6 +64,9 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/sailinglo
   process.exit(1);
 });
 
+app.get('/', (req, res) => {
+  res.redirect('/api');
+});
 app.get('/api', (req, res) => {
   res.json({
     success: true,
