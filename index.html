@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SailingLoc - Location de Bateaux</title>
+    <meta name="description" content="Louez le bateau de vos rêves avec SailingLoc. Voiliers, catamarans, yachts disponibles partout en France.">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/boat-icon.svg">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="/src/style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <!-- Logo -->
+            <div class="nav-logo">
+                <img src="/boat-icon.svg" alt="SailingLoc" class="logo-icon">
+                <span class="logo-text">SailingLoc</span>
+            </div>
+            
+            <!-- Menu de navigation -->
+            <div class="nav-menu" id="nav-menu">
+                <a href="#home" class="nav-link active">Accueil</a>
+                <a href="#boats" class="nav-link">Bateaux</a>
+                <a href="#about" class="nav-link">À propos</a>
+                <a href="#contact" class="nav-link">Contact</a>
+            </div>
+            
+            <!-- Actions utilisateur -->
+            <div class="nav-actions">
+                <button class="btn-secondary" id="login-btn">Connexion</button>
+                <button class="btn-primary" id="register-btn">Inscription</button>
+                
+                <!-- Menu utilisateur connecté (caché par défaut) -->
+                <div class="user-menu" id="user-menu" style="display: none;">
+                    <div class="user-avatar" id="user-avatar">
+                        <span id="user-initials">U</span>
+                    </div>
+                    <div class="user-dropdown" id="user-dropdown">
+                        <div class="user-info">
+                            <span class="user-name" id="user-name">Utilisateur</span>
+                            <span class="user-email" id="user-email">user@example.com</span>
+                        </div>
+                        <hr>
+                        <a href="#" class="dropdown-item" id="profile-link">Mon Profil</a>
+                        <a href="#" class="dropdown-item" id="bookings-link">Mes Réservations</a>
+                        <a href="#" class="dropdown-item" id="boats-link" style="display: none;">Mes Bateaux</a>
+                        <hr>
+                        <a href="#" class="dropdown-item" id="logout-link">Déconnexion</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Menu mobile -->
+            <div class="mobile-menu-toggle" id="mobile-menu-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Section Hero -->
+    <section class="hero" id="home">
+        <div class="hero-background">
+            <img src="https://images.pexels.com/photos/1001682/pexels-photo-1001682.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop" alt="Bateau sur l'océan" class="hero-image">
+            <div class="hero-overlay"></div>
+        </div>
+        
+        <div class="hero-content">
+            <h1 class="hero-title">
+                Naviguez vers vos <span class="text-gradient">rêves</span>
+            </h1>
+            <p class="hero-subtitle">
+                Découvrez notre flotte de bateaux exceptionnels et vivez des moments inoubliables sur l'eau
+            </p>
+            
+            <!-- Formulaire de recherche -->
+            <div class="search-form">
+                <div class="search-field">
+                    <label for="search-location">Destination</label>
+                    <input type="text" id="search-location" placeholder="Où souhaitez-vous naviguer ?">
+                </div>
+                <div class="search-field">
+                    <label for="search-dates">Dates</label>
+                    <input type="date" id="search-start-date">
+                    <input type="date" id="search-end-date">
+                </div>
+                <div class="search-field">
+                    <label for="search-guests">Passagers</label>
+                    <select id="search-guests">
+                        <option value="2">2 personnes</option>
+                        <option value="4">4 personnes</option>
+                        <option value="6">6 personnes</option>
+                        <option value="8">8 personnes</option>
+                        <option value="10">10+ personnes</option>
+                    </select>
+                </div>
+                <button class="btn-search" id="search-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="m21 21-4.35-4.35"></path>
+                    </svg>
+                    Rechercher
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section Bateaux -->
+    <section class="boats-section" id="boats">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Notre Flotte</h2>
+                <p class="section-subtitle">Découvrez nos bateaux soigneusement sélectionnés</p>
+            </div>
+            
+            <!-- Filtres -->
+            <div class="filters" id="boat-filters">
+                <div class="filter-group">
+                    <label for="filter-type">Type</label>
+                    <select id="filter-type">
+                        <option value="">Tous les types</option>
+                        <option value="voilier">Voilier</option>
+                        <option value="catamaran">Catamaran</option>
+                        <option value="yacht">Yacht</option>
+                        <option value="bateau_moteur">Bateau à moteur</option>
+                        <option value="semi_rigide">Semi-rigide</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="filter-price">Prix max/jour</label>
+                    <input type="range" id="filter-price" min="50" max="2000" value="1000">
+                    <span id="price-display">1000€</span>
+                </div>
+                <div class="filter-group">
+                    <label for="filter-capacity">Capacité min</label>
+                    <select id="filter-capacity">
+                        <option value="">Toutes capacités</option>
+                        <option value="2">2+ personnes</option>
+                        <option value="4">4+ personnes</option>
+                        <option value="6">6+ personnes</option>
+                        <option value="8">8+ personnes</option>
+                        <option value="10">10+ personnes</option>
+                    </select>
+                </div>
+                <button class="btn-filter" id="apply-filters">Appliquer</button>
+            </div>
+            
+            <!-- Grille des bateaux -->
+            <div class="boats-grid" id="boats-grid">
+                <!-- Les bateaux seront chargés dynamiquement -->
+                <div class="loading-spinner" id="boats-loading">
+                    <div class="spinner"></div>
+                    <p>Chargement des bateaux...</p>
+                </div>
+            </div>
+            
+            <!-- Pagination -->
+            <div class="pagination" id="boats-pagination" style="display: none;">
+                <button class="btn-page" id="prev-page" disabled>Précédent</button>
+                <div class="page-numbers" id="page-numbers"></div>
+                <button class="btn-page" id="next-page">Suivant</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section À propos -->
+    <section class="about-section" id="about">
+        <div class="container">
+            <div class="about-content">
+                <div class="about-text">
+                    <h2 class="section-title">Pourquoi choisir SailingLoc ?</h2>
+                    <p class="section-subtitle">
+                        Nous sommes passionnés par la navigation et nous nous engageons à vous offrir 
+                        une expérience exceptionnelle sur l'eau.
+                    </p>
+                    
+                    <div class="features-grid">
+                        <div class="feature-card">
+                            <div class="feature-icon">🛥️</div>
+                            <h3>Flotte Premium</h3>
+                            <p>Bateaux modernes et parfaitement entretenus</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">🔒</div>
+                            <h3>Sécurité Garantie</h3>
+                            <p>Assurance complète et équipements de sécurité</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">⭐</div>
+                            <h3>Service 5 étoiles</h3>
+                            <p>Support client disponible 24h/24</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">💰</div>
+                            <h3>Prix Transparents</h3>
+                            <p>Aucun frais caché, tarifs compétitifs</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="about-image">
+                    <img src="https://images.pexels.com/photos/1001682/pexels-photo-1001682.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop" alt="Navigation">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section Contact -->
+    <section class="contact-section" id="contact">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Contactez-nous</h2>
+                <p class="section-subtitle">Une question ? Nous sommes là pour vous aider</p>
+            </div>
+            
+            <div class="contact-content">
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <div class="contact-icon">📧</div>
+                        <div>
+                            <h3>Email</h3>
+                            <p>contact@sailingloc.fr</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">📞</div>
+                        <div>
+                            <h3>Téléphone</h3>
+                            <p>+33 1 23 45 67 89</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">📍</div>
+                        <div>
+                            <h3>Adresse</h3>
+                            <p>Port de Plaisance<br>06400 Cannes, France</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <form class="contact-form" id="contact-form">
+                    <div class="form-group">
+                        <input type="text" id="contact-name" placeholder="Votre nom" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="email" id="contact-email" placeholder="Votre email" required>
+                    </div>
+                    <div class="form-group">
+                        <textarea id="contact-message" placeholder="Votre message" rows="5" required></textarea>
+                    </div>
+                    <button type="submit" class="btn-primary">Envoyer le message</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <img src="/boat-icon.svg" alt="SailingLoc" class="logo-icon">
+                        <span class="logo-text">SailingLoc</span>
+                    </div>
+                    <p>Votre partenaire de confiance pour la location de bateaux en France.</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Services</h3>
+                    <ul>
+                        <li><a href="#">Location de voiliers</a></li>
+                        <li><a href="#">Location de catamarans</a></li>
+                        <li><a href="#">Location de yachts</a></li>
+                        <li><a href="#">Services avec skipper</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Support</h3>
+                    <ul>
+                        <li><a href="#">Centre d'aide</a></li>
+                        <li><a href="#">Conditions générales</a></li>
+                        <li><a href="#">Politique de confidentialité</a></li>
+                        <li><a href="#">Assurance</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Suivez-nous</h3>
+                    <div class="social-links">
+                        <a href="#" class="social-link">Facebook</a>
+                        <a href="#" class="social-link">Instagram</a>
+                        <a href="#" class="social-link">Twitter</a>
+                        <a href="#" class="social-link">LinkedIn</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 SailingLoc. Tous droits réservés.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modales -->
+    
+    <!-- Modale de connexion -->
+    <div class="modal" id="login-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Connexion</h2>
+                <button class="modal-close" id="login-modal-close">&times;</button>
+            </div>
+            <form class="auth-form" id="login-form">
+                <div class="form-group">
+                    <input type="email" id="login-email" placeholder="Email" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="login-password" placeholder="Mot de passe" required>
+                </div>
+                <button type="submit" class="btn-primary btn-full">Se connecter</button>
+                <p class="auth-switch">
+                    Pas encore de compte ? 
+                    <a href="#" id="switch-to-register">Inscrivez-vous</a>
+                </p>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Modale d'inscription -->
+    <div class="modal" id="register-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Inscription</h2>
+                <button class="modal-close" id="register-modal-close">&times;</button>
+            </div>
+            <form class="auth-form" id="register-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <input type="text" id="register-firstname" placeholder="Prénom" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="register-lastname" placeholder="Nom" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <input type="email" id="register-email" placeholder="Email" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="register-password" placeholder="Mot de passe (min. 6 caractères)" required>
+                </div>
+                <div class="form-group">
+                    <input type="tel" id="register-phone" placeholder="Téléphone (optionnel)">
+                </div>
+                <div class="form-group">
+                    <select id="register-role" required>
+                        <option value="">Sélectionnez votre profil</option>
+                        <option value="client">Client (je souhaite louer)</option>
+                        <option value="owner">Propriétaire (je souhaite louer mon bateau)</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-primary btn-full">S'inscrire</button>
+                <p class="auth-switch">
+                    Déjà un compte ? 
+                    <a href="#" id="switch-to-login">Connectez-vous</a>
+                </p>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Modale de détails du bateau -->
+    <div class="modal modal-large" id="boat-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="boat-modal-title">Détails du bateau</h2>
+                <button class="modal-close" id="boat-modal-close">&times;</button>
+            </div>
+            <div class="boat-details" id="boat-details">
+                <!-- Le contenu sera chargé dynamiquement -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Système de notifications -->
+    <div class="notifications" id="notifications"></div>
+
+    <!-- Scripts -->
+    <script type="module" src="/src/main.js"></script>
+</body>
+</html>
