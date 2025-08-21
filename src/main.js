@@ -47,6 +47,9 @@ class SailingLocApp {
       // Chargement initial des bateaux
       await this.loadBoats();
       
+      // Configuration de la navigation
+      this.setupNavigation();
+      
       console.log('✅ SailingLoc initialisé avec succès');
       
     } catch (error) {
@@ -226,28 +229,6 @@ class SailingLocApp {
     
     if (nextPageBtn) {
       nextPageBtn.addEventListener('click', () => this.changePage(this.currentPage + 1));
-    }
-
-    // Dates par défaut
-    this.setDefaultDates();
-  }
-
-  /**
-   * Configuration des dates par défaut
-   */
-  setDefaultDates() {
-    const startDateInput = document.getElementById('search-start-date');
-    const endDateInput = document.getElementById('search-end-date');
-    
-    if (startDateInput && endDateInput) {
-      const tomorrow = new Date();
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      
-      const nextWeek = new Date();
-      nextWeek.setDate(nextWeek.getDate() + 8);
-      
-      startDateInput.value = tomorrow.toISOString().split('T')[0];
-      endDateInput.value = nextWeek.toISOString().split('T')[0];
     }
   }
 
@@ -1008,12 +989,10 @@ class SailingLocApp {
    */
   async loadBoats(filters = {}, page = 1) {
     try {
-      console.log('🚀 Chargement des bateaux depuis:', this.boatService.boatsEndpoint);
       const boatsGrid = document.getElementById('boats-grid');
       const boatsLoading = document.getElementById('boats-loading');
       
       if (boatsLoading) boatsLoading.style.display = 'block';
-      if (boatsGrid) boatsGrid.innerHTML = '<div class="loading-spinner"><div class="spinner"></div><p>Chargement des bateaux...</p></div>';
       
       const queryParams = {
         page,
@@ -1021,26 +1000,28 @@ class SailingLocApp {
         ...filters
       };
       
+      console.log('🚤 Chargement des bateaux depuis:', this.boatService.boatsEndpoint);
+      console.log('📊 Paramètres:', queryParams);
+      
       const response = await this.boatService.getBoats(queryParams);
       
+      console.log('📡 Réponse API:', response);
+      
       if (response.success) {
-        console.log('✅ Bateaux chargés:', response.data.boats.length);
         this.renderBoats(response.data.boats);
         this.renderPagination(response.data.pagination);
         this.currentPage = page;
         this.currentFilters = filters;
       } else {
         console.error('❌ Erreur API:', response);
-        this.uiManager.showNotification('Erreur lors du chargement des bateaux', 'error');
-        this.showBoatsError('Aucun bateau trouvé');
+        this.uiManager.showNotification(`Erreur API: ${response.message || 'Données non disponibles'}`, 'error');
+        this.renderBoats([]); // Afficher "aucun bateau"
       }
       
     } catch (error) {
-      console.error('❌ Erreur complète:', error);
-      console.error('❌ Message:', error.message);
-      console.error('❌ Stack:', error.stack);
-      this.uiManager.showNotification('Erreur lors du chargement des bateaux', 'error');
-      this.showBoatsError('Erreur de connexion au serveur');
+      console.error('Erreur lors du chargement des bateaux:', error);
+      this.uiManager.showNotification(`Erreur de connexion: ${error.message}`, 'error');
+      this.renderBoats([]); // Afficher "aucun bateau"
     } finally {
       const boatsLoading = document.getElementById('boats-loading');
       if (boatsLoading) boatsLoading.style.display = 'none';
@@ -1048,26 +1029,9 @@ class SailingLocApp {
   }
 
   /**
-   * Affichage d'une erreur pour les bateaux
-   */
-  showBoatsError(message) {
-    const boatsGrid = document.getElementById('boats-grid');
-    if (boatsGrid) {
-      boatsGrid.innerHTML = `
-        <div class="no-results">
-          <h3>${message}</h3>
-          <p>Impossible de charger les bateaux pour le moment.</p>
-          <button class="btn-primary" onclick="app.loadBoats()">Réessayer</button>
-        </div>
-      `;
-    }
-  }
-
-  /**
    * Rendu des bateaux
    */
   renderBoats(boats) {
-    console.log('🎨 Rendu des bateaux:', boats.length);
     const boatsGrid = document.getElementById('boats-grid');
     if (!boatsGrid) return;
     
@@ -1085,12 +1049,9 @@ class SailingLocApp {
     }
     
     boats.forEach(boat => {
-      console.log('🛥️ Création carte bateau:', boat.name);
       const boatCard = this.createBoatCard(boat);
       boatsGrid.appendChild(boatCard);
     });
-    
-    console.log('✅ Rendu terminé:', boats.length, 'bateaux affichés');
   }
 
   /**
@@ -1359,7 +1320,7 @@ class SailingLocApp {
     
     await this.loadBoats(this.currentFilters, page);
     
-    // Scroll vers la section bateaux
+    // Scroll vers le haut de la section bateaux
     const boatsSection = document.getElementById('boats');
     if (boatsSection) {
       boatsSection.scrollIntoView({ behavior: 'smooth' });
@@ -1437,6 +1398,35 @@ class SailingLocApp {
     } finally {
       this.uiManager.hideLoading('contact-form');
     }
+  }
+
+  /**
+   * Configuration de la navigation
+   */
+  setupNavigation() {
+    // Intersection Observer pour la navigation active
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks = document.querySelectorAll('.nav-link');
+    
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const id = entry.target.getAttribute('id');
+          
+          navLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href') === `#${id}`) {
+              link.classList.add('active');
+            }
+          });
+        }
+      });
+    }, {
+      threshold: 0.3,
+      rootMargin: '-100px 0px -100px 0px'
+    });
+    
+    sections.forEach(section => observer.observe(section));
   }
 
   /**
