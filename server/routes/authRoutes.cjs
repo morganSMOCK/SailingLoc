@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const authController = require('../controllers/authController');
-const { authenticateToken, requireAdmin, logUserAction } = require('../middleware/auth');
+const authController = require('../controllers/authController.cjs');
+const { authenticateToken, requireAdmin, logUserAction } = require('../middleware/auth.cjs');
 
 // Routes publiques (sans authentification)
 

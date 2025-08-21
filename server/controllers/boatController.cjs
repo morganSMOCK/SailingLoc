@@ -1,5 +1,5 @@
-const Boat = require('../models/Boat');
-const User = require('../models/User');
+const Boat = require('../models/Boat.cjs');
+const User = require('../models/User.cjs');
 
 // Récupération de tous les bateaux avec filtres
 exports.getAllBoats = async (req, res) => {

@@ -7,10 +7,10 @@ const rateLimit = require('express-rate-limit');
 require('dotenv').config();
 
 // Importation des routes
-const authRoutes = require('./routes/authRoutes');
-const boatRoutes = require('./routes/boatRoutes');
-const bookingRoutes = require('./routes/bookingRoutes');
-const paymentRoutes = require('./routes/paymentRoutes');
+const authRoutes = require('./routes/authRoutes.cjs');
+const boatRoutes = require('./routes/boatRoutes.cjs');
+const bookingRoutes = require('./routes/bookingRoutes.cjs');
+const paymentRoutes = require('./routes/paymentRoutes.cjs');
 
 // Création de l'application Express
 const app = express();

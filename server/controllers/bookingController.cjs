@@ -1,6 +1,6 @@
-const Booking = require('../models/Booking');
-const Boat = require('../models/Boat');
-const User = require('../models/User');
+const Booking = require('../models/Booking.cjs');
+const Boat = require('../models/Boat.cjs');
+const User = require('../models/User.cjs');
 
 // Création d'une nouvelle réservation
 exports.createBooking = async (req, res) => {
