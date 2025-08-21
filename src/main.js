@@ -1008,10 +1008,12 @@ class SailingLocApp {
    */
   async loadBoats(filters = {}, page = 1) {
     try {
+      console.log('🚀 Chargement des bateaux...', { filters, page });
       const boatsGrid = document.getElementById('boats-grid');
       const boatsLoading = document.getElementById('boats-loading');
       
       if (boatsLoading) boatsLoading.style.display = 'block';
+      if (boatsGrid) boatsGrid.innerHTML = '<div class="loading-spinner"><div class="spinner"></div><p>Chargement des bateaux...</p></div>';
       
       const queryParams = {
         page,
@@ -1019,20 +1021,26 @@ class SailingLocApp {
         ...filters
       };
       
+      console.log('📡 Requête API:', `${this.boatService.boatsEndpoint}`, queryParams);
       const response = await this.boatService.getBoats(queryParams);
+      console.log('📦 Réponse API:', response);
       
       if (response.success) {
+        console.log('✅ Bateaux reçus:', response.data.boats.length);
         this.renderBoats(response.data.boats);
         this.renderPagination(response.data.pagination);
         this.currentPage = page;
         this.currentFilters = filters;
       } else {
+        console.error('❌ Erreur API:', response.message);
         this.uiManager.showNotification('Erreur lors du chargement des bateaux', 'error');
+        this.showBoatsError('Aucun bateau trouvé');
       }
       
     } catch (error) {
       console.error('Erreur lors du chargement des bateaux:', error);
       this.uiManager.showNotification('Erreur lors du chargement des bateaux', 'error');
+      this.showBoatsError('Erreur de connexion au serveur');
     } finally {
       const boatsLoading = document.getElementById('boats-loading');
       if (boatsLoading) boatsLoading.style.display = 'none';
@@ -1040,9 +1048,26 @@ class SailingLocApp {
   }
 
   /**
+   * Affichage d'une erreur pour les bateaux
+   */
+  showBoatsError(message) {
+    const boatsGrid = document.getElementById('boats-grid');
+    if (boatsGrid) {
+      boatsGrid.innerHTML = `
+        <div class="no-results">
+          <h3>${message}</h3>
+          <p>Impossible de charger les bateaux pour le moment.</p>
+          <button class="btn-primary" onclick="app.loadBoats()">Réessayer</button>
+        </div>
+      `;
+    }
+  }
+
+  /**
    * Rendu des bateaux
    */
   renderBoats(boats) {
+    console.log('🎨 Rendu des bateaux:', boats.length);
     const boatsGrid = document.getElementById('boats-grid');
     if (!boatsGrid) return;
     
@@ -1060,9 +1085,12 @@ class SailingLocApp {
     }
     
     boats.forEach(boat => {
+      console.log('🛥️ Création carte bateau:', boat.name);
       const boatCard = this.createBoatCard(boat);
       boatsGrid.appendChild(boatCard);
     });
+    
+    console.log('✅ Rendu terminé:', boats.length, 'bateaux affichés');
   }
 
   /**
