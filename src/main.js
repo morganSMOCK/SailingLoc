@@ -263,6 +263,40 @@ class SailingLocApp {
     if (contactForm) {
       contactForm.addEventListener('submit', (e) => this.handleContactForm(e));
     }
+    
+    // Formulaire de profil
+    const profileForm = document.getElementById('profile-form');
+    if (profileForm) {
+      profileForm.addEventListener('submit', (e) => this.handleProfileUpdate(e));
+    }
+    
+    // Formulaire de changement de mot de passe
+    const changePasswordForm = document.getElementById('change-password-form');
+    if (changePasswordForm) {
+      changePasswordForm.addEventListener('submit', (e) => this.handlePasswordChange(e));
+    }
+    
+    // Formulaire d'ajout de bateau
+    const addBoatForm = document.getElementById('add-boat-form');
+    if (addBoatForm) {
+      addBoatForm.addEventListener('submit', (e) => this.handleAddBoat(e));
+    }
+    
+    // Bouton de changement de mot de passe
+    const changePasswordBtn = document.getElementById('change-password-btn');
+    if (changePasswordBtn) {
+      changePasswordBtn.addEventListener('click', () => {
+        this.uiManager.showModal('change-password-modal');
+      });
+    }
+    
+    // Bouton d'ajout de bateau
+    const addBoatBtn = document.getElementById('add-boat-btn');
+    if (addBoatBtn) {
+      addBoatBtn.addEventListener('click', () => {
+        this.uiManager.showModal('add-boat-modal');
+      });
+    }
   }
 
   /**
