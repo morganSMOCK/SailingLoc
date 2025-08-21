@@ -1,4 +1,5 @@
 // Importation des modules
+import './style.css';
 import { AuthService } from './services/AuthService.js';
 import { BoatService } from './services/BoatService.js';
 import { BookingService } from './services/BookingService.js';
