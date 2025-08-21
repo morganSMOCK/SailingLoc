@@ -394,10 +394,17 @@ class SailingLocApp {
     const email = document.getElementById('login-email').value;
     const password = document.getElementById('login-password').value;
     
+    if (!email || !password) {
+      this.uiManager.showNotification('Veuillez remplir tous les champs', 'error');
+      return;
+    }
+    
     try {
       this.uiManager.showLoading('login-form');
       
+      console.log('🔐 Tentative de connexion pour:', email);
       const response = await this.authService.login(email, password);
+      console.log('📡 Réponse de connexion:', response);
       
       if (response.success) {
         this.currentUser = response.data.user;
@@ -412,12 +419,12 @@ class SailingLocApp {
         document.getElementById('login-form').reset();
         
       } else {
-        this.uiManager.showNotification(response.message || 'Erreur de connexion', 'error');
+        this.uiManager.showNotification(response.message || 'Email ou mot de passe incorrect', 'error');
       }
       
     } catch (error) {
       console.error('Erreur de connexion:', error);
-      this.uiManager.showNotification('Erreur de connexion', 'error');
+      this.uiManager.showNotification(`Erreur de connexion: ${error.message}`, 'error');
     } finally {
       this.uiManager.hideLoading('login-form');
     }

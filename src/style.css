@@ -1151,6 +1151,24 @@ body {
   color: var(--primary-dark);
 }
 
+.auth-demo {
+  background: var(--gray-50);
+  padding: var(--space-md);
+  border-radius: var(--radius-lg);
+  margin: var(--space-lg) 0;
+  font-size: var(--text-sm);
+  border-left: 4px solid var(--primary);
+}
+
+.auth-demo p {
+  margin: var(--space-xs) 0;
+  color: var(--gray-600);
+}
+
+.auth-demo strong {
+  color: var(--primary);
+}
+
 /* Profil avec onglets */
 .profile-tabs {
   display: flex;
