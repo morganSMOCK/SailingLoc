@@ -1099,6 +1099,345 @@ body {
   background: var(--gray-100);
 }
 
+/* Profil */
+.profile-content {
+  padding: var(--spacing-6);
+}
+
+.profile-tabs {
+  display: flex;
+  border-bottom: 2px solid var(--gray-200);
+  margin-bottom: var(--spacing-6);
+}
+
+.tab-btn {
+  background: none;
+  border: none;
+  padding: var(--spacing-3) var(--spacing-6);
+  font-weight: 600;
+  color: var(--gray-600);
+  cursor: pointer;
+  transition: var(--transition);
+  border-bottom: 2px solid transparent;
+}
+
+.tab-btn.active {
+  color: var(--primary-color);
+  border-bottom-color: var(--primary-color);
+}
+
+.tab-btn:hover {
+  color: var(--primary-color);
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+.profile-form {
+  max-width: 600px;
+}
+
+.form-section {
+  margin-top: var(--spacing-8);
+  padding-top: var(--spacing-6);
+  border-top: 1px solid var(--gray-200);
+}
+
+.form-section h3 {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: var(--gray-900);
+  margin-bottom: var(--spacing-4);
+}
+
+.checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.checkbox-label input[type="checkbox"] {
+  display: none;
+}
+
+.checkmark {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--gray-300);
+  border-radius: 4px;
+  position: relative;
+  transition: var(--transition);
+}
+
+.checkbox-label input[type="checkbox"]:checked + .checkmark {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.checkbox-label input[type="checkbox"]:checked + .checkmark::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-weight: bold;
+  font-size: 12px;
+}
+
+/* Réservations */
+.bookings-content {
+  padding: var(--spacing-6);
+}
+
+.bookings-filters {
+  display: flex;
+  gap: var(--spacing-4);
+  margin-bottom: var(--spacing-6);
+  padding: var(--spacing-4);
+  background: var(--gray-50);
+  border-radius: var(--border-radius);
+}
+
+.bookings-filters select {
+  padding: var(--spacing-2) var(--spacing-3);
+  border: 2px solid var(--gray-200);
+  border-radius: var(--border-radius);
+  background: white;
+}
+
+.bookings-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+}
+
+.booking-card {
+  background: white;
+  border: 2px solid var(--gray-200);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-6);
+  transition: var(--transition);
+}
+
+.booking-card:hover {
+  border-color: var(--primary-color);
+  box-shadow: var(--shadow-md);
+}
+
+.booking-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-4);
+}
+
+.booking-number {
+  font-weight: 700;
+  color: var(--primary-color);
+}
+
+.booking-status {
+  padding: var(--spacing-1) var(--spacing-3);
+  border-radius: 20px;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+}
+
+.status-pending {
+  background: var(--warning-color);
+  color: white;
+}
+
+.status-confirmed {
+  background: var(--accent-color);
+  color: white;
+}
+
+.status-paid {
+  background: var(--success-color);
+  color: white;
+}
+
+.status-active {
+  background: var(--primary-color);
+  color: white;
+}
+
+.status-completed {
+  background: var(--success-color);
+  color: white;
+}
+
+.status-cancelled {
+  background: var(--error-color);
+  color: white;
+}
+
+.booking-details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--spacing-4);
+}
+
+.booking-detail {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+}
+
+.booking-detail-label {
+  font-size: var(--font-size-sm);
+  color: var(--gray-600);
+  font-weight: 500;
+}
+
+.booking-detail-value {
+  font-weight: 600;
+  color: var(--gray-900);
+}
+
+.booking-actions {
+  margin-top: var(--spacing-4);
+  display: flex;
+  gap: var(--spacing-3);
+}
+
+/* Mes bateaux */
+.my-boats-content {
+  padding: var(--spacing-6);
+}
+
+.boats-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-6);
+}
+
+.my-boats-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--spacing-6);
+}
+
+.my-boat-card {
+  background: white;
+  border: 2px solid var(--gray-200);
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+  transition: var(--transition);
+}
+
+.my-boat-card:hover {
+  border-color: var(--primary-color);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.my-boat-image {
+  height: 200px;
+  overflow: hidden;
+  position: relative;
+}
+
+.my-boat-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.boat-status-badge {
+  position: absolute;
+  top: var(--spacing-3);
+  right: var(--spacing-3);
+  padding: var(--spacing-1) var(--spacing-3);
+  border-radius: 20px;
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: white;
+}
+
+.status-available {
+  background: var(--success-color);
+}
+
+.status-rented {
+  background: var(--warning-color);
+}
+
+.status-maintenance {
+  background: var(--error-color);
+}
+
+.status-inactive {
+  background: var(--gray-500);
+}
+
+.my-boat-content {
+  padding: var(--spacing-4);
+}
+
+.my-boat-name {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--gray-900);
+  margin-bottom: var(--spacing-2);
+}
+
+.my-boat-location {
+  color: var(--gray-600);
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--spacing-3);
+}
+
+.my-boat-stats {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-4);
+  padding: var(--spacing-3);
+  background: var(--gray-50);
+  border-radius: var(--border-radius);
+}
+
+.boat-stat {
+  text-align: center;
+}
+
+.boat-stat-value {
+  font-weight: 700;
+  color: var(--primary-color);
+  font-size: var(--font-size-lg);
+}
+
+.boat-stat-label {
+  font-size: var(--font-size-xs);
+  color: var(--gray-600);
+}
+
+.my-boat-actions {
+  display: flex;
+  gap: var(--spacing-2);
+}
+
+.btn-small {
+  padding: var(--spacing-2) var(--spacing-3);
+  font-size: var(--font-size-sm);
+}
+
 .auth-form {
   padding: var(--spacing-6);
 }
