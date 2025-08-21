@@ -10,7 +10,14 @@ export class HomePage {
    * Rendu de la page d'accueil
    */
   async render() {
+    console.log('HomePage: Starting render');
     const mainContent = document.getElementById('main-content');
+    
+    if (!mainContent) {
+      console.error('HomePage: main-content element not found');
+      return this;
+    }
+    
     mainContent.innerHTML = `
       <!-- Hero Section -->
       <section class="hero">
@@ -166,7 +173,9 @@ export class HomePage {
       </section>
     `;
 
+    console.log('HomePage: HTML rendered, initializing events');
     await this.initEvents();
+    console.log('HomePage: Events initialized');
     return this;
   }
 
