@@ -44,15 +44,18 @@ app.use(cors({
   origin: [
     'http://localhost:5173',
     'https://localhost:5173', 
+    'https://sailing-loc.vercel.app',
     'https://sailingloc.vercel.app',
     'https://sailingloc-frontend.vercel.app',
+    'https://*.vercel.app',
     /\.stackblitz\.io$/,
     /\.webcontainer\.io$/,
-    /\.vercel\.app$/
+    /\.vercel\.app$/,
+    /^https:\/\/.*\.vercel\.app$/
   ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization', 'Origin', 'X-Requested-With', 'Accept']
 }));
 
 // Middleware pour parser le JSON
