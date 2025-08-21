@@ -385,8 +385,11 @@
         <button type="submit" class="btn-primary btn-full">Se connecter</button>
         <div class="auth-demo">
           <p><strong>Compte de test :</strong></p>
-          <p>Email: owner@sailingloc.com</p>
-          <p>Mot de passe: password123</p>
+          <p><strong>Email:</strong> owner@sailingloc.com</p>
+          <p><strong>Mot de passe:</strong> password123</p>
+          <button type="button" class="btn-secondary btn-small" onclick="document.getElementById('login-email').value='owner@sailingloc.com'; document.getElementById('login-password').value='password123';">
+            Remplir automatiquement
+          </button>
         </div>
         <p class="auth-switch">
           Pas encore de compte ? 

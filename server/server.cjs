@@ -45,6 +45,7 @@ app.use(cors({
     'http://localhost:5173',
     'https://localhost:5173', 
     'https://sailing-loc.vercel.app',
+    'https://sailing-loc.vercel.app',
     'https://sailingloc.vercel.app',
     'https://sailingloc-frontend.vercel.app',
     'https://*.vercel.app',
@@ -57,6 +58,18 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'Origin', 'X-Requested-With', 'Accept']
 }));
+
+// Middleware de debug pour toutes les requêtes
+app.use((req, res, next) => {
+  console.log(`🌐 [${new Date().toISOString()}] ${req.method} ${req.path}`);
+  console.log('📍 Origin:', req.headers.origin);
+  if (req.body && Object.keys(req.body).length > 0) {
+    const logBody = { ...req.body };
+    if (logBody.password) logBody.password = '***';
+    console.log('📊 Body:', logBody);
+  }
+  next();
+});
 
 // Middleware pour parser le JSON
 app.use(express.json({ limit: '10mb' }));
