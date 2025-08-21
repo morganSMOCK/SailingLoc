@@ -45,6 +45,8 @@ export class AuthService {
    */
   async login(email, password) {
     try {
+      console.log('🔐 AuthService.login appelé avec:', { email, password: '***' });
+      
       const response = await fetch(`${this.authEndpoint}/login`, {
         method: 'POST',
         headers: {
@@ -53,7 +55,10 @@ export class AuthService {
         body: JSON.stringify({ email, password })
       });
 
+      console.log('📡 Réponse HTTP status:', response.status);
+      
       const data = await response.json();
+      console.log('📊 Données reçues:', data);
       
       if (!response.ok) {
         throw new Error(data.message || 'Erreur lors de la connexion');

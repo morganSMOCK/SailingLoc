@@ -83,10 +83,13 @@ exports.register = async (req, res) => {
 // Connexion d'un utilisateur
 exports.login = async (req, res) => {
   try {
+    console.log('🔐 Tentative de connexion reçue:', req.body);
+    
     const { email, password } = req.body;
 
     // Vérification des champs obligatoires
     if (!email || !password) {
+      console.log('❌ Champs manquants');
       return res.status(400).json({
         success: false,
         message: 'Email et mot de passe requis'
@@ -99,6 +102,8 @@ exports.login = async (req, res) => {
       isActive: true 
     });
 
+    console.log('👤 Utilisateur trouvé:', user ? 'Oui' : 'Non');
+    
     if (!user) {
       return res.status(401).json({
         success: false,
@@ -108,6 +113,8 @@ exports.login = async (req, res) => {
 
     // Vérification du mot de passe
     const isPasswordValid = await user.comparePassword(password);
+    console.log('🔑 Mot de passe valide:', isPasswordValid);
+    
     if (!isPasswordValid) {
       return res.status(401).json({
         success: false,
@@ -121,6 +128,7 @@ exports.login = async (req, res) => {
 
     // Génération du token
     const token = generateToken(user._id);
+    console.log('🎫 Token généré pour:', user.email);
 
     res.json({
       success: true,
