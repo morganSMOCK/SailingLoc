@@ -5,7 +5,7 @@
 export class AuthService {
   constructor() {
     // URL de base de l'API (à adapter selon l'environnement)
-    this.baseURL = import.meta.env.VITE_API_URL || '/api';
+    this.baseURL = '/api';
     this.authEndpoint = `${this.baseURL}/auth`;
   }
 
