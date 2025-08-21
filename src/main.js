@@ -164,6 +164,32 @@ class SailingLocApp {
         this.handleLogout();
       });
     }
+
+    // Liens du menu utilisateur
+    const profileLink = document.getElementById('profile-link');
+    const bookingsLink = document.getElementById('bookings-link');
+    const boatsLink = document.getElementById('boats-link');
+    
+    if (profileLink) {
+      profileLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.showProfile();
+      });
+    }
+    
+    if (bookingsLink) {
+      bookingsLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.showBookings();
+      });
+    }
+    
+    if (boatsLink) {
+      boatsLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.showMyBoats();
+      });
+    }
   }
 
   /**
@@ -276,6 +302,18 @@ class SailingLocApp {
       changePasswordForm.addEventListener('submit', (e) => this.handlePasswordChange(e));
     }
     
+    // Formulaire de changement de mot de passe dans le profil
+    const changePasswordFormProfile = document.getElementById('change-password-form-profile');
+    if (changePasswordFormProfile) {
+      changePasswordFormProfile.addEventListener('submit', (e) => this.handlePasswordChange(e));
+    }
+    
+    // Formulaire de préférences
+    const preferencesForm = document.getElementById('preferences-form');
+    if (preferencesForm) {
+      preferencesForm.addEventListener('submit', (e) => this.handlePreferencesUpdate(e));
+    }
+    
     // Formulaire d'ajout de bateau
     const addBoatForm = document.getElementById('add-boat-form');
     if (addBoatForm) {
@@ -296,6 +334,27 @@ class SailingLocApp {
       addBoatBtn.addEventListener('click', () => {
         this.uiManager.showModal('add-boat-modal');
       });
+    }
+    
+    // Onglets du profil
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    tabBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tabId = btn.getAttribute('data-tab');
+        this.switchTab(tabId);
+      });
+    });
+    
+    // Boutons d'actualisation
+    const refreshBookingsBtn = document.getElementById('refresh-bookings');
+    const refreshBoatsBtn = document.getElementById('refresh-boats');
+    
+    if (refreshBookingsBtn) {
+      refreshBookingsBtn.addEventListener('click', () => this.loadUserBookings());
+    }
+    
+    if (refreshBoatsBtn) {
+      refreshBoatsBtn.addEventListener('click', () => this.loadOwnerBoats());
     }
   }
 
@@ -426,6 +485,449 @@ class SailingLocApp {
       this.storageManager.clearAuth();
       this.updateUIForUnauthenticatedUser();
     }
+  }
+
+  /**
+   * Affichage du profil utilisateur
+   */
+  async showProfile() {
+    try {
+      this.uiManager.showModal('profile-modal');
+      await this.loadUserProfile();
+    } catch (error) {
+      console.error('Erreur lors de l\'affichage du profil:', error);
+      this.uiManager.showNotification('Erreur lors du chargement du profil', 'error');
+    }
+  }
+
+  /**
+   * Chargement des données du profil
+   */
+  async loadUserProfile() {
+    try {
+      const response = await this.authService.getProfile();
+      
+      if (response.success) {
+        const user = response.data.user;
+        
+        // Remplir les champs du formulaire
+        document.getElementById('profile-firstname').value = user.firstName || '';
+        document.getElementById('profile-lastname').value = user.lastName || '';
+        document.getElementById('profile-email').value = user.email || '';
+        document.getElementById('profile-phone').value = user.phone || '';
+        
+        // Adresse
+        if (user.address) {
+          document.getElementById('profile-street').value = user.address.street || '';
+          document.getElementById('profile-city').value = user.address.city || '';
+          document.getElementById('profile-postal').value = user.address.postalCode || '';
+        }
+        
+        // Préférences
+        if (user.preferences) {
+          document.getElementById('profile-language').value = user.preferences.language || 'fr';
+          document.getElementById('profile-currency').value = user.preferences.currency || 'EUR';
+          document.getElementById('email-notifications').checked = user.preferences.notifications?.email !== false;
+          document.getElementById('sms-notifications').checked = user.preferences.notifications?.sms === true;
+        }
+      }
+    } catch (error) {
+      console.error('Erreur lors du chargement du profil:', error);
+      this.uiManager.showNotification('Erreur lors du chargement du profil', 'error');
+    }
+  }
+
+  /**
+   * Mise à jour du profil
+   */
+  async handleProfileUpdate(e) {
+    e.preventDefault();
+    
+    const profileData = {
+      firstName: document.getElementById('profile-firstname').value,
+      lastName: document.getElementById('profile-lastname').value,
+      phone: document.getElementById('profile-phone').value,
+      address: {
+        street: document.getElementById('profile-street').value,
+        city: document.getElementById('profile-city').value,
+        postalCode: document.getElementById('profile-postal').value
+      }
+    };
+    
+    try {
+      this.uiManager.showLoading('profile-form');
+      
+      const response = await this.authService.updateProfile(profileData);
+      
+      if (response.success) {
+        this.currentUser = response.data.user;
+        this.storageManager.setUser(response.data.user);
+        this.updateUIForAuthenticatedUser();
+        this.uiManager.showNotification('Profil mis à jour avec succès !', 'success');
+      } else {
+        this.uiManager.showNotification(response.message || 'Erreur lors de la mise à jour', 'error');
+      }
+      
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour du profil:', error);
+      this.uiManager.showNotification('Erreur lors de la mise à jour du profil', 'error');
+    } finally {
+      this.uiManager.hideLoading('profile-form');
+    }
+  }
+
+  /**
+   * Changement de mot de passe
+   */
+  async handlePasswordChange(e) {
+    e.preventDefault();
+    
+    const form = e.target;
+    const currentPassword = form.querySelector('[id*="current-password"]').value;
+    const newPassword = form.querySelector('[id*="new-password"]').value;
+    const confirmPassword = form.querySelector('[id*="confirm-password"]').value;
+    
+    if (newPassword !== confirmPassword) {
+      this.uiManager.showNotification('Les mots de passe ne correspondent pas', 'error');
+      return;
+    }
+    
+    try {
+      this.uiManager.showLoading(form);
+      
+      const response = await this.authService.changePassword(currentPassword, newPassword);
+      
+      if (response.success) {
+        this.uiManager.showNotification('Mot de passe modifié avec succès !', 'success');
+        form.reset();
+      } else {
+        this.uiManager.showNotification(response.message || 'Erreur lors du changement de mot de passe', 'error');
+      }
+      
+    } catch (error) {
+      console.error('Erreur lors du changement de mot de passe:', error);
+      this.uiManager.showNotification('Erreur lors du changement de mot de passe', 'error');
+    } finally {
+      this.uiManager.hideLoading(form);
+    }
+  }
+
+  /**
+   * Mise à jour des préférences
+   */
+  async handlePreferencesUpdate(e) {
+    e.preventDefault();
+    
+    const preferencesData = {
+      preferences: {
+        language: document.getElementById('profile-language').value,
+        currency: document.getElementById('profile-currency').value,
+        notifications: {
+          email: document.getElementById('email-notifications').checked,
+          sms: document.getElementById('sms-notifications').checked
+        }
+      }
+    };
+    
+    try {
+      this.uiManager.showLoading('preferences-form');
+      
+      const response = await this.authService.updateProfile(preferencesData);
+      
+      if (response.success) {
+        this.currentUser = response.data.user;
+        this.storageManager.setUser(response.data.user);
+        this.uiManager.showNotification('Préférences mises à jour avec succès !', 'success');
+      } else {
+        this.uiManager.showNotification(response.message || 'Erreur lors de la mise à jour', 'error');
+      }
+      
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour des préférences:', error);
+      this.uiManager.showNotification('Erreur lors de la mise à jour des préférences', 'error');
+    } finally {
+      this.uiManager.hideLoading('preferences-form');
+    }
+  }
+
+  /**
+   * Affichage des réservations
+   */
+  async showBookings() {
+    try {
+      this.uiManager.showModal('bookings-modal');
+      await this.loadUserBookings();
+    } catch (error) {
+      console.error('Erreur lors de l\'affichage des réservations:', error);
+      this.uiManager.showNotification('Erreur lors du chargement des réservations', 'error');
+    }
+  }
+
+  /**
+   * Chargement des réservations utilisateur
+   */
+  async loadUserBookings() {
+    try {
+      const bookingsList = document.getElementById('bookings-list');
+      bookingsList.innerHTML = `
+        <div class="loading-spinner">
+          <div class="spinner"></div>
+          <p>Chargement des réservations...</p>
+        </div>
+      `;
+      
+      const response = await this.bookingService.getUserBookings();
+      
+      if (response.success) {
+        this.renderBookings(response.data.bookings);
+      } else {
+        bookingsList.innerHTML = `
+          <div class="no-results">
+            <h3>Aucune réservation trouvée</h3>
+            <p>Vous n'avez pas encore de réservations</p>
+          </div>
+        `;
+      }
+      
+    } catch (error) {
+      console.error('Erreur lors du chargement des réservations:', error);
+      const bookingsList = document.getElementById('bookings-list');
+      bookingsList.innerHTML = `
+        <div class="no-results">
+          <h3>Erreur de chargement</h3>
+          <p>Impossible de charger les réservations</p>
+        </div>
+      `;
+    }
+  }
+
+  /**
+   * Rendu des réservations
+   */
+  renderBookings(bookings) {
+    const bookingsList = document.getElementById('bookings-list');
+    
+    if (bookings.length === 0) {
+      bookingsList.innerHTML = `
+        <div class="no-results">
+          <h3>Aucune réservation</h3>
+          <p>Vous n'avez pas encore de réservations</p>
+        </div>
+      `;
+      return;
+    }
+    
+    bookingsList.innerHTML = bookings.map(booking => `
+      <div class="booking-card">
+        <div class="booking-header">
+          <span class="booking-number">#${booking.bookingNumber}</span>
+          <span class="booking-status status-${booking.status}">${this.getStatusLabel(booking.status)}</span>
+        </div>
+        <div class="booking-details">
+          <div class="booking-detail">
+            <span class="booking-detail-label">Bateau</span>
+            <span class="booking-detail-value">${booking.boat?.name || 'N/A'}</span>
+          </div>
+          <div class="booking-detail">
+            <span class="booking-detail-label">Dates</span>
+            <span class="booking-detail-value">
+              ${new Date(booking.startDate).toLocaleDateString('fr-FR')} - 
+              ${new Date(booking.endDate).toLocaleDateString('fr-FR')}
+            </span>
+          </div>
+          <div class="booking-detail">
+            <span class="booking-detail-label">Montant</span>
+            <span class="booking-detail-value">${booking.pricing?.totalAmount || 0}€</span>
+          </div>
+          <div class="booking-detail">
+            <span class="booking-detail-label">Participants</span>
+            <span class="booking-detail-value">${booking.participants?.total || 0} personnes</span>
+          </div>
+        </div>
+        <div class="booking-actions">
+          <button class="btn-secondary btn-small" onclick="app.viewBookingDetails('${booking._id}')">
+            Voir détails
+          </button>
+          ${booking.status === 'pending' || booking.status === 'confirmed' ? `
+            <button class="btn-ghost btn-small" onclick="app.cancelBooking('${booking._id}')">
+              Annuler
+            </button>
+          ` : ''}
+        </div>
+      </div>
+    `).join('');
+  }
+
+  /**
+   * Affichage des bateaux du propriétaire
+   */
+  async showMyBoats() {
+    try {
+      this.uiManager.showModal('my-boats-modal');
+      await this.loadOwnerBoats();
+    } catch (error) {
+      console.error('Erreur lors de l\'affichage des bateaux:', error);
+      this.uiManager.showNotification('Erreur lors du chargement des bateaux', 'error');
+    }
+  }
+
+  /**
+   * Chargement des bateaux du propriétaire
+   */
+  async loadOwnerBoats() {
+    try {
+      const boatsList = document.getElementById('my-boats-list');
+      boatsList.innerHTML = `
+        <div class="loading-spinner">
+          <div class="spinner"></div>
+          <p>Chargement de vos bateaux...</p>
+        </div>
+      `;
+      
+      const response = await this.boatService.getOwnerBoats();
+      
+      if (response.success) {
+        this.renderOwnerBoats(response.data.boats);
+      } else {
+        boatsList.innerHTML = `
+          <div class="no-results">
+            <h3>Aucun bateau trouvé</h3>
+            <p>Vous n'avez pas encore ajouté de bateaux</p>
+          </div>
+        `;
+      }
+      
+    } catch (error) {
+      console.error('Erreur lors du chargement des bateaux:', error);
+      const boatsList = document.getElementById('my-boats-list');
+      boatsList.innerHTML = `
+        <div class="no-results">
+          <h3>Erreur de chargement</h3>
+          <p>Impossible de charger vos bateaux</p>
+        </div>
+      `;
+    }
+  }
+
+  /**
+   * Rendu des bateaux du propriétaire
+   */
+  renderOwnerBoats(boats) {
+    const boatsList = document.getElementById('my-boats-list');
+    
+    if (boats.length === 0) {
+      boatsList.innerHTML = `
+        <div class="no-results">
+          <h3>Aucun bateau</h3>
+          <p>Vous n'avez pas encore ajouté de bateaux</p>
+          <button class="btn-primary" onclick="app.uiManager.showModal('add-boat-modal')">
+            Ajouter votre premier bateau
+          </button>
+        </div>
+      `;
+      return;
+    }
+    
+    boatsList.innerHTML = boats.map(boat => `
+      <div class="my-boat-card">
+        <div class="my-boat-image">
+          <img src="${boat.mainImage || boat.images?.[0]?.url || 'https://images.pexels.com/photos/1001682/pexels-photo-1001682.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop'}" alt="${boat.name}">
+          <div class="boat-status-badge status-${boat.status}">${this.getBoatStatusLabel(boat.status)}</div>
+        </div>
+        <div class="my-boat-content">
+          <h3 class="my-boat-name">${boat.name}</h3>
+          <p class="my-boat-location">📍 ${boat.location?.city || 'N/A'}</p>
+          <div class="my-boat-stats">
+            <div class="boat-stat">
+              <div class="boat-stat-value">${boat.pricing?.dailyRate || 0}€</div>
+              <div class="boat-stat-label">Prix/jour</div>
+            </div>
+            <div class="boat-stat">
+              <div class="boat-stat-value">${boat.stats?.totalBookings || 0}</div>
+              <div class="boat-stat-label">Réservations</div>
+            </div>
+            <div class="boat-stat">
+              <div class="boat-stat-value">${boat.rating?.average?.toFixed(1) || '0.0'}</div>
+              <div class="boat-stat-label">Note</div>
+            </div>
+          </div>
+          <div class="my-boat-actions">
+            <button class="btn-primary btn-small" onclick="app.editBoat('${boat._id}')">
+              Modifier
+            </button>
+            <button class="btn-secondary btn-small" onclick="app.showBoatDetails('${boat._id}')">
+              Voir
+            </button>
+            <button class="btn-ghost btn-small" onclick="app.toggleBoatStatus('${boat._id}')">
+              ${boat.status === 'available' ? 'Désactiver' : 'Activer'}
+            </button>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  /**
+   * Basculement entre les onglets du profil
+   */
+  switchTab(tabId) {
+    // Désactiver tous les onglets
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+    
+    // Activer l'onglet sélectionné
+    document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
+    document.getElementById(tabId).classList.add('active');
+  }
+
+  /**
+   * Libellés des statuts de réservation
+   */
+  getStatusLabel(status) {
+    const labels = {
+      'pending': 'En attente',
+      'confirmed': 'Confirmée',
+      'paid': 'Payée',
+      'active': 'En cours',
+      'completed': 'Terminée',
+      'cancelled': 'Annulée',
+      'refunded': 'Remboursée'
+    };
+    return labels[status] || status;
+  }
+
+  /**
+   * Libellés des statuts de bateau
+   */
+  getBoatStatusLabel(status) {
+    const labels = {
+      'available': 'Disponible',
+      'rented': 'Loué',
+      'maintenance': 'Maintenance',
+      'inactive': 'Inactif'
+    };
+    return labels[status] || status;
+  }
+
+  /**
+   * Méthodes placeholder pour les actions
+   */
+  async viewBookingDetails(bookingId) {
+    this.uiManager.showNotification('Fonctionnalité en cours de développement', 'info');
+  }
+
+  async cancelBooking(bookingId) {
+    if (confirm('Êtes-vous sûr de vouloir annuler cette réservation ?')) {
+      this.uiManager.showNotification('Fonctionnalité en cours de développement', 'info');
+    }
+  }
+
+  async editBoat(boatId) {
+    this.uiManager.showNotification('Fonctionnalité en cours de développement', 'info');
+  }
+
+  async toggleBoatStatus(boatId) {
+    this.uiManager.showNotification('Fonctionnalité en cours de développement', 'info');
   }
 
   /**
