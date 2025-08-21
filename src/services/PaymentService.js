@@ -5,7 +5,7 @@
 export class PaymentService {
   constructor() {
     // URL de base de l'API
-    this.baseURL = import.meta.env.VITE_API_URL || '/api';
+    this.baseURL = '/api';
     this.paymentsEndpoint = `${this.baseURL}/payments`;
     
     // Configuration Stripe (à configurer plus tard)

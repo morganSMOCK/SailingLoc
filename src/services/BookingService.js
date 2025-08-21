@@ -5,7 +5,7 @@
 export class BookingService {
   constructor() {
     // URL de base de l'API
-    this.baseURL = import.meta.env.VITE_API_URL || '/api';
+    this.baseURL = '/api';
     this.bookingsEndpoint = `${this.baseURL}/bookings`;
   }
 
