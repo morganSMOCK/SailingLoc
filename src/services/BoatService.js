@@ -4,8 +4,8 @@
  */
 export class BoatService {
   constructor() {
-    // URL de base de l'API
-    this.baseURL = '/api';  // Utilise le proxy Vite en développement
+    // URL de base de l'API - utilise Render en production
+    this.baseURL = 'https://sailingloc-backend.onrender.com/api';
     this.boatsEndpoint = `${this.baseURL}/boats`;
   }
 

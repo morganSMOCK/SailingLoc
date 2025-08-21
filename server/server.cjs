@@ -44,9 +44,11 @@ app.use(cors({
   origin: [
     'http://localhost:5173',
     'https://localhost:5173', 
-    'https://votre-frontend-url.com',  // Remplacez par l'URL de votre frontend déployé
+    'https://sailingloc.vercel.app',
+    'https://sailingloc-frontend.vercel.app',
     /\.stackblitz\.io$/,
-    /\.webcontainer\.io$/
+    /\.webcontainer\.io$/,
+    /\.vercel\.app$/
   ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
