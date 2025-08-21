@@ -4,8 +4,10 @@
  */
 export class BoatService {
   constructor() {
-    // URL de base de l'API
-    this.baseURL = '/api';
+    // URL de base de l'API - utilise Render en production
+    this.baseURL = import.meta.env.PROD 
+      ? 'https://votre-app-render.onrender.com/api'  // Remplacez par votre URL Render
+      : '/api';
     this.boatsEndpoint = `${this.baseURL}/boats`;
   }
 
