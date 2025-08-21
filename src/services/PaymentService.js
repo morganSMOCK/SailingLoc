@@ -5,7 +5,7 @@
 export class PaymentService {
   constructor() {
     // URL de base de l'API - utilise Render en production
-    this.baseURL = 'https://sailingloc-backend.onrender.com/api';
+    this.baseURL = 'https://sailingloc.onrender.com/api';
     this.paymentsEndpoint = `${this.baseURL}/payments`;
     
     // Configuration Stripe (à configurer plus tard)
