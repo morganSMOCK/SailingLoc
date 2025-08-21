@@ -5,10 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "server": "node server/server.js",
+    "server": "node server/server.cjs",
     "build": "vite build",
     "preview": "vite preview",
-    "start": "node server/server.js"
+    "start": "node server/server.cjs"
   },
   "devDependencies": {
     "vite": "^5.4.2"
