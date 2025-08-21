@@ -9,8 +9,9 @@ export class HomePage {
   /**
    * Rendu de la page d'accueil
    */
-  render() {
-    return `
+  async render() {
+    const mainContent = document.getElementById('main-content');
+    mainContent.innerHTML = `
       <!-- Hero Section -->
       <section class="hero">
         <div class="hero-content">
@@ -54,6 +55,29 @@ export class HomePage {
         </div>
       </section>
 
+      <!-- Section Bateaux populaires -->
+      <section class="featured-boats-section">
+        <div class="container">
+          <div class="section-header">
+            <h2>Bateaux Populaires</h2>
+            <p>Découvrez nos bateaux les plus appréciés</p>
+          </div>
+          
+          <div id="featured-boats-grid" class="boats-grid">
+            <div class="loading-spinner">
+              <div class="spinner"></div>
+              <p>Chargement des bateaux...</p>
+            </div>
+          </div>
+          
+          <div class="cta-section">
+            <a href="/boats" data-route="/boats" class="btn-primary btn-large">
+              Voir tous les bateaux
+            </a>
+          </div>
+        </div>
+      </section>
+
       <!-- Section Services -->
       <section class="services-section">
         <div class="container">
@@ -87,31 +111,86 @@ export class HomePage {
               <p>Assistance technique et support client disponibles à tout moment</p>
             </div>
           </div>
+        </div>
+      </section>
+
+      <!-- Section Contact -->
+      <section class="contact-section">
+        <div class="container">
+          <div class="section-header">
+            <h2>Contactez-nous</h2>
+            <p>Une question ? Besoin d'aide ? Notre équipe est là pour vous</p>
+          </div>
           
-          <div class="cta-section">
-            <h3>Prêt à naviguer ?</h3>
-            <p>Découvrez notre flotte exceptionnelle</p>
-            <a href="/boats" data-route="/boats" class="btn-primary btn-large">
-              Voir tous les bateaux
-            </a>
+          <div class="contact-content">
+            <div class="contact-info">
+              <div class="contact-item">
+                <div class="contact-icon">📍</div>
+                <div>
+                  <h4>Adresse</h4>
+                  <p>Port de Plaisance<br>06400 Cannes, France</p>
+                </div>
+              </div>
+              
+              <div class="contact-item">
+                <div class="contact-icon">📞</div>
+                <div>
+                  <h4>Téléphone</h4>
+                  <p>+33 4 93 99 99 99</p>
+                </div>
+              </div>
+              
+              <div class="contact-item">
+                <div class="contact-icon">✉️</div>
+                <div>
+                  <h4>Email</h4>
+                  <p>contact@sailingloc.com</p>
+                </div>
+              </div>
+            </div>
+            
+            <form id="contact-form" class="contact-form">
+              <div class="form-group">
+                <input type="text" id="contact-name" placeholder="Votre nom" required>
+              </div>
+              <div class="form-group">
+                <input type="email" id="contact-email" placeholder="Votre email" required>
+              </div>
+              <div class="form-group">
+                <textarea id="contact-message" placeholder="Votre message" rows="5" required></textarea>
+              </div>
+              <button type="submit" class="btn-primary btn-full">Envoyer le message</button>
+            </form>
           </div>
         </div>
       </section>
     `;
+
+    await this.initEvents();
+    return this;
   }
 
   /**
    * Initialisation des événements de la page
    */
-  initEvents() {
+  async initEvents() {
     // Bouton de recherche
     const searchBtn = document.getElementById('search-btn');
     if (searchBtn) {
       searchBtn.addEventListener('click', () => this.handleSearch());
     }
 
+    // Formulaire de contact
+    const contactForm = document.getElementById('contact-form');
+    if (contactForm) {
+      contactForm.addEventListener('submit', (e) => this.handleContactForm(e));
+    }
+
     // Dates par défaut
     this.setDefaultDates();
+
+    // Charger les bateaux populaires
+    await this.loadFeaturedBoats();
   }
 
   /**
@@ -131,6 +210,78 @@ export class HomePage {
       startDateInput.value = tomorrow.toISOString().split('T')[0];
       endDateInput.value = nextWeek.toISOString().split('T')[0];
     }
+  }
+
+  /**
+   * Chargement des bateaux populaires
+   */
+  async loadFeaturedBoats() {
+    try {
+      const response = await this.app.boatService.getBoats({ 
+        limit: 3, 
+        sortBy: '-rating.average' 
+      });
+      
+      if (response.success && response.data.boats.length > 0) {
+        this.renderFeaturedBoats(response.data.boats);
+      }
+    } catch (error) {
+      console.error('Erreur lors du chargement des bateaux populaires:', error);
+      const grid = document.getElementById('featured-boats-grid');
+      if (grid) {
+        grid.innerHTML = `
+          <div class="no-results">
+            <p>Impossible de charger les bateaux populaires</p>
+          </div>
+        `;
+      }
+    }
+  }
+
+  /**
+   * Rendu des bateaux populaires
+   */
+  renderFeaturedBoats(boats) {
+    const grid = document.getElementById('featured-boats-grid');
+    if (!grid) return;
+
+    grid.innerHTML = boats.map(boat => this.createBoatCard(boat)).join('');
+  }
+
+  /**
+   * Création d'une carte de bateau
+   */
+  createBoatCard(boat) {
+    const mainImage = boat.mainImage || boat.images?.[0]?.url || 'https://images.pexels.com/photos/1001682/pexels-photo-1001682.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop';
+    
+    return `
+      <div class="boat-card" data-boat-id="${boat._id}">
+        <div class="boat-image">
+          <img src="${mainImage}" alt="${boat.name}" loading="lazy">
+          <div class="boat-badge">${this.formatBoatType(boat.type)}</div>
+          <div class="boat-rating">
+            <span class="rating-stars">${this.renderStars(boat.rating?.average || 0)}</span>
+            <span class="rating-count">(${boat.rating?.totalReviews || 0})</span>
+          </div>
+        </div>
+        <div class="boat-content">
+          <h3 class="boat-name">${boat.name}</h3>
+          <p class="boat-location">📍 ${boat.location.city}, ${boat.location.country}</p>
+          <div class="boat-specs">
+            <span class="spec">👥 ${boat.capacity.maxPeople} pers.</span>
+            <span class="spec">📏 ${boat.specifications.length}m</span>
+            ${boat.capacity.cabins ? `<span class="spec">🛏️ ${boat.capacity.cabins} cabines</span>` : ''}
+          </div>
+          <div class="boat-price">
+            <span class="price">${boat.pricing.dailyRate}€</span>
+            <span class="price-unit">/jour</span>
+          </div>
+          <button class="btn-primary btn-full boat-details-btn" onclick="app.router.navigate('/boat/${boat._id}')">
+            Voir les détails
+          </button>
+        </div>
+      </div>
+    `;
   }
 
   /**
@@ -154,5 +305,79 @@ export class HomePage {
     const url = queryString ? `/boats?${queryString}` : '/boats';
     
     this.app.router.navigate(url);
+  }
+
+  /**
+   * Gestion du formulaire de contact
+   */
+  async handleContactForm(e) {
+    e.preventDefault();
+    
+    const name = document.getElementById('contact-name').value;
+    const email = document.getElementById('contact-email').value;
+    const message = document.getElementById('contact-message').value;
+    
+    try {
+      this.app.uiManager.showLoading('contact-form');
+      
+      // Simulation d'envoi
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      this.app.uiManager.showNotification('Message envoyé avec succès !', 'success');
+      document.getElementById('contact-form').reset();
+      
+    } catch (error) {
+      console.error('Erreur lors de l\'envoi du message:', error);
+      this.app.uiManager.showNotification('Erreur lors de l\'envoi du message', 'error');
+    } finally {
+      this.app.uiManager.hideLoading('contact-form');
+    }
+  }
+
+  /**
+   * Formatage du type de bateau
+   */
+  formatBoatType(type) {
+    const types = {
+      'voilier': 'Voilier',
+      'catamaran': 'Catamaran',
+      'yacht': 'Yacht',
+      'bateau_moteur': 'Bateau à moteur',
+      'semi_rigide': 'Semi-rigide',
+      'peniche': 'Péniche'
+    };
+    return types[type] || type;
+  }
+
+  /**
+   * Rendu des étoiles de notation
+   */
+  renderStars(rating) {
+    const fullStars = Math.floor(rating);
+    const hasHalfStar = rating % 1 >= 0.5;
+    const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+    
+    let stars = '';
+    
+    for (let i = 0; i < fullStars; i++) {
+      stars += '⭐';
+    }
+    
+    if (hasHalfStar) {
+      stars += '⭐';
+    }
+    
+    for (let i = 0; i < emptyStars; i++) {
+      stars += '☆';
+    }
+    
+    return stars;
+  }
+
+  /**
+   * Nettoyage de la page
+   */
+  cleanup() {
+    // Nettoyer les écouteurs d'événements si nécessaire
   }
 }

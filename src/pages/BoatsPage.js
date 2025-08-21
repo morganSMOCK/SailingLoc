@@ -13,8 +13,9 @@ export class BoatsPage {
   /**
    * Rendu de la page des bateaux
    */
-  render() {
-    return `
+  async render({ searchParams }) {
+    const mainContent = document.getElementById('main-content');
+    mainContent.innerHTML = `
       <div class="boats-page">
         <div class="page-header">
           <div class="container">
@@ -98,12 +99,15 @@ export class BoatsPage {
         </div>
       </div>
     `;
+
+    await this.initEvents(searchParams);
+    return this;
   }
 
   /**
    * Initialisation des événements de la page
    */
-  async initEvents() {
+  async initEvents(searchParams) {
     // Filtres
     const applyFiltersBtn = document.getElementById('apply-filters');
     const resetFiltersBtn = document.getElementById('reset-filters');
@@ -137,22 +141,21 @@ export class BoatsPage {
     }
 
     // Charger les bateaux avec les paramètres URL
-    await this.loadBoatsFromURL();
+    await this.loadBoatsFromURL(searchParams);
   }
 
   /**
    * Chargement des bateaux depuis les paramètres URL
    */
-  async loadBoatsFromURL() {
-    const urlParams = new URLSearchParams(window.location.search);
+  async loadBoatsFromURL(searchParams) {
     const filters = {};
     
     // Récupérer les filtres depuis l'URL
-    if (urlParams.get('search')) filters.search = urlParams.get('search');
-    if (urlParams.get('type')) filters.type = urlParams.get('type');
-    if (urlParams.get('city')) filters.city = urlParams.get('city');
-    if (urlParams.get('minCapacity')) filters.minCapacity = urlParams.get('minCapacity');
-    if (urlParams.get('maxPrice')) filters.maxPrice = urlParams.get('maxPrice');
+    if (searchParams.get('search')) filters.search = searchParams.get('search');
+    if (searchParams.get('type')) filters.type = searchParams.get('type');
+    if (searchParams.get('city')) filters.city = searchParams.get('city');
+    if (searchParams.get('minCapacity')) filters.minCapacity = searchParams.get('minCapacity');
+    if (searchParams.get('maxPrice')) filters.maxPrice = searchParams.get('maxPrice');
     
     // Appliquer les filtres dans l'interface
     this.applyFiltersToUI(filters);
@@ -284,9 +287,6 @@ export class BoatsPage {
             <span class="rating-stars">${this.renderStars(boat.rating?.average || 0)}</span>
             <span class="rating-count">(${boat.rating?.totalReviews || 0})</span>
           </div>
-          <button class="favorite-btn" data-boat-id="${boat._id}">
-            <span class="heart">🤍</span>
-          </button>
         </div>
         <div class="boat-content">
           <h3 class="boat-name">${boat.name}</h3>
@@ -294,7 +294,7 @@ export class BoatsPage {
           <div class="boat-specs">
             <span class="spec">👥 ${boat.capacity.maxPeople} pers.</span>
             <span class="spec">📏 ${boat.specifications.length}m</span>
-            ${boat.capacity.cabins ? `<span class="spec">🛏️ ${boat.capacity.cabins} cabines</span>` : ''}
+            ${boat.capacity.cabins ? `<span class="spec">🛏️ ${boat.capacity.cabines} cabines</span>` : ''}
           </div>
           <div class="boat-price">
             <span class="price">${boat.pricing.dailyRate}€</span>
@@ -333,7 +333,7 @@ export class BoatsPage {
     });
     
     const newUrl = searchParams.toString() ? `/boats?${searchParams.toString()}` : '/boats';
-    history.pushState({}, '', newUrl);
+    this.app.router.navigate(newUrl);
     
     await this.loadBoats(filters, 1);
   }
@@ -351,7 +351,7 @@ export class BoatsPage {
     document.getElementById('price-display').textContent = '1000€';
     
     // Mettre à jour l'URL
-    history.pushState({}, '', '/boats');
+    this.app.router.navigate('/boats');
     
     await this.loadBoats({}, 1);
   }
@@ -448,5 +448,12 @@ export class BoatsPage {
     }
     
     return stars;
+  }
+
+  /**
+   * Nettoyage de la page
+   */
+  cleanup() {
+    // Nettoyer les écouteurs d'événements si nécessaire
   }
 }
