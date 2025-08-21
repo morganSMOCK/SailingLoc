@@ -6,10 +6,6 @@ import { BookingService } from './services/BookingService.js';
 import { PaymentService } from './services/PaymentService.js';
 import { UIManager } from './utils/UIManager.js';
 import { StorageManager } from './utils/StorageManager.js';
-import { Router } from './router/Router.js';
-import { HomePage } from './pages/HomePage.js';
-import { BoatsPage } from './pages/BoatsPage.js';
-import { BoatDetailPage } from './pages/BoatDetailPage.js';
 
 /**
  * Classe principale de l'application SailingLoc
@@ -24,7 +20,6 @@ class SailingLocApp {
     this.paymentService = new PaymentService();
     this.uiManager = new UIManager();
     this.storageManager = new StorageManager();
-    this.router = new Router();
     
     // État de l'application
     this.currentUser = null;
@@ -43,14 +38,14 @@ class SailingLocApp {
     try {
       console.log('🚀 Initialisation de SailingLoc...');
       
-      // Configuration du routeur
-      this.setupRoutes();
-      
       // Vérification de l'authentification existante
       await this.checkAuthStatus();
       
       // Configuration des écouteurs d'événements
       this.setupEventListeners();
+      
+      // Chargement initial des bateaux
+      await this.loadBoats();
       
       console.log('✅ SailingLoc initialisé avec succès');
       
@@ -58,29 +53,6 @@ class SailingLocApp {
       console.error('❌ Erreur lors de l\'initialisation:', error);
       this.uiManager.showNotification('Erreur lors du chargement de l\'application', 'error');
     }
-  }
-
-  /**
-   * Configuration des routes
-   */
-  setupRoutes() {
-    // Route d'accueil
-    this.router.addRoute('/', async () => {
-      const homePage = new HomePage(this);
-      return await homePage.render();
-    });
-    
-    // Route de la liste des bateaux
-    this.router.addRoute('/boats', async (context) => {
-      const boatsPage = new BoatsPage(this);
-      return await boatsPage.render(context);
-    });
-    
-    // Route des détails d'un bateau
-    this.router.addRoute('/boat/:id', async (context) => {
-      const boatDetailPage = new BoatDetailPage(this);
-      return await boatDetailPage.render(context);
-    });
   }
 
   /**
@@ -254,6 +226,28 @@ class SailingLocApp {
     
     if (nextPageBtn) {
       nextPageBtn.addEventListener('click', () => this.changePage(this.currentPage + 1));
+    }
+
+    // Dates par défaut
+    this.setDefaultDates();
+  }
+
+  /**
+   * Configuration des dates par défaut
+   */
+  setDefaultDates() {
+    const startDateInput = document.getElementById('search-start-date');
+    const endDateInput = document.getElementById('search-end-date');
+    
+    if (startDateInput && endDateInput) {
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      
+      const nextWeek = new Date();
+      nextWeek.setDate(nextWeek.getDate() + 8);
+      
+      startDateInput.value = tomorrow.toISOString().split('T')[0];
+      endDateInput.value = nextWeek.toISOString().split('T')[0];
     }
   }
 
@@ -1337,7 +1331,7 @@ class SailingLocApp {
     
     await this.loadBoats(this.currentFilters, page);
     
-    // Scroll vers le haut de la section bateaux
+    // Scroll vers la section bateaux
     const boatsSection = document.getElementById('boats');
     if (boatsSection) {
       boatsSection.scrollIntoView({ behavior: 'smooth' });
@@ -1415,13 +1409,6 @@ class SailingLocApp {
     } finally {
       this.uiManager.hideLoading('contact-form');
     }
-  }
-
-  /**
-   * Configuration de la navigation
-   */
-  setupNavigation() {
-    // La navigation est maintenant gérée par le routeur
   }
 
   /**
