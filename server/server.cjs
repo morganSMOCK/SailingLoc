@@ -41,7 +41,13 @@ app.use(limiter);
 
 // Configuration CORS pour permettre les requêtes depuis le frontend
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  origin: [
+    'http://localhost:5173',
+    'https://localhost:5173', 
+    'https://votre-frontend-url.com',  // Remplacez par l'URL de votre frontend déployé
+    /\.stackblitz\.io$/,
+    /\.webcontainer\.io$/
+  ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
