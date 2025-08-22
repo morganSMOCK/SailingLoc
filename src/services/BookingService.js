@@ -4,7 +4,7 @@
  */
 export class BookingService {
   constructor() {
-    // URL de base de l'API - utilise Render en production
+    // URL de base de l'API
     this.baseURL = 'https://sailingloc.onrender.com/api';
     this.bookingsEndpoint = `${this.baseURL}/bookings`;
   }
