@@ -45,7 +45,6 @@ app.use(cors({
     'http://localhost:5173',
     'https://localhost:5173', 
     'https://sailing-loc.vercel.app',
-    'https://sailing-loc.vercel.app',
     'https://sailingloc.vercel.app',
     'https://sailingloc-frontend.vercel.app',
     'https://*.vercel.app',
