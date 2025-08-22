@@ -91,16 +91,29 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Connexion à MongoDB Atlas
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/sailingloc', {
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://ProjetM1G2:Thc8XKw6dpfs0Aag@projetm1g2.vmsnfdz.mongodb.net/ProjetM1G2?retryWrites=true&w=majority&appName=ProjetM1G2';
+
+console.log('🔗 Tentative de connexion à MongoDB...');
+console.log('🔗 URI utilisée:', MONGODB_URI.replace(/\/\/([^:]+):([^@]+)@/, '//***:***@'));
+
+mongoose.connect(MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
+  serverSelectionTimeoutMS: 5000,
+  socketTimeoutMS: 45000,
 })
 .then(() => {
   console.log('✅ Connexion à MongoDB Atlas réussie');
+  console.log('📊 Base de données:', mongoose.connection.name);
 })
 .catch((error) => {
   console.error('❌ Erreur de connexion à MongoDB:', error);
-  process.exit(1);
+  console.error('💡 Vérifiez que MONGODB_URI est correctement configuré dans les variables d\'environnement');
+  // Ne pas arrêter le serveur immédiatement, laisser une chance de retry
+  setTimeout(() => {
+    console.error('🛑 Arrêt du serveur après échec de connexion MongoDB');
+    process.exit(1);
+  }, 10000);
 });
 
 app.get('/', (req, res) => {
