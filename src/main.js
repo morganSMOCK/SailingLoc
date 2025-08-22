@@ -6,6 +6,9 @@ import { BookingService } from './services/BookingService.js';
 import { PaymentService } from './services/PaymentService.js';
 import { UIManager } from './utils/UIManager.js';
 import { StorageManager } from './utils/StorageManager.js';
+import AddBoatForm from './components/AddBoatForm.js'; // Import du composant AddBoatForm
+import React from 'react';
+import ReactDOM from 'react-dom/client';
 
 /**
  * Classe principale de l'application SailingLoc
@@ -189,6 +192,15 @@ class SailingLocApp {
       boatsLink.addEventListener('click', (e) => {
         e.preventDefault();
         this.showMyBoats();
+      });
+    }
+
+    // Lien pour ajouter un bateau
+    const addBoatLink = document.getElementById('add-boat-link');
+    if (addBoatLink) {
+      addBoatLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.showAddBoatForm();
       });
     }
   }
@@ -986,6 +998,12 @@ class SailingLocApp {
       if (boatsLink && ['owner', 'admin'].includes(this.currentUser.role)) {
         boatsLink.style.display = 'block';
       }
+
+      // Afficher le lien "Ajouter un bateau" pour les propriétaires
+      const addBoatLink = document.getElementById('add-boat-link');
+      if (addBoatLink && ['owner', 'admin'].includes(this.currentUser.role)) {
+        addBoatLink.style.display = 'block';
+      }
     }
   }
 
@@ -1469,6 +1487,23 @@ class SailingLocApp {
     // Ici, on pourrait ouvrir une modale de réservation
     // Pour l'instant, on affiche juste une notification
     this.uiManager.showNotification('Fonctionnalité de réservation en cours de développement', 'info');
+  }
+
+  /**
+   * Affichage du formulaire d'ajout de bateau
+   */
+  showAddBoatForm() {
+    if (!this.currentUser || !['owner', 'admin'].includes(this.currentUser.role)) {
+      this.uiManager.showNotification('Vous n\'avez pas les permissions pour ajouter un bateau.', 'error');
+      return;
+    }
+
+    this.uiManager.showModal('add-boat-modal');
+    const container = document.getElementById('add-boat-form-container');
+    if (container) {
+      const root = ReactDOM.createRoot(container);
+      root.render(<AddBoatForm />);
+    }
   }
 }
 

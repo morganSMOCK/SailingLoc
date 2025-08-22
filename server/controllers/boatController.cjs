@@ -160,10 +160,28 @@ exports.createBoat = async (req, res) => {
       });
     }
 
-    // Création du bateau avec le propriétaire
+    // Récupérer les chemins des images téléchargées
+    const imageUrls = req.files ? req.files.map(file => `/uploads/boats/${file.filename}`) : [];
+
+    // Extraire les données du corps de la requête, y compris les champs imbriqués
+    const { name, description, type, length, width, year, capacity, pricePerDay, amenities, location } = req.body;
+    
     const boatData = {
-      ...req.body,
-      owner: userId
+      name,
+      description,
+      type,
+      specifications: { length, width, year: parseInt(year) },
+      capacity: { maxPeople: parseInt(capacity) },
+      pricing: { dailyRate: parseFloat(pricePerDay) },
+      amenities: Array.isArray(amenities) ? amenities : (amenities ? [amenities] : []), // Gérer un seul amenity ou plusieurs
+      location: {
+        address: location['address'],
+        city: location['city'],
+        postalCode: location['postalCode'],
+        country: location['country'],
+      },
+      images: imageUrls,
+      owner: userId,
     };
 
     const boat = new Boat(boatData);
@@ -180,6 +198,15 @@ exports.createBoat = async (req, res) => {
 
   } catch (error) {
     console.error('Erreur lors de la création du bateau:', error);
+    // Gérer les erreurs de validation spécifiques de Mongoose
+    if (error.name === 'ValidationError') {
+      const errors = Object.values(error.errors).map(err => err.message);
+      return res.status(400).json({
+        success: false,
+        message: 'Erreur de validation',
+        errors
+      });
+    }
     res.status(500).json({
       success: false,
       message: 'Erreur lors de la création du bateau'

@@ -1,5 +1,4 @@
 const express = require('express');
-const router = express.Router();
 const boatController = require('../controllers/boatController.cjs');
 const { 
   authenticateToken, 
@@ -10,9 +9,12 @@ const {
 } = require('../middleware/auth.cjs');
 const Boat = require('../models/Boat.cjs');
 
-// Routes publiques (avec authentification optionnelle)
+module.exports = (upload) => {
+  const router = express.Router();
 
-/**
+  // Routes publiques (avec authentification optionnelle)
+
+  /**
  * @route   GET /api/boats
  * @desc    Récupération de tous les bateaux avec filtres
  * @access  Public
@@ -62,6 +64,7 @@ router.get('/:id/availability',
 router.post('/', 
   authenticateToken,
   requireOwner,
+  upload.array('images', 10), // Middleware Multer pour 10 images max
   logUserAction('BOAT_CREATE'),
   boatController.createBoat
 );
@@ -112,4 +115,5 @@ router.get('/stats/overview',
   boatController.getBoatStats
 );
 
-module.exports = router;
+  return router;
+};

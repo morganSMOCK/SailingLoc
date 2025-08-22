@@ -52,6 +52,10 @@
               <span class="dropdown-icon">🛥️</span>
               Mes Bateaux
             </a>
+            <a href="#" id="add-boat-link" class="dropdown-item" style="display: none;">
+              <span class="dropdown-icon">➕</span>
+              Ajouter un bateau
+            </a>
             <div class="dropdown-divider"></div>
             <a href="#" id="logout-link" class="dropdown-item logout">
               <span class="dropdown-icon">🚪</span>
@@ -607,6 +611,19 @@
       </div>
       <div id="boat-details" class="boat-details">
         <!-- Les détails seront chargés dynamiquement -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Modale d'ajout de bateau -->
+  <div id="add-boat-modal" class="modal modal-large">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="add-boat-modal-title">Ajouter un nouveau bateau</h2>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div id="add-boat-form-container" class="add-boat-form-container">
+        <!-- Le formulaire React sera monté ici -->
       </div>
     </div>
   </div>

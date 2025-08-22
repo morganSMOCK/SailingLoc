@@ -19,12 +19,12 @@ const boatSchema = new mongoose.Schema({
   type: {
     type: String,
     required: [true, 'Le type de bateau est obligatoire'],
-    enum: ['voilier', 'catamaran', 'yacht', 'bateau_moteur', 'semi_rigide', 'peniche']
+    enum: ['voilier', 'catamaran', 'yacht', 'bateau_moteur', 'semi_rigide', 'peniche', 'autre'] // Ajout de 'autre'
   },
   category: {
     type: String,
-    required: [true, 'La catégorie est obligatoire'],
-    enum: ['luxe', 'standard', 'economique', 'sportif', 'familial']
+    enum: ['luxe', 'standard', 'economique', 'sportif', 'familial', 'peche', 'croisiere'], // Rend facultatif et ajoute des options
+    default: 'standard'
   },
   
   // Spécifications techniques
@@ -39,18 +39,19 @@ const boatSchema = new mongoose.Schema({
       required: [true, 'La largeur est obligatoire'],
       min: [1, 'La largeur doit être positive']
     },
-    draft: Number, // Tirant d'eau
-    displacement: Number, // Déplacement en tonnes
-    enginePower: Number, // Puissance moteur en CV
-    fuelCapacity: Number, // Capacité carburant en litres
-    waterCapacity: Number, // Capacité eau douce en litres
+    draft: { type: Number, default: 0 }, // Tirant d'eau
+    displacement: { type: Number, default: 0 }, // Déplacement en tonnes
+    enginePower: { type: Number, default: 0 }, // Puissance moteur en CV
+    fuelCapacity: { type: Number, default: 0 }, // Capacité carburant en litres
+    waterCapacity: { type: Number, default: 0 }, // Capacité eau douce en litres
     year: {
       type: Number,
-      min: [1900, 'Année invalide'],
-      max: [new Date().getFullYear() + 1, 'Année invalide']
+      required: [true, 'L\'année de fabrication est obligatoire'],
+      min: [1900, 'Année de fabrication invalide'],
+      max: [new Date().getFullYear() + 5, 'Année de fabrication future invalide'] // Permet quelques années futures
     },
-    brand: String,
-    model: String
+    brand: { type: String, trim: true, default: 'Inconnu' },
+    model: { type: String, trim: true, default: 'Inconnu' }
   },
   
   // Capacité et couchages
@@ -60,78 +61,57 @@ const boatSchema = new mongoose.Schema({
       required: [true, 'Le nombre maximum de personnes est obligatoire'],
       min: [1, 'Doit accueillir au moins 1 personne']
     },
-    cabins: {
-      type: Number,
-      min: [0, 'Le nombre de cabines ne peut pas être négatif']
-    },
-    berths: {
-      type: Number,
-      min: [0, 'Le nombre de couchages ne peut pas être négatif']
-    },
-    bathrooms: {
-      type: Number,
-      min: [0, 'Le nombre de salles de bain ne peut pas être négatif']
-    }
+    cabins: { type: Number, min: [0, 'Le nombre de cabines ne peut pas être négatif'], default: 0 },
+    berths: { type: Number, min: [0, 'Le nombre de couchages ne peut pas être négatif'], default: 0 },
+    bathrooms: { type: Number, min: [0, 'Le nombre de salles de bain ne peut pas être négatif'], default: 0 }
   },
   
-  // Équipements et options
-  equipment: {
-    navigation: {
-      gps: { type: Boolean, default: false },
-      autopilot: { type: Boolean, default: false },
-      radar: { type: Boolean, default: false },
-      chartPlotter: { type: Boolean, default: false },
-      compass: { type: Boolean, default: true }
-    },
-    safety: {
-      lifeJackets: { type: Boolean, default: true },
-      lifeRaft: { type: Boolean, default: false },
-      fireExtinguisher: { type: Boolean, default: true },
-      firstAidKit: { type: Boolean, default: true },
-      flares: { type: Boolean, default: false }
-    },
-    comfort: {
-      airConditioning: { type: Boolean, default: false },
-      heating: { type: Boolean, default: false },
-      wifi: { type: Boolean, default: false },
-      tv: { type: Boolean, default: false },
-      stereo: { type: Boolean, default: false },
-      refrigerator: { type: Boolean, default: false },
-      microwave: { type: Boolean, default: false },
-      dishwasher: { type: Boolean, default: false }
-    },
-    water: {
-      shower: { type: Boolean, default: false },
-      hotWater: { type: Boolean, default: false },
-      waterMaker: { type: Boolean, default: false }
+  // Équipements et options (simplifié pour correspondre au formulaire)
+  amenities: [
+    {
+      type: String,
+      trim: true
     }
-  },
+  ],
   
   // Localisation
   location: {
-    marina: {
+    address: {
       type: String,
-      required: [true, 'Le port d\'attache est obligatoire']
+      trim: true,
+      default: 'N/A'
+    },
+    marina: { // Mappé depuis l'adresse pour l'instant
+      type: String,
+      trim: true,
+      default: 'N/A'
     },
     city: {
       type: String,
-      required: [true, 'La ville est obligatoire']
+      required: [true, 'La ville est obligatoire'],
+      trim: true
     },
-    region: String,
+    postalCode: {
+      type: String,
+      trim: true,
+      default: 'N/A'
+    },
+    region: { type: String, trim: true, default: 'N/A' },
     country: {
       type: String,
-      default: 'France'
+      default: 'France',
+      trim: true
     },
     coordinates: {
-      latitude: {
-        type: Number,
-        min: [-90, 'Latitude invalide'],
-        max: [90, 'Latitude invalide']
+      type: {
+        type: String,
+        enum: ['Point'],
+        default: 'Point'
       },
-      longitude: {
-        type: Number,
-        min: [-180, 'Longitude invalide'],
-        max: [180, 'Longitude invalide']
+      coordinates: {
+        type: [Number],
+        index: '2dsphere',
+        default: [0, 0] // Valeurs par défaut
       }
     }
   },
@@ -143,12 +123,13 @@ const boatSchema = new mongoose.Schema({
       required: [true, 'Le tarif journalier est obligatoire'],
       min: [0, 'Le tarif ne peut pas être négatif']
     },
-    weeklyRate: Number,
-    monthlyRate: Number,
+    weeklyRate: { type: Number, min: [0, 'Le tarif hebdomadaire ne peut pas être négatif'] },
+    monthlyRate: { type: Number, min: [0, 'Le tarif mensuel ne peut pas être négatif'] },
     securityDeposit: {
       type: Number,
       required: [true, 'La caution est obligatoire'],
-      min: [0, 'La caution ne peut pas être négative']
+      min: [0, 'La caution ne peut pas être négative'],
+      default: 500 // Valeur par défaut
     },
     cleaningFee: {
       type: Number,
@@ -277,9 +258,6 @@ boatSchema.index({ 'pricing.dailyRate': 1 });
 boatSchema.index({ 'rating.average': -1 });
 boatSchema.index({ status: 1, isActive: 1 });
 boatSchema.index({ owner: 1 });
-
-// Index géospatial pour les recherches par proximité
-boatSchema.index({ 'location.coordinates': '2dsphere' });
 
 // Propriété virtuelle pour l'image principale
 boatSchema.virtual('mainImage').get(function() {

@@ -90,10 +90,9 @@ export class BoatService {
       const response = await fetch(this.boatsEndpoint, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify(boatData)
+        body: boatData // boatData est déjà un FormData
       });
 
       const data = await response.json();

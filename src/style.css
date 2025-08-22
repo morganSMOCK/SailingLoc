@@ -1704,3 +1704,116 @@ textarea:focus-visible {
     grid-template-columns: 1fr;
   }
 }
+
+/* Styles pour AddBoatForm */
+.add-boat-form {
+  padding: var(--space-2xl);
+}
+
+.add-boat-form h2,
+.add-boat-form h3 {
+  font-size: var(--text-xl);
+  color: var(--gray-800);
+  margin-bottom: var(--space-xl);
+  font-weight: 800;
+}
+
+.add-boat-form h3 {
+  margin-top: var(--space-3xl);
+  margin-bottom: var(--space-lg);
+  border-bottom: 2px solid var(--gray-200);
+  padding-bottom: var(--space-md);
+}
+
+.form-group-inline {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--space-lg);
+  margin-bottom: var(--space-lg);
+}
+
+.form-group-checkboxes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--space-md);
+  margin-bottom: var(--space-xl);
+}
+
+.form-group-checkboxes label {
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+  color: var(--gray-700);
+  cursor: pointer;
+}
+
+.form-group-checkboxes input[type="checkbox"] {
+  margin-right: var(--space-sm);
+  width: 20px;
+  height: 20px;
+  accent-color: var(--primary);
+}
+
+.image-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
+}
+
+.image-tag {
+  background: var(--primary-light);
+  color: var(--white);
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-md);
+  font-size: var(--text-xs);
+  font-weight: 600;
+}
+
+.input-error {
+  border-color: #ef4444 !important;
+}
+
+.error-message {
+  color: #ef4444;
+  font-size: var(--text-sm);
+  margin-top: var(--space-xs);
+}
+
+.success {
+  color: #10b981;
+  background-color: #ecfdf5;
+  padding: var(--space-md);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-lg);
+  font-weight: 600;
+}
+
+.error {
+  color: #ef4444;
+  background-color: #fee2e2;
+  padding: var(--space-md);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-lg);
+  font-weight: 600;
+}
+
+/* Adjustments for modals with forms */
+.modal-large .modal-content {
+  max-width: 800px; /* Ajusté pour mieux accommoder les formulaires plus grands */
+}
+
+.add-boat-form-container {
+  padding: var(--space-lg) var(--space-2xl);
+}
+
+/* Responsive adjustments for forms */
+@media (max-width: 600px) {
+  .form-group-inline {
+    grid-template-columns: 1fr;
+  }
+
+  .form-group-checkboxes {
+    grid-template-columns: 1fr;
+  }
+}

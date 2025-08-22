@@ -4,11 +4,13 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
+const path = require('path'); // Ajout du module path
+const multer = require('multer'); // Ajout du module multer
 require('dotenv').config();
 
 // Importation des routes
 const authRoutes = require('./routes/authRoutes.cjs');
-const boatRoutes = require('./routes/boatRoutes.cjs');
+const boatRoutes = require('./routes/boatRoutes.cjs'); // Modifié pour être une fonction
 const bookingRoutes = require('./routes/bookingRoutes.cjs');
 const paymentRoutes = require('./routes/paymentRoutes.cjs');
 
@@ -90,6 +92,22 @@ app.use((req, res, next) => {
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
+// Configuration de Multer pour le téléchargement d'images
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'public/uploads/boats/'); // Dossier où les images seront stockées
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}-${file.originalname}`); // Nom du fichier
+  },
+});
+
+const upload = multer({ storage: storage });
+app.set('upload', upload); // Rendre l'instance multer disponible via app.set
+
+// Servir les fichiers statiques du dossier 'public'
+app.use(express.static(path.join(__dirname, '..\', 'public')));
+
 // Connexion à MongoDB Atlas
 const MONGODB_URI = process.env.MONGODB_URI;
 
@@ -135,7 +153,7 @@ app.get('/api', (req, res) => {
 
 // Configuration des routes API
 app.use('/api/auth', authRoutes);
-app.use('/api/boats', boatRoutes);
+app.use('/api/boats', boatRoutes(upload)); // Passe l'instance upload aux routes de bateaux
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/payments', paymentRoutes);
 
