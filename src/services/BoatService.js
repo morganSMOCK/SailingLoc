@@ -5,7 +5,7 @@
 export class BoatService {
   constructor() {
     // URL de base de l'API - utilise Render en production
-    this.baseURL = 'https://sailingloc.onrender.com/api';
+    this.baseURL = '/api';
     this.boatsEndpoint = `${this.baseURL}/boats`;
   }
 
