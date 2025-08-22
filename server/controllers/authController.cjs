@@ -255,7 +255,6 @@ exports.changePassword = async (req, res) => {
     // Vérification de la longueur du nouveau mot de passe
     if (newPassword.length < 6) {
       return res.status(400).json({
-      console.log('❌ [AUTH] Mot de passe trop court');
         success: false,
         message: 'Le nouveau mot de passe doit contenir au moins 6 caractères'
       });
@@ -265,14 +264,12 @@ exports.changePassword = async (req, res) => {
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({
-      console.log('❌ [AUTH] Email déjà utilisé:', email);
         success: false,
         message: 'Utilisateur non trouvé'
       });
     }
 
     // Vérification du mot de passe actuel
-    console.log('✅ [AUTH] Validation OK, création utilisateur...');
     
     const isCurrentPasswordValid = await user.comparePassword(currentPassword);
     if (!isCurrentPasswordValid) {
@@ -285,7 +282,6 @@ exports.changePassword = async (req, res) => {
     // Mise à jour du mot de passe
     user.password = newPassword;
     await user.save();
-    console.log('✅ [AUTH] Utilisateur créé:', user.email);
 
     res.json({
       success: true,
@@ -293,7 +289,6 @@ exports.changePassword = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Erreur lors du changement de mot de passe:', error);
     res.status(500).json({
       success: false,
       message: 'Erreur lors du changement de mot de passe'
