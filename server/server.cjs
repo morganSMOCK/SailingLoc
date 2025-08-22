@@ -106,7 +106,7 @@ const upload = multer({ storage: storage });
 app.set('upload', upload); // Rendre l'instance multer disponible via app.set
 
 // Servir les fichiers statiques du dossier 'public'
-app.use(express.static(path.join(__dirname, '..\', 'public')));
+app.use(express.static(path.join(__dirname, '..', 'public')));
 
 // Connexion à MongoDB Atlas
 const MONGODB_URI = process.env.MONGODB_URI;
