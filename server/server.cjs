@@ -106,13 +106,15 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/sailinglo
 app.get('/', (req, res) => {
   res.redirect('/api');
 });
+
 app.get('/api', (req, res) => {
   res.json({
     success: true,
-    message: 'Bienvenue sur l'API SailingLoc ⛵',
+    message: 'Bienvenue sur l\'API SailingLoc ⛵',
     availableRoutes: ['/api/auth', '/api/boats', '/api/bookings', '/api/payments']
   });
 });
+
 // Configuration des routes API
 app.use('/api/auth', authRoutes);
 app.use('/api/boats', boatRoutes);
