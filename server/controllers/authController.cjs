@@ -2,6 +2,7 @@ const User = require('../models/User.cjs');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 
+
 // Fonction utilitaire pour générer un token JWT
 const generateToken = (userId) => {
   return jwt.sign({ userId }, process.env.JWT_SECRET, {
