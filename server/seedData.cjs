@@ -579,7 +579,8 @@ const sampleBoats = [
 async function seedDatabase() {
   try {
     // Connexion à MongoDB
-    await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/sailingloc');
+    await mongoose.connect(process.env.MONGODB_URI || 'mongodb+srv://ProjetM1G2:Thc8XKw6dpfs0Aag@projetm1g2.vmsnfdz.mongodb.net/ProjetM1G2?retryWrites=true&w=majority&appName=ProjetM1G2
+');
     console.log('✅ Connexion à MongoDB réussie');
 
     // Créer un utilisateur propriétaire par défaut
