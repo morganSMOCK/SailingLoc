@@ -170,6 +170,7 @@ app.use((error, req, res, next) => {
 
 // Gestion des routes non trouvées
 app.use('*', (req, res) => {
+  console.log(`❌ Route non trouvée: ${req.method} ${req.originalUrl}`);
   res.status(404).json({
     success: false,
     message: 'Route non trouvée'
@@ -177,9 +178,11 @@ app.use('*', (req, res) => {
 });
 
 // Démarrage du serveur
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Serveur SailingLoc démarré sur le port ${PORT}`);
   console.log(`🌐 API disponible sur http://localhost:${PORT}/api`);
+  console.log(`🔗 MongoDB URI: ${process.env.MONGODB_URI ? 'Configuré' : 'Non configuré'}`);
+  console.log(`🔑 JWT Secret: ${process.env.JWT_SECRET ? 'Configuré' : 'Non configuré'}`);
 });
 
 // Gestion propre de l'arrêt du serveur
