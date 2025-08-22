@@ -72,7 +72,7 @@ app.use((req, res, next) => {
   } else {
     next();
   }
-}));
+});
 
 // Middleware de debug pour toutes les requêtes
 app.use((req, res, next) => {
@@ -109,7 +109,7 @@ app.get('/', (req, res) => {
 app.get('/api', (req, res) => {
   res.json({
     success: true,
-    message: 'Bienvenue sur l’API SailingLoc ⛵',
+    message: 'Bienvenue sur l'API SailingLoc ⛵',
     availableRoutes: ['/api/auth', '/api/boats', '/api/bookings', '/api/payments']
   });
 });
