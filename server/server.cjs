@@ -91,10 +91,15 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Connexion à MongoDB Atlas
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://ProjetM1G2:Thc8XKw6dpfs0Aag@projetm1g2.vmsnfdz.mongodb.net/ProjetM1G2?retryWrites=true&w=majority&appName=ProjetM1G2';
+const MONGODB_URI = process.env.MONGODB_URI;
+
+if (!MONGODB_URI) {
+  console.error('❌ MONGODB_URI n\'est pas défini dans les variables d\'environnement');
+  process.exit(1);
+}
 
 console.log('🔗 Tentative de connexion à MongoDB...');
-console.log('🔗 URI utilisée:', MONGODB_URI.replace(/\/\/([^:]+):([^@]+)@/, '//***:***@'));
+console.log('🔗 URI configurée:', MONGODB_URI ? 'Oui' : 'Non');
 
 mongoose.connect(MONGODB_URI, {
   useNewUrlParser: true,

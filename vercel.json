@@ -24,8 +24,7 @@
     }
   ],
   "env": {
-    "MONGODB_URI":
-    "mongodb+srv://ProjetM1G2:Thc8XKw6dpfs0Aag@projetm1g2.vmsnfdz.mongodb.net/ProjetM1G2?retryWrites=true&w=majority&appName=ProjetM1G2",
+    "MONGODB_URI": "",
     "JWT_SECRET": "superSecretKey",
     "NODE_ENV": "production"
   }
