@@ -9,7 +9,7 @@
       "src": "package.json",
       "use": "@vercel/static-build",
       "config": {
-        "distDir": "."
+        "distDir": "dist"
       }
     }
   ],
@@ -19,40 +19,40 @@
       "dest": "/server/server.cjs"
     },
     {
-      "src": "/boats.html",
-      "dest": "/boats.html"
+      "src": "/assets/(.*)",
+      "dest": "/dist/assets/$1"
     },
     {
-      "src": "/boats_detail.html",
-      "dest": "/boats_detail.html"
+      "src": "/boat-icon.svg",
+      "dest": "/dist/boat-icon.svg"
+    },
+    {
+      "src": "/boats.html",
+      "dest": "/dist/boats.html"
+    },
+    {
+      "src": "/boats_detail.html", 
+      "dest": "/dist/boats_detail.html"
     },
     {
       "src": "/contact.html",
-      "dest": "/contact.html"
+      "dest": "/dist/contact.html"
     },
     {
       "src": "/services.html",
-      "dest": "/services.html"
+      "dest": "/dist/services.html"
     },
     {
       "src": "/test-navigation.html",
-      "dest": "/test-navigation.html"
-    },
-    {
-      "src": "/src/(.*)",
-      "dest": "/src/$1"
-    },
-    {
-      "src": "/public/(.*)",
-      "dest": "/public/$1"
+      "dest": "/dist/test-navigation.html"
     },
     {
       "src": "/",
-      "dest": "/index.html"
+      "dest": "/dist/index.html"
     },
     {
       "src": "/(.*)",
-      "dest": "/$1"
+      "dest": "/dist/index.html"
     }
   ],
   "env": {

@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "server": "node server/server.cjs",
-    "build": "echo 'Build completed - serving static files directly'",
+    "build": "vite build",
     "preview": "vite preview",
     "start": "node server/server.cjs",
     "postinstall": "echo 'Installation terminée'"
