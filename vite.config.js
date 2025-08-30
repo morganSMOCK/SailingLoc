@@ -1,6 +1,20 @@
 import { defineConfig } from 'vite'
+import { resolve } from 'path'
+import { copyFileSync, mkdirSync, existsSync } from 'fs'
 
 export default defineConfig({
+  build: {
+    rollupOptions: {
+      input: {
+        main: resolve(__dirname, 'index.html'),
+        boats: resolve(__dirname, 'boats.html'),
+        boats_detail: resolve(__dirname, 'boats_detail.html'),
+        contact: resolve(__dirname, 'contact.html'),
+        services: resolve(__dirname, 'services.html'),
+        test: resolve(__dirname, 'test-navigation.html')
+      }
+    }
+  },
   server: {
     port: 5173,
     proxy: {

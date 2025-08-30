@@ -9,7 +9,7 @@
       "src": "package.json",
       "use": "@vercel/static-build",
       "config": {
-        "distDir": "."
+        "distDir": "dist"
       }
     }
   ],
@@ -19,40 +19,8 @@
       "dest": "/server/server.cjs"
     },
     {
-      "src": "/boats.html",
-      "dest": "/boats.html"
-    },
-    {
-      "src": "/boats_detail.html",
-      "dest": "/boats_detail.html"
-    },
-    {
-      "src": "/contact.html",
-      "dest": "/contact.html"
-    },
-    {
-      "src": "/services.html",
-      "dest": "/services.html"
-    },
-    {
-      "src": "/test-navigation.html",
-      "dest": "/test-navigation.html"
-    },
-    {
-      "src": "/src/(.*)",
-      "dest": "/src/$1"
-    },
-    {
-      "src": "/public/(.*)",
-      "dest": "/public/$1"
-    },
-    {
-      "src": "/",
-      "dest": "/index.html"
-    },
-    {
       "src": "/(.*)",
-      "dest": "/$1"
+      "dest": "/dist/$1"
     }
   ],
   "env": {
