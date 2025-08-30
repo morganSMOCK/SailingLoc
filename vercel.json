@@ -19,8 +19,40 @@
       "dest": "/server/server.cjs"
     },
     {
+      "src": "/assets/(.*)",
+      "dest": "/dist/assets/$1"
+    },
+    {
+      "src": "/boat-icon.svg",
+      "dest": "/dist/boat-icon.svg"
+    },
+    {
+      "src": "/boats.html",
+      "dest": "/dist/boats.html"
+    },
+    {
+      "src": "/boats_detail.html", 
+      "dest": "/dist/boats_detail.html"
+    },
+    {
+      "src": "/contact.html",
+      "dest": "/dist/contact.html"
+    },
+    {
+      "src": "/services.html",
+      "dest": "/dist/services.html"
+    },
+    {
+      "src": "/test-navigation.html",
+      "dest": "/dist/test-navigation.html"
+    },
+    {
+      "src": "/",
+      "dest": "/dist/index.html"
+    },
+    {
       "src": "/(.*)",
-      "dest": "/dist/$1"
+      "dest": "/dist/index.html"
     }
   ],
   "env": {
