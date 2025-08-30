@@ -9,7 +9,7 @@
       "src": "package.json",
       "use": "@vercel/static-build",
       "config": {
-        "distDir": "dist"
+        "distDir": "."
       }
     }
   ],
@@ -19,13 +19,48 @@
       "dest": "/server/server.cjs"
     },
     {
+      "src": "/boats.html",
+      "dest": "/boats.html"
+    },
+    {
+      "src": "/boats_detail.html",
+      "dest": "/boats_detail.html"
+    },
+    {
+      "src": "/contact.html",
+      "dest": "/contact.html"
+    },
+    {
+      "src": "/services.html",
+      "dest": "/services.html"
+    },
+    {
+      "src": "/test-navigation.html",
+      "dest": "/test-navigation.html"
+    },
+    {
+      "src": "/src/(.*)",
+      "dest": "/src/$1"
+    },
+    {
+      "src": "/public/(.*)",
+      "dest": "/public/$1"
+    },
+    {
+      "src": "/",
+      "dest": "/index.html"
+    },
+    {
       "src": "/(.*)",
-      "dest": "/dist/$1"
+      "dest": "/$1"
     }
   ],
   "env": {
     "MONGODB_URI": "",
     "JWT_SECRET": "superSecretKey",
-    "NODE_ENV": "production"
+    "NODE_ENV": "production",
+    "BREVO_API_KEY": "",
+    "CONTACT_TO_EMAIL": "",
+    "CONTACT_FROM_EMAIL": ""
   }
 }
