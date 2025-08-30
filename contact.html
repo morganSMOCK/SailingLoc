@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SailingLoc - Location de bateaux</title>
-  <meta name="description" content="Louez le bateau de vos rêves avec SailingLoc. Voiliers, catamarans, yachts disponibles partout en France et en Europe.">
+  <title>Contact - SailingLoc</title>
+  <meta name="description" content="Contactez l'équipe SailingLoc pour toute question sur la location de bateaux. Support client disponible 24/7.">
   <link rel="stylesheet" href="/src/style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,10 +19,10 @@
       </div>
       
       <div class="nav-menu" id="nav-menu">
-        <a href="index.html" class="nav-link active">Accueil</a>
+        <a href="index.html" class="nav-link">Accueil</a>
         <a href="boats.html" class="nav-link">Bateaux</a>
         <a href="services.html" class="nav-link">Services</a>
-        <a href="contact.html" class="nav-link">Contact</a>
+        <a href="contact.html" class="nav-link active">Contact</a>
       </div>
       
       <div class="nav-auth">
@@ -69,73 +69,202 @@
     </div>
   </nav>
 
-  <!-- Hero Section -->
-  <section id="home" class="hero">
-    <div class="hero-content">
-      <h1 class="hero-title">
-        Naviguez vers vos <span class="gradient-text">rêves</span>
-      </h1>
-      <p class="hero-subtitle">
-        Découvrez notre flotte exceptionnelle de bateaux et vivez des aventures inoubliables sur les plus belles eaux d'Europe
-      </p>
+  <!-- Section Contact -->
+  <section id="contact" class="contact-section">
+    <div class="container">
+      <div class="section-header">
+        <h1>Contactez-nous</h1>
+        <p>Une question ? Besoin d'aide ? Notre équipe est là pour vous</p>
+      </div>
       
-      <!-- Barre de recherche -->
-      <div class="search-bar">
-        <div class="search-field">
-          <label>Destination</label>
-          <input type="text" id="search-location" placeholder="Où souhaitez-vous naviguer ?">
+      <div class="contact-content">
+        <div class="contact-info">
+          <div class="contact-item">
+            <div class="contact-icon">📍</div>
+            <div>
+              <h4>Adresse</h4>
+              <p>Port de Plaisance<br>06400 Cannes, France</p>
+            </div>
+          </div>
+          
+          <div class="contact-item">
+            <div class="contact-icon">📞</div>
+            <div>
+              <h4>Téléphone</h4>
+              <p>+33 4 93 99 99 99</p>
+            </div>
+          </div>
+          
+          <div class="contact-item">
+            <div class="contact-icon">✉️</div>
+            <div>
+              <h4>Email</h4>
+              <p>contact@sailingloc.com</p>
+            </div>
+          </div>
+
+          <div class="contact-item">
+            <div class="contact-icon">🕒</div>
+            <div>
+              <h4>Horaires</h4>
+              <p>Lundi - Vendredi : 9h - 18h<br>Samedi : 9h - 17h<br>Dimanche : 10h - 16h</p>
+            </div>
+          </div>
+
+          <div class="contact-item">
+            <div class="contact-icon">🌐</div>
+            <div>
+              <h4>Réseaux sociaux</h4>
+              <div class="social-links">
+                <a href="#" class="social-link">📘 Facebook</a>
+                <a href="#" class="social-link">📷 Instagram</a>
+                <a href="#" class="social-link">🐦 Twitter</a>
+                <a href="#" class="social-link">💼 LinkedIn</a>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="search-field">
-          <label>Départ</label>
-          <input type="date" id="search-start-date">
-        </div>
-        <div class="search-field">
-          <label>Retour</label>
-          <input type="date" id="search-end-date">
-        </div>
-        <div class="search-field">
-          <label>Passagers</label>
-          <select id="search-guests">
-            <option value="">Nombre</option>
-            <option value="2">2 personnes</option>
-            <option value="4">4 personnes</option>
-            <option value="6">6 personnes</option>
-            <option value="8">8 personnes</option>
-            <option value="10">10+ personnes</option>
-          </select>
-        </div>
-        <button id="search-btn" class="btn-primary search-btn">
-          <span>🔍</span>
-          Rechercher
-        </button>
+        
+        <form id="contact-form" class="contact-form">
+          <div class="form-group">
+            <label for="contact-name">Nom complet *</label>
+            <input type="text" id="contact-name" placeholder="Votre nom" required>
+          </div>
+          <div class="form-group">
+            <label for="contact-email">Email *</label>
+            <input type="email" id="contact-email" placeholder="Votre email" required>
+          </div>
+          <div class="form-group">
+            <label for="contact-phone">Téléphone</label>
+            <input type="tel" id="contact-phone" placeholder="Votre téléphone">
+          </div>
+          <div class="form-group">
+            <label for="contact-subject">Sujet *</label>
+            <select id="contact-subject" required>
+              <option value="">Choisissez un sujet</option>
+              <option value="reservation">Question sur une réservation</option>
+              <option value="boat">Information sur un bateau</option>
+              <option value="service">Demande de service</option>
+              <option value="partnership">Partenariat</option>
+              <option value="other">Autre</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="contact-message">Message *</label>
+            <textarea id="contact-message" placeholder="Votre message" rows="5" required></textarea>
+          </div>
+          <div class="form-group">
+            <label class="checkbox-label">
+              <input type="checkbox" id="contact-newsletter">
+              <span class="checkmark"></span>
+              Je souhaite recevoir la newsletter SailingLoc
+            </label>
+          </div>
+          <button type="submit" class="btn-primary btn-full">Envoyer le message</button>
+        </form>
       </div>
     </div>
   </section>
 
-
-
-  <!-- Section Bateaux (résultats de recherche) -->
-  <section id="boats" class="boats-section">
+  <!-- Section FAQ -->
+  <section class="faq-section">
     <div class="container">
       <div class="section-header">
-        <h2>Résultats</h2>
-        <p>Affichage des bateaux correspondant à votre recherche</p>
+        <h2>Questions Fréquentes</h2>
+        <p>Trouvez rapidement les réponses à vos questions</p>
       </div>
+      
+      <div class="faq-grid">
+        <div class="faq-item">
+          <div class="faq-question">
+            <h3>Comment réserver un bateau ?</h3>
+            <span class="faq-toggle">+</span>
+          </div>
+          <div class="faq-answer">
+            <p>La réservation se fait en ligne en quelques étapes simples : choisissez votre bateau, sélectionnez vos dates, remplissez vos informations et confirmez votre paiement. Vous recevrez une confirmation par email.</p>
+          </div>
+        </div>
 
-      <!-- Loading -->
-      <div id="boats-loading" class="loading-spinner" style="display: none;">
-        <div class="spinner"></div>
-        <p>Chargement des bateaux...</p>
+        <div class="faq-item">
+          <div class="faq-question">
+            <h3>Quels documents sont nécessaires ?</h3>
+            <span class="faq-toggle">+</span>
+          </div>
+          <div class="faq-answer">
+            <p>Pour louer un bateau, vous aurez besoin de votre permis de conduire maritime, d'une pièce d'identité valide et d'une attestation d'assurance. Pour certains bateaux, un permis côtier peut être suffisant.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">
+            <h3>Puis-je annuler ma réservation ?</h3>
+            <span class="faq-toggle">+</span>
+          </div>
+          <div class="faq-answer">
+            <p>Oui, vous pouvez annuler votre réservation jusqu'à 48h avant le départ. Les conditions de remboursement varient selon le délai d'annulation. Consultez nos conditions générales pour plus de détails.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">
+            <h3>Les capitaines sont-ils inclus ?</h3>
+            <span class="faq-toggle">+</span>
+          </div>
+          <div class="faq-answer">
+            <p>Cela dépend de la formule choisie. Nos formules Premium et Luxe incluent un capitaine expérimenté. Pour la formule Basique, vous pouvez louer un capitaine en supplément.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">
+            <h3>Que se passe-t-il en cas de mauvais temps ?</h3>
+            <span class="faq-toggle">+</span>
+          </div>
+          <div class="faq-answer">
+            <p>En cas de conditions météorologiques défavorables, nous vous proposons de reporter votre sortie ou de vous rembourser intégralement. Votre sécurité est notre priorité.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">
+            <h3>Comment devenir propriétaire partenaire ?</h3>
+            <span class="faq-toggle">+</span>
+          </div>
+          <div class="faq-answer">
+            <p>Pour louer votre bateau sur notre plateforme, contactez-nous via le formulaire ci-dessus en sélectionnant "Partenariat". Notre équipe vous accompagnera dans le processus d'inscription.</p>
+          </div>
+        </div>
       </div>
+    </div>
+  </section>
 
-      <!-- Grille des bateaux -->
-      <div id="boats-grid" class="boats-grid"></div>
-
-      <!-- Pagination -->
-      <div id="boats-pagination" class="pagination" style="display: none;">
-        <button id="prev-page" class="btn-page">Précédent</button>
-        <div id="page-numbers" class="page-numbers"></div>
-        <button id="next-page" class="btn-page">Suivant</button>
+  <!-- Section Carte -->
+  <section class="map-section">
+    <div class="container">
+      <div class="section-header">
+        <h2>Notre Localisation</h2>
+        <p>Retrouvez-nous au port de plaisance de Cannes</p>
+      </div>
+      
+      <div class="map-container">
+        <div class="map-placeholder">
+          <div class="map-content">
+            <h3>📍 Port de Plaisance de Cannes</h3>
+            <p>Quai Laubeuf, 06400 Cannes, France</p>
+            <div class="map-info">
+              <div class="map-info-item">
+                <strong>Accès :</strong> En voiture, bus ou train
+              </div>
+              <div class="map-info-item">
+                <strong>Parking :</strong> Parking du port disponible
+              </div>
+              <div class="map-info-item">
+                <strong>Métro :</strong> Ligne 1, arrêt Port
+              </div>
+            </div>
+            <button class="btn-primary" onclick="openMap()">Voir sur la carte</button>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -390,6 +519,24 @@
     </div>
   </div>
 
+  <!-- Modale des bateaux du propriétaire -->
+  <div id="my-boats-modal" class="modal modal-large">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Mes Bateaux</h2>
+        <button class="modal-close">&times;</button>
+      </div>
+      
+      <div class="boats-actions">
+        <button id="add-boat-btn" class="btn-primary">Ajouter un bateau</button>
+        <button id="refresh-boats" class="btn-secondary">Actualiser</button>
+      </div>
+      
+      <div id="my-boats-list" class="my-boats-list">
+        <!-- Les bateaux seront chargés dynamiquement -->
+      </div>
+    </div>
+  </div>
 
   <!-- Modale des détails de bateau -->
   <div id="boat-modal" class="modal modal-large">
@@ -408,5 +555,40 @@
   <div id="notifications-container" class="notifications-container"></div>
 
   <script type="module" src="/src/main.js"></script>
+  <script>
+    // Fonction pour ouvrir la carte
+    function openMap() {
+      window.open('https://maps.google.com/?q=Port+de+Plaisance+Cannes', '_blank');
+    }
+
+    // Gestion de la FAQ
+    document.addEventListener('DOMContentLoaded', function() {
+      const faqItems = document.querySelectorAll('.faq-item');
+      
+      faqItems.forEach(item => {
+        const question = item.querySelector('.faq-question');
+        const answer = item.querySelector('.faq-answer');
+        const toggle = item.querySelector('.faq-toggle');
+        
+        question.addEventListener('click', () => {
+          const isOpen = item.classList.contains('active');
+          
+          // Fermer tous les autres items
+          faqItems.forEach(otherItem => {
+            otherItem.classList.remove('active');
+            otherItem.querySelector('.faq-answer').style.maxHeight = '0px';
+            otherItem.querySelector('.faq-toggle').textContent = '+';
+          });
+          
+          // Ouvrir/fermer l'item cliqué
+          if (!isOpen) {
+            item.classList.add('active');
+            answer.style.maxHeight = answer.scrollHeight + 'px';
+            toggle.textContent = '−';
+          }
+        });
+      });
+    });
+  </script>
 </body>
 </html>
