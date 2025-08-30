@@ -11,6 +11,7 @@ const authRoutes = require('./routes/authRoutes.cjs');
 const boatRoutes = require('./routes/boatRoutes.cjs');
 const bookingRoutes = require('./routes/bookingRoutes.cjs');
 const paymentRoutes = require('./routes/paymentRoutes.cjs');
+const contactRoutes = require('./routes/contactRoutes.cjs');
 
 // Création de l'application Express
 const app = express();
@@ -129,7 +130,7 @@ app.get('/api', (req, res) => {
   res.json({
     success: true,
     message: 'Bienvenue sur l\'API SailingLoc ⛵',
-    availableRoutes: ['/api/auth', '/api/boats', '/api/bookings', '/api/payments']
+    availableRoutes: ['/api/auth', '/api/boats', '/api/bookings', '/api/payments', '/api/contact']
   });
 });
 
@@ -138,6 +139,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/boats', boatRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/payments', paymentRoutes);
+app.use('/api/contact', contactRoutes);
 
 // Route de test pour vérifier que le serveur fonctionne
 app.get('/api/health', (req, res) => {
