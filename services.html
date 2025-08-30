@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SailingLoc - Location de bateaux</title>
-  <meta name="description" content="Louez le bateau de vos rêves avec SailingLoc. Voiliers, catamarans, yachts disponibles partout en France et en Europe.">
+  <title>Services - SailingLoc</title>
+  <meta name="description" content="Découvrez nos services premium pour la location de bateaux. Capitaines expérimentés, destinations exclusives et support 24/7.">
   <link rel="stylesheet" href="/src/style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,9 +19,9 @@
       </div>
       
       <div class="nav-menu" id="nav-menu">
-        <a href="index.html" class="nav-link active">Accueil</a>
+        <a href="index.html" class="nav-link">Accueil</a>
         <a href="boats.html" class="nav-link">Bateaux</a>
-        <a href="services.html" class="nav-link">Services</a>
+        <a href="services.html" class="nav-link active">Services</a>
         <a href="contact.html" class="nav-link">Contact</a>
       </div>
       
@@ -69,73 +69,177 @@
     </div>
   </nav>
 
-  <!-- Hero Section -->
-  <section id="home" class="hero">
-    <div class="hero-content">
-      <h1 class="hero-title">
-        Naviguez vers vos <span class="gradient-text">rêves</span>
-      </h1>
-      <p class="hero-subtitle">
-        Découvrez notre flotte exceptionnelle de bateaux et vivez des aventures inoubliables sur les plus belles eaux d'Europe
-      </p>
+  <!-- Section Services -->
+  <section id="services" class="services-section">
+    <div class="container">
+      <div class="section-header">
+        <h1>Nos Services</h1>
+        <p>Une expérience complète pour votre location de bateau</p>
+      </div>
       
-      <!-- Barre de recherche -->
-      <div class="search-bar">
-        <div class="search-field">
-          <label>Destination</label>
-          <input type="text" id="search-location" placeholder="Où souhaitez-vous naviguer ?">
+      <div class="services-grid">
+        <div class="service-card">
+          <div class="service-icon">🛥️</div>
+          <h3>Flotte Premium</h3>
+          <p>Bateaux récents et parfaitement entretenus, inspectés régulièrement pour votre sécurité</p>
         </div>
-        <div class="search-field">
-          <label>Départ</label>
-          <input type="date" id="search-start-date">
+        
+        <div class="service-card">
+          <div class="service-icon">👨‍✈️</div>
+          <h3>Capitaines Expérimentés</h3>
+          <p>Équipage professionnel disponible pour vous accompagner dans vos navigations</p>
         </div>
-        <div class="search-field">
-          <label>Retour</label>
-          <input type="date" id="search-end-date">
+        
+        <div class="service-card">
+          <div class="service-icon">🏝️</div>
+          <h3>Destinations Exclusives</h3>
+          <p>Accès à des mouillages privés et des destinations secrètes</p>
         </div>
-        <div class="search-field">
-          <label>Passagers</label>
-          <select id="search-guests">
-            <option value="">Nombre</option>
-            <option value="2">2 personnes</option>
-            <option value="4">4 personnes</option>
-            <option value="6">6 personnes</option>
-            <option value="8">8 personnes</option>
-            <option value="10">10+ personnes</option>
-          </select>
+        
+        <div class="service-card">
+          <div class="service-icon">🔧</div>
+          <h3>Support 24/7</h3>
+          <p>Assistance technique et support client disponibles à tout moment</p>
         </div>
-        <button id="search-btn" class="btn-primary search-btn">
-          <span>🔍</span>
-          Rechercher
-        </button>
       </div>
     </div>
   </section>
 
+  <!-- Section Services Détaillés -->
+  <section class="detailed-services">
+    <div class="container">
+      <div class="service-detail">
+        <div class="service-content">
+          <h2>Flotte Premium</h2>
+          <p>Notre flotte est composée de bateaux sélectionnés avec soin pour garantir votre sécurité et votre confort. Chaque bateau est :</p>
+          <ul>
+            <li>✅ Inspecté régulièrement par des professionnels</li>
+            <li>✅ Équipé des dernières technologies de navigation</li>
+            <li>✅ Entretenu selon les standards internationaux</li>
+            <li>✅ Assuré pour votre tranquillité</li>
+          </ul>
+          <button class="btn-primary">En savoir plus</button>
+        </div>
+        <div class="service-image">
+          <img src="https://images.pexels.com/photos/1001682/pexels-photo-1001682.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop" alt="Flotte premium">
+        </div>
+      </div>
 
+      <div class="service-detail reverse">
+        <div class="service-content">
+          <h2>Capitaines Expérimentés</h2>
+          <p>Nos capitaines sont des professionnels qualifiés avec des années d'expérience en navigation. Ils vous offrent :</p>
+          <ul>
+            <li>✅ Licences professionnelles reconnues</li>
+            <li>✅ Connaissance approfondie des eaux locales</li>
+            <li>✅ Formation continue en sécurité maritime</li>
+            <li>✅ Service personnalisé et attentionné</li>
+          </ul>
+          <button class="btn-primary">Rencontrer nos capitaines</button>
+        </div>
+        <div class="service-image">
+          <img src="https://images.pexels.com/photos/1001682/pexels-photo-1001682.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop" alt="Capitaine expérimenté">
+        </div>
+      </div>
 
-  <!-- Section Bateaux (résultats de recherche) -->
-  <section id="boats" class="boats-section">
+      <div class="service-detail">
+        <div class="service-content">
+          <h2>Destinations Exclusives</h2>
+          <p>Découvrez des lieux uniques accessibles uniquement par mer. Nos partenariats vous donnent accès à :</p>
+          <ul>
+            <li>✅ Mouillages privés et sécurisés</li>
+            <li>✅ Plages isolées et préservées</li>
+            <li>✅ Restaurants et clubs exclusifs</li>
+            <li>✅ Activités nautiques organisées</li>
+          </ul>
+          <button class="btn-primary">Découvrir nos destinations</button>
+        </div>
+        <div class="service-image">
+          <img src="https://images.pexels.com/photos/1001682/pexels-photo-1001682.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop" alt="Destination exclusive">
+        </div>
+      </div>
+
+      <div class="service-detail reverse">
+        <div class="service-content">
+          <h2>Support 24/7</h2>
+          <p>Notre équipe est disponible 24h/24 et 7j/7 pour vous accompagner. Nous vous proposons :</p>
+          <ul>
+            <li>✅ Assistance technique en temps réel</li>
+            <li>✅ Support client multilingue</li>
+            <li>✅ Intervention d'urgence si nécessaire</li>
+            <li>✅ Suivi personnalisé de votre voyage</li>
+          </ul>
+          <button class="btn-primary">Nous contacter</button>
+        </div>
+        <div class="service-image">
+          <img src="https://images.pexels.com/photos/1001682/pexels-photo-1001682.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop" alt="Support 24/7">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section Tarifs -->
+  <section class="pricing-section">
     <div class="container">
       <div class="section-header">
-        <h2>Résultats</h2>
-        <p>Affichage des bateaux correspondant à votre recherche</p>
+        <h2>Nos Formules</h2>
+        <p>Choisissez la formule qui correspond à vos besoins</p>
       </div>
-
-      <!-- Loading -->
-      <div id="boats-loading" class="loading-spinner" style="display: none;">
-        <div class="spinner"></div>
-        <p>Chargement des bateaux...</p>
-      </div>
-
-      <!-- Grille des bateaux -->
-      <div id="boats-grid" class="boats-grid"></div>
-
-      <!-- Pagination -->
-      <div id="boats-pagination" class="pagination" style="display: none;">
-        <button id="prev-page" class="btn-page">Précédent</button>
-        <div id="page-numbers" class="page-numbers"></div>
-        <button id="next-page" class="btn-page">Suivant</button>
+      
+      <div class="pricing-grid">
+        <div class="pricing-card">
+          <div class="pricing-header">
+            <h3>Formule Basique</h3>
+            <div class="price">
+              <span class="amount">Gratuit</span>
+            </div>
+          </div>
+          <ul class="pricing-features">
+            <li>✅ Accès à notre flotte</li>
+            <li>✅ Réservation en ligne</li>
+            <li>✅ Support client</li>
+            <li>❌ Capitaine inclus</li>
+            <li>❌ Destinations exclusives</li>
+          </ul>
+          <button class="btn-secondary btn-full">Choisir cette formule</button>
+        </div>
+        
+        <div class="pricing-card featured">
+          <div class="pricing-header">
+            <h3>Formule Premium</h3>
+            <div class="price">
+              <span class="amount">50€</span>
+              <span class="period">/jour</span>
+            </div>
+          </div>
+          <ul class="pricing-features">
+            <li>✅ Accès à notre flotte</li>
+            <li>✅ Réservation en ligne</li>
+            <li>✅ Support client 24/7</li>
+            <li>✅ Capitaine inclus</li>
+            <li>✅ Destinations exclusives</li>
+          </ul>
+          <button class="btn-primary btn-full">Choisir cette formule</button>
+        </div>
+        
+        <div class="pricing-card">
+          <div class="pricing-header">
+            <h3>Formule Luxe</h3>
+            <div class="price">
+              <span class="amount">150€</span>
+              <span class="period">/jour</span>
+            </div>
+          </div>
+          <ul class="pricing-features">
+            <li>✅ Accès à notre flotte</li>
+            <li>✅ Réservation en ligne</li>
+            <li>✅ Support client 24/7</li>
+            <li>✅ Capitaine expérimenté</li>
+            <li>✅ Destinations exclusives</li>
+            <li>✅ Service conciergerie</li>
+          </ul>
+          <button class="btn-secondary btn-full">Choisir cette formule</button>
+        </div>
       </div>
     </div>
   </section>
@@ -390,6 +494,24 @@
     </div>
   </div>
 
+  <!-- Modale des bateaux du propriétaire -->
+  <div id="my-boats-modal" class="modal modal-large">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Mes Bateaux</h2>
+        <button class="modal-close">&times;</button>
+      </div>
+      
+      <div class="boats-actions">
+        <button id="add-boat-btn" class="btn-primary">Ajouter un bateau</button>
+        <button id="refresh-boats" class="btn-secondary">Actualiser</button>
+      </div>
+      
+      <div id="my-boats-list" class="my-boats-list">
+        <!-- Les bateaux seront chargés dynamiquement -->
+      </div>
+    </div>
+  </div>
 
   <!-- Modale des détails de bateau -->
   <div id="boat-modal" class="modal modal-large">

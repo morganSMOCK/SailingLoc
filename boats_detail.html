@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Détail du Bateau - SailingLoc</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/src/style.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-ship"></i>
+                    SailingLoc
+                </div>
+                <nav>
+                    <ul class="nav-links">
+                        <li><a href="index.html">Accueil</a></li>
+                        <li><a href="boats.html">Bateaux</a></li>
+                        <li><a href="about.html">À propos</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="index.html">Accueil</a> > 
+            <a href="boats.html">Bateaux</a> > 
+            <span id="boat-name">Détail du Bateau</span>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Loading State -->
+            <div id="loading" class="loading">
+                <i class="fas fa-spinner"></i>
+                Chargement des détails du bateau...
+            </div>
+
+            <!-- Error State -->
+            <div id="error" class="error" style="display: none;">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span id="error-message">Une erreur est survenue lors du chargement des détails du bateau.</span>
+            </div>
+
+            <!-- Boat Detail Content -->
+            <div id="boat-content" style="display: none;">
+                <!-- Boat Detail Grid -->
+                <div class="boat-detail-grid">
+                    <!-- Image Gallery -->
+                    <div class="image-gallery">
+                        <div class="main-image">
+                            <div class="image-placeholder">
+                                <i class="fas fa-ship"></i>
+                                <span>Image du bateau</span>
+                            </div>
+                        </div>
+                        <div class="thumbnail-grid">
+                            <div class="thumbnail active">
+                                <i class="fas fa-image"></i>
+                            </div>
+                            <div class="thumbnail">
+                                <i class="fas fa-image"></i>
+                            </div>
+                            <div class="thumbnail">
+                                <i class="fas fa-image"></i>
+                            </div>
+                            <div class="thumbnail">
+                                <i class="fas fa-image"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Boat Info & Booking -->
+                    <div class="boat-info">
+                        <h1 class="boat-title" id="boat-title">Nom du Bateau</h1>
+                        <div class="boat-location">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span id="boat-location">Localisation</span>
+                        </div>
+                        <div class="boat-rating">
+                            <div class="stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <span class="rating-text" id="rating-text">4.8 (24 avis)</span>
+                        </div>
+
+                        <div class="price-section">
+                            <div class="price" id="boat-price">€250</div>
+                            <div class="price-period">par jour</div>
+                        </div>
+
+                        <div class="booking-form">
+                            <div class="form-group">
+                                <label for="start-date">Date de début</label>
+                                <input type="date" id="start-date" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="end-date">Date de fin</label>
+                                <input type="date" id="end-date" required>
+                            </div>
+                            <button class="book-button" onclick="bookBoat()">
+                                <i class="fas fa-calendar-check"></i>
+                                Réserver maintenant
+                            </button>
+                        </div>
+
+                        <div class="contact-owner">
+                            <p>Questions sur ce bateau ?</p>
+                            <button onclick="contactOwner()">
+                                <i class="fas fa-envelope"></i>
+                                Contacter le propriétaire
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Details Section -->
+                <div class="details-section">
+                    <h2 class="section-title">
+                        <i class="fas fa-info-circle"></i>
+                        Détails du Bateau
+                    </h2>
+                    
+                    <div class="specs-grid">
+                        <div class="spec-item">
+                            <div class="spec-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="spec-content">
+                                <h4>Capacité</h4>
+                                <p id="boat-capacity">8 personnes</p>
+                            </div>
+                        </div>
+                        <div class="spec-item">
+                            <div class="spec-icon">
+                                <i class="fas fa-ruler-combined"></i>
+                            </div>
+                            <div class="spec-content">
+                                <h4>Longueur</h4>
+                                <p id="boat-length">12 mètres</p>
+                            </div>
+                        </div>
+                        <div class="spec-item">
+                            <div class="spec-icon">
+                                <i class="fas fa-anchor"></i>
+                            </div>
+                            <div class="spec-content">
+                                <h4>Type</h4>
+                                <p id="boat-type">Voilier</p>
+                            </div>
+                        </div>
+                        <div class="spec-item">
+                            <div class="spec-icon">
+                                <i class="fas fa-calendar-alt"></i>
+                            </div>
+                            <div class="spec-content">
+                                <h4>Année</h4>
+                                <p id="boat-year">2020</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3>Description</h3>
+                    <p class="description" id="boat-description">
+                        Magnifique voilier moderne parfaitement équipé pour des croisières inoubliables. 
+                        Idéal pour les familles ou les groupes d'amis souhaitant découvrir les côtes 
+                        méditerranéennes dans le confort et la sécurité.
+                    </p>
+
+                    <h3 style="margin-top: 2rem; margin-bottom: 1rem;">Équipements</h3>
+                    <div class="amenities-grid">
+                        <div class="amenity-item">
+                            <i class="fas fa-wifi"></i>
+                            <span>WiFi</span>
+                        </div>
+                        <div class="amenity-item">
+                            <i class="fas fa-snowflake"></i>
+                            <span>Climatisation</span>
+                        </div>
+                        <div class="amenity-item">
+                            <i class="fas fa-utensils"></i>
+                            <span>Cuisine</span>
+                        </div>
+                        <div class="amenity-item">
+                            <i class="fas fa-bed"></i>
+                            <span>Cabines</span>
+                        </div>
+                        <div class="amenity-item">
+                            <i class="fas fa-shower"></i>
+                            <span>Salle de bain</span>
+                        </div>
+                        <div class="amenity-item">
+                            <i class="fas fa-tv"></i>
+                            <span>TV</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reviews Section -->
+                <div class="reviews-section">
+                    <h2 class="section-title">
+                        <i class="fas fa-star"></i>
+                        Avis des locataires
+                    </h2>
+                    
+                    <div id="reviews-container">
+                        <div class="review-item">
+                            <div class="review-header">
+                                <div class="reviewer-info">
+                                    <div class="reviewer-avatar">M</div>
+                                    <div>
+                                        <div class="reviewer-name">Marie Dubois</div>
+                                        <div class="review-date">15 août 2024</div>
+                                    </div>
+                                </div>
+                                <div class="review-rating">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                </div>
+                            </div>
+                            <p class="review-text">
+                                Excellent bateau, très bien équipé et le propriétaire est très professionnel. 
+                                Nous avons passé une semaine merveilleuse sur la Méditerranée.
+                            </p>
+                        </div>
+
+                        <div class="review-item">
+                            <div class="review-header">
+                                <div class="reviewer-info">
+                                    <div class="reviewer-avatar">P</div>
+                                    <div>
+                                        <div class="reviewer-name">Pierre Martin</div>
+                                        <div class="review-date">2 juillet 2024</div>
+                                    </div>
+                                </div>
+                                <div class="review-rating">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="far fa-star"></i>
+                                </div>
+                            </div>
+                            <p class="review-text">
+                                Très bon rapport qualité-prix. Le bateau est en excellent état et 
+                                la navigation était parfaite. Je recommande vivement !
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Récupération de l'ID du bateau depuis l'URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const boatId = urlParams.get('id');
+
+        // État de l'application
+        let boatData = null;
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            if (boatId) {
+                loadBoatDetails(boatId);
+            } else {
+                showError('Aucun bateau spécifié');
+            }
+        });
+
+        // Chargement des détails du bateau
+        async function loadBoatDetails(id) {
+            try {
+                showLoading(true);
+                
+                // Simulation d'un appel API (remplacez par votre vraie API)
+                const response = await fetch(`/api/boats/${id}`);
+                
+                if (!response.ok) {
+                    throw new Error('Bateau non trouvé');
+                }
+                
+                boatData = await response.json();
+                displayBoatDetails(boatData);
+                
+            } catch (error) {
+                console.error('Erreur lors du chargement:', error);
+                showError('Impossible de charger les détails du bateau');
+                
+                // Données de démonstration en cas d'erreur
+                displayDemoData();
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // Affichage des détails du bateau
+        function displayBoatDetails(data) {
+            // Mise à jour du titre de la page
+            document.title = `${data.name} - SailingLoc`;
+            
+            // Mise à jour du breadcrumb
+            document.getElementById('boat-name').textContent = data.name;
+            
+            // Mise à jour des informations principales
+            document.getElementById('boat-title').textContent = data.name;
+            document.getElementById('boat-location').textContent = `${data.location.city}, ${data.location.country}`;
+            document.getElementById('boat-price').textContent = `€${data.pricing.dailyRate}`;
+            document.getElementById('rating-text').textContent = `${data.rating.average} (${data.rating.totalReviews} avis)`;
+            
+            // Mise à jour des spécifications
+            document.getElementById('boat-capacity').textContent = `${data.capacity.maxPeople} personnes`;
+            document.getElementById('boat-length').textContent = `${data.specifications.length}m`;
+            document.getElementById('boat-type').textContent = data.type;
+            document.getElementById('boat-year').textContent = data.specifications.year;
+            
+            // Mise à jour de la description
+            document.getElementById('boat-description').textContent = data.description;
+            
+            // Affichage du contenu
+            document.getElementById('boat-content').style.display = 'block';
+        }
+
+        // Données de démonstration
+        function displayDemoData() {
+            const demoData = {
+                name: "Voilier Élégance 2020",
+                location: { city: "Marseille", country: "France" },
+                pricing: { dailyRate: 250 },
+                rating: { average: 4.8, totalReviews: 24 },
+                capacity: { maxPeople: 8 },
+                specifications: { length: 12, year: 2020 },
+                type: "Voilier",
+                description: "Magnifique voilier moderne parfaitement équipé pour des croisières inoubliables. Idéal pour les familles ou les groupes d'amis souhaitant découvrir les côtes méditerranéennes dans le confort et la sécurité."
+            };
+            
+            displayBoatDetails(demoData);
+        }
+
+        // Gestion des états de chargement
+        function showLoading(show) {
+            document.getElementById('loading').style.display = show ? 'flex' : 'none';
+            document.getElementById('boat-content').style.display = show ? 'none' : 'block';
+        }
+
+        // Gestion des erreurs
+        function showError(message) {
+            document.getElementById('error-message').textContent = message;
+            document.getElementById('error').style.display = 'block';
+            document.getElementById('loading').style.display = 'none';
+        }
+
+        // Fonction de réservation
+        function bookBoat() {
+            const startDate = document.getElementById('start-date').value;
+            const endDate = document.getElementById('end-date').value;
+            
+            if (!startDate || !endDate) {
+                alert('Veuillez sélectionner les dates de début et de fin');
+                return;
+            }
+            
+            if (new Date(startDate) >= new Date(endDate)) {
+                alert('La date de fin doit être postérieure à la date de début');
+                return;
+            }
+            
+            // Calcul du nombre de jours
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            const days = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+            
+            // Calcul du prix total
+            const dailyRate = parseInt(document.getElementById('boat-price').textContent.replace('€', ''));
+            const totalPrice = days * dailyRate;
+            
+            // Redirection vers la page de réservation
+            const bookingUrl = `booking.html?boatId=${boatId}&startDate=${startDate}&endDate=${endDate}&totalPrice=${totalPrice}`;
+            window.location.href = bookingUrl;
+        }
+
+        // Fonction de contact du propriétaire
+        function contactOwner() {
+            // Ici vous pouvez implémenter l'ouverture d'un modal de contact
+            // ou rediriger vers une page de contact
+            alert('Fonctionnalité de contact en cours de développement');
+        }
+
+        // Gestion des images (thumbnails)
+        document.addEventListener('DOMContentLoaded', function() {
+            const thumbnails = document.querySelectorAll('.thumbnail');
+            const mainImage = document.querySelector('.main-image');
+            
+            thumbnails.forEach(thumbnail => {
+                thumbnail.addEventListener('click', function() {
+                    // Retirer la classe active de tous les thumbnails
+                    thumbnails.forEach(t => t.classList.remove('active'));
+                    
+                    // Ajouter la classe active au thumbnail cliqué
+                    this.classList.add('active');
+                    
+                    // Ici vous pouvez changer l'image principale
+                    // Pour l'instant, c'est juste un placeholder
+                });
+            });
+        });
+
+        // Validation des dates
+        document.addEventListener('DOMContentLoaded', function() {
+            const startDateInput = document.getElementById('start-date');
+            const endDateInput = document.getElementById('end-date');
+            
+            // Définir la date minimale à aujourd'hui
+            const today = new Date().toISOString().split('T')[0];
+            startDateInput.min = today;
+            endDateInput.min = today;
+            
+            // Mettre à jour la date minimale de fin quand la date de début change
+            startDateInput.addEventListener('change', function() {
+                endDateInput.min = this.value;
+                if (endDateInput.value && endDateInput.value <= this.value) {
+                    endDateInput.value = '';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

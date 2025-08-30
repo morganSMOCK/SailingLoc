@@ -44,8 +44,11 @@ class SailingLocApp {
       // Configuration des écouteurs d'événements
       this.setupEventListeners();
       
-      // Chargement initial des bateaux
-      await this.loadBoats();
+      // Chargement initial des bateaux (uniquement sur les pages appropriées)
+      const currentPage = window.location.pathname;
+      if (currentPage === '/' || currentPage.endsWith('index.html') || currentPage.endsWith('boats.html')) {
+        await this.loadBoats();
+      }
       
       // Configuration de la navigation
       this.setupNavigation();
@@ -197,6 +200,14 @@ class SailingLocApp {
    * Configuration des écouteurs de recherche
    */
   setupSearchListeners() {
+    // Vérifier si nous sommes sur une page avec des fonctionnalités de recherche
+    const currentPage = window.location.pathname;
+    const hasSearchFeatures = currentPage === '/' || currentPage.endsWith('index.html') || currentPage.endsWith('boats.html');
+    
+    if (!hasSearchFeatures) {
+      return; // Ne pas configurer les écouteurs sur les autres pages
+    }
+    
     // Bouton de recherche principal
     const searchBtn = document.getElementById('search-btn');
     if (searchBtn) {
@@ -247,12 +258,20 @@ class SailingLocApp {
       });
     }
 
-    // Navigation smooth scroll
+    // Navigation smooth scroll (uniquement pour les liens internes sur la page d'accueil)
     const navLinks = document.querySelectorAll('.nav-link');
     navLinks.forEach(link => {
       link.addEventListener('click', (e) => {
+        const href = link.getAttribute('href');
+        
+        // Si c'est un lien vers une page externe (boats.html, services.html, contact.html), laisser la navigation normale
+        if (href && (href.includes('.html') || href.startsWith('http'))) {
+          return; // Laisser la navigation normale
+        }
+        
+        // Sinon, c'est un lien interne sur la page d'accueil
         e.preventDefault();
-        const targetId = link.getAttribute('href').substring(1);
+        const targetId = href.substring(1);
         const targetElement = document.getElementById(targetId);
         
         if (targetElement) {
@@ -1414,8 +1433,15 @@ class SailingLocApp {
     try {
       this.uiManager.showLoading('contact-form');
       
-      // Simulation d'envoi (à remplacer par un vrai service)
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const response = await fetch(`${this.apiBaseUrl || ''}/api/contact`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, message })
+      });
+      const data = await response.json();
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || 'Échec de l\'envoi du message');
+      }
       
       this.uiManager.showNotification('Message envoyé avec succès !', 'success');
       document.getElementById('contact-form').reset();
@@ -1432,29 +1458,32 @@ class SailingLocApp {
    * Configuration de la navigation
    */
   setupNavigation() {
-    // Intersection Observer pour la navigation active
+    // Intersection Observer pour la navigation active (uniquement sur la page d'accueil)
     const sections = document.querySelectorAll('section[id]');
     const navLinks = document.querySelectorAll('.nav-link');
     
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          const id = entry.target.getAttribute('id');
-          
-          navLinks.forEach(link => {
-            link.classList.remove('active');
-            if (link.getAttribute('href') === `#${id}`) {
-              link.classList.add('active');
-            }
-          });
-        }
+    // Vérifier si nous sommes sur la page d'accueil (avec des sections internes)
+    if (sections.length > 0 && window.location.pathname === '/' || window.location.pathname.endsWith('index.html')) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const id = entry.target.getAttribute('id');
+            
+            navLinks.forEach(link => {
+              link.classList.remove('active');
+              if (link.getAttribute('href') === `#${id}`) {
+                link.classList.add('active');
+              }
+            });
+          }
+        });
+      }, {
+        threshold: 0.3,
+        rootMargin: '-100px 0px -100px 0px'
       });
-    }, {
-      threshold: 0.3,
-      rootMargin: '-100px 0px -100px 0px'
-    });
-    
-    sections.forEach(section => observer.observe(section));
+      
+      sections.forEach(section => observer.observe(section));
+    }
   }
 
   /**
