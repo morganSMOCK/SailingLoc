@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SailingLoc - Location de bateaux</title>
-  <meta name="description" content="Louez le bateau de vos rêves avec SailingLoc. Voiliers, catamarans, yachts disponibles partout en France et en Europe.">
+  <title>Bateaux - SailingLoc</title>
+  <meta name="description" content="Découvrez notre flotte exceptionnelle de bateaux disponibles à la location. Voiliers, catamarans, yachts et bateaux à moteur.">
   <link rel="stylesheet" href="/src/style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,8 +19,8 @@
       </div>
       
       <div class="nav-menu" id="nav-menu">
-        <a href="index.html" class="nav-link active">Accueil</a>
-        <a href="boats.html" class="nav-link">Bateaux</a>
+        <a href="index.html" class="nav-link">Accueil</a>
+        <a href="boats.html" class="nav-link active">Bateaux</a>
         <a href="services.html" class="nav-link">Services</a>
         <a href="contact.html" class="nav-link">Contact</a>
       </div>
@@ -69,68 +69,127 @@
     </div>
   </nav>
 
-  <!-- Hero Section -->
-  <section id="home" class="hero">
-    <div class="hero-content">
-      <h1 class="hero-title">
-        Naviguez vers vos <span class="gradient-text">rêves</span>
-      </h1>
-      <p class="hero-subtitle">
-        Découvrez notre flotte exceptionnelle de bateaux et vivez des aventures inoubliables sur les plus belles eaux d'Europe
-      </p>
-      
-      <!-- Barre de recherche -->
-      <div class="search-bar">
-        <div class="search-field">
-          <label>Destination</label>
-          <input type="text" id="search-location" placeholder="Où souhaitez-vous naviguer ?">
-        </div>
-        <div class="search-field">
-          <label>Départ</label>
-          <input type="date" id="search-start-date">
-        </div>
-        <div class="search-field">
-          <label>Retour</label>
-          <input type="date" id="search-end-date">
-        </div>
-        <div class="search-field">
-          <label>Passagers</label>
-          <select id="search-guests">
-            <option value="">Nombre</option>
-            <option value="2">2 personnes</option>
-            <option value="4">4 personnes</option>
-            <option value="6">6 personnes</option>
-            <option value="8">8 personnes</option>
-            <option value="10">10+ personnes</option>
-          </select>
-        </div>
-        <button id="search-btn" class="btn-primary search-btn">
-          <span>🔍</span>
-          Rechercher
-        </button>
-      </div>
-    </div>
-  </section>
-
-
-
-  <!-- Section Bateaux (résultats de recherche) -->
+  <!-- Section Bateaux -->
   <section id="boats" class="boats-section">
     <div class="container">
       <div class="section-header">
-        <h2>Résultats</h2>
-        <p>Affichage des bateaux correspondant à votre recherche</p>
+        <h1>Notre Flotte</h1>
+        <p>Découvrez nos bateaux exceptionnels pour tous vos besoins</p>
       </div>
-
+      
+      <!-- Filtres -->
+      <div class="filters-container">
+        <div class="filters">
+          <select id="filter-type" class="filter-select">
+            <option value="">Type de bateau</option>
+            <option value="voilier">Voilier</option>
+            <option value="catamaran">Catamaran</option>
+            <option value="yacht">Yacht</option>
+            <option value="bateau_moteur">Bateau à moteur</option>
+          </select>
+          
+          <div class="filter-range">
+            <label>Prix max: <span id="price-display">1000€</span></label>
+            <input type="range" id="filter-price" min="100" max="2000" value="1000" step="50">
+          </div>
+          
+          <select id="filter-capacity" class="filter-select">
+            <option value="">Capacité</option>
+            <option value="2">2+ personnes</option>
+            <option value="4">4+ personnes</option>
+            <option value="6">6+ personnes</option>
+            <option value="8">8+ personnes</option>
+          </select>
+          
+          <button id="apply-filters" class="btn-primary">Appliquer</button>
+        </div>
+      </div>
+      
       <!-- Loading -->
       <div id="boats-loading" class="loading-spinner" style="display: none;">
         <div class="spinner"></div>
         <p>Chargement des bateaux...</p>
       </div>
-
+      
       <!-- Grille des bateaux -->
-      <div id="boats-grid" class="boats-grid"></div>
-
+      <div id="boats-grid" class="boats-grid">
+        <!-- Bateaux d'exemple avec de belles photos -->
+        <div class="boat-card">
+          <div class="boat-image">
+            <img src="https://images.pexels.com/photos/1001682/pexels-photo-1001682.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop" alt="Yacht de luxe" loading="lazy">
+            <div class="boat-badge">Yacht</div>
+            <div class="boat-rating">
+              <span class="rating-stars">⭐⭐⭐⭐⭐</span>
+              <span class="rating-count">(24)</span>
+            </div>
+          </div>
+          <div class="boat-content">
+            <h3 class="boat-name">Ocean Dream</h3>
+            <p class="boat-location">📍 Cannes, France</p>
+            <div class="boat-specs">
+              <span class="spec">👥 8 pers.</span>
+              <span class="spec">📏 15m</span>
+              <span class="spec">🛏️ 3 cabines</span>
+            </div>
+            <div class="boat-price">
+              <span class="price">850€</span>
+              <span class="price-unit">/jour</span>
+            </div>
+            <button class="btn-primary btn-full boat-details-btn">Voir les détails</button>
+          </div>
+        </div>
+        
+        <div class="boat-card">
+          <div class="boat-image">
+            <img src="https://images.pexels.com/photos/1001682/pexels-photo-1001682.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop" alt="Catamaran moderne" loading="lazy">
+            <div class="boat-badge">Catamaran</div>
+            <div class="boat-rating">
+              <span class="rating-stars">⭐⭐⭐⭐⭐</span>
+              <span class="rating-count">(18)</span>
+            </div>
+          </div>
+          <div class="boat-content">
+            <h3 class="boat-name">Blue Horizon</h3>
+            <p class="boat-location">📍 Nice, France</p>
+            <div class="boat-specs">
+              <span class="spec">👥 10 pers.</span>
+              <span class="spec">📏 12m</span>
+              <span class="spec">🛏️ 4 cabines</span>
+            </div>
+            <div class="boat-price">
+              <span class="price">650€</span>
+              <span class="price-unit">/jour</span>
+            </div>
+            <button class="btn-primary btn-full boat-details-btn">Voir les détails</button>
+          </div>
+        </div>
+        
+        <div class="boat-card">
+          <div class="boat-image">
+            <img src="https://images.pexels.com/photos/1001682/pexels-photo-1001682.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop" alt="Voilier classique" loading="lazy">
+            <div class="boat-badge">Voilier</div>
+            <div class="boat-rating">
+              <span class="rating-stars">⭐⭐⭐⭐</span>
+              <span class="rating-count">(12)</span>
+            </div>
+          </div>
+          <div class="boat-content">
+            <h3 class="boat-name">Sea Breeze</h3>
+            <p class="boat-location">📍 Saint-Tropez, France</p>
+            <div class="boat-specs">
+              <span class="spec">👥 6 pers.</span>
+              <span class="spec">📏 10m</span>
+              <span class="spec">🛏️ 2 cabines</span>
+            </div>
+            <div class="boat-price">
+              <span class="price">450€</span>
+              <span class="price-unit">/jour</span>
+            </div>
+            <button class="btn-primary btn-full boat-details-btn">Voir les détails</button>
+          </div>
+        </div>
+      </div>
+      
       <!-- Pagination -->
       <div id="boats-pagination" class="pagination" style="display: none;">
         <button id="prev-page" class="btn-page">Précédent</button>
@@ -390,6 +449,24 @@
     </div>
   </div>
 
+  <!-- Modale des bateaux du propriétaire -->
+  <div id="my-boats-modal" class="modal modal-large">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Mes Bateaux</h2>
+        <button class="modal-close">&times;</button>
+      </div>
+      
+      <div class="boats-actions">
+        <button id="add-boat-btn" class="btn-primary">Ajouter un bateau</button>
+        <button id="refresh-boats" class="btn-secondary">Actualiser</button>
+      </div>
+      
+      <div id="my-boats-list" class="my-boats-list">
+        <!-- Les bateaux seront chargés dynamiquement -->
+      </div>
+    </div>
+  </div>
 
   <!-- Modale des détails de bateau -->
   <div id="boat-modal" class="modal modal-large">
