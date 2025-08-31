@@ -8,59 +8,23 @@
     {
       "src": "package.json",
       "use": "@vercel/static-build",
-      "config": {
-        "distDir": "dist"
-      }
+      "config": { "distDir": "dist" }
     }
   ],
   "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "/server/server.cjs"
-    },
-    {
-      "src": "/assets/(.*)",
-      "dest": "/dist/assets/$1"
-    },
-    {
-      "src": "/boat-icon.svg",
-      "dest": "/dist/boat-icon.svg"
-    },
-    {
-      "src": "/boats.html",
-      "dest": "/dist/boats.html"
-    },
-    {
-      "src": "/boats_detail.html", 
-      "dest": "/dist/boats_detail.html"
-    },
-    {
-      "src": "/contact.html",
-      "dest": "/dist/contact.html"
-    },
-    {
-      "src": "/services.html",
-      "dest": "/dist/services.html"
-    },
-    {
-      "src": "/test-navigation.html",
-      "dest": "/dist/test-navigation.html"
-    },
-    {
-      "src": "/",
-      "dest": "/dist/index.html"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/dist/index.html"
-    }
+    { "src": "/api/(.*)", "dest": "/server/server.cjs" },
+    { "src": "/assets/(.*)", "dest": "/dist/assets/$1" },
+    { "src": "/(.*)", "dest": "/dist/index.html" }
   ],
+  
   "env": {
-    "MONGODB_URI": "",
+    "MONGO_URI": "mongodb+srv://ProjetM1G2:Thc8XKw6dpfs0Aag@projetm1g2.vmsnfdz.mongodb.net/ProjetM1G2?retryWrites=true&w=majority&appName=ProjetM1G2",
     "JWT_SECRET": "superSecretKey",
     "NODE_ENV": "production",
-    "BREVO_API_KEY": "",
-    "CONTACT_TO_EMAIL": "",
-    "CONTACT_FROM_EMAIL": ""
+    "BREVO_API_KEY": "xsmtpsib-ced374c2fb78385ccc9cd04a19553e31b85a51008f6160d7d3fa22da3776ef2c-QAUq9hdSZ4LTgWrN",
+    "CONTACT_TO_EMAIL": "sailingloc98@gmail.com",
+    "CONTACT_FROM_EMAIL": "no-reply@sailingloc.com"
   }
 }
+
+
