@@ -213,14 +213,3 @@ process.on('SIGTERM', () => {
     process.exit(0);
   });
 });
-
-if (process.env.VERCEL) {
-  // On exporte l'app pour que Vercel la prenne en charge
-  module.exports = app;
-} else {
-  // Mode local : on lance le serveur normalement
-  app.listen(PORT, '0.0.0.0', () => {
-    console.log(`🚀 Serveur SailingLoc démarré sur le port ${PORT}`);
-    console.log(`🌐 API disponible sur http://localhost:${PORT}/api`);
-  });
-}
