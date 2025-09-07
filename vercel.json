@@ -14,6 +14,8 @@
   "routes": [
     { "src": "/api/(.*)", "dest": "/server/server.cjs" },
     { "src": "/assets/(.*)", "dest": "/dist/assets/$1" },
+    { "src": "/(.*\\.(?:html|js|css|svg|png|jpg|jpeg|gif|webp|ico|json|map))", "dest": "/dist/$1" },
+    { "src": "/", "dest": "/dist/index.html" },
     { "src": "/(.*)", "dest": "/dist/index.html" }
   ],
   
