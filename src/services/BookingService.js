@@ -4,8 +4,9 @@
  */
 export class BookingService {
   constructor() {
-    // URL de base de l'API
-    this.baseURL = 'https://sailingloc.onrender.com/api';
+    // URL de base de l'API (auto-détection env)
+    const envBase = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_BASE) ? import.meta.env.VITE_API_BASE : '';
+    this.baseURL = envBase || 'https://sailingloc.onrender.com/api';
     this.bookingsEndpoint = `${this.baseURL}/bookings`;
   }
 
