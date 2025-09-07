@@ -2,5 +2,3 @@ node_modules
 .git
 .env
 .env.local
-dist
-vite.config.js
