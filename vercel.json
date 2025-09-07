@@ -21,7 +21,7 @@
   ],
   
   "env": {
-    "MONGO_URI": "mongodb+srv://ProjetM1G2:Thc8XKw6dpfs0Aag@projetm1g2.vmsnfdz.mongodb.net/ProjetM1G2?retryWrites=true&w=majority&appName=ProjetM1G2",
+    "MONGODB_URI": "mongodb+srv://ProjetM1G2:Thc8XKw6dpfs0Aag@projetm1g2.vmsnfdz.mongodb.net/ProjetM1G2?retryWrites=true&w=majority&appName=ProjetM1G2",
     "JWT_SECRET": "superSecretKey",
     "NODE_ENV": "production",
     "BREVO_API_KEY": "xsmtpsib-ced374c2fb78385ccc9cd04a19553e31b85a51008f6160d7d3fa22da3776ef2c-QAUq9hdSZ4LTgWrN",
