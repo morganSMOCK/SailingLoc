@@ -4,8 +4,11 @@
  */
 export class BoatService {
   constructor() {
-    // URL de base de l'API - utilise Render en production
-    this.baseURL = 'https://sailingloc.onrender.com/api';
+    // URL de base de l'API (auto-détection env)
+    const isBrowser = typeof window !== 'undefined';
+    const isVercel = isBrowser && /vercel\.app$/.test(window.location.hostname);
+    const envBase = (typeof import !== 'undefined' && import.meta && import.meta.env && import.meta.env.VITE_API_BASE) || '';
+    this.baseURL = isVercel ? '/api' : (envBase || 'https://sailingloc.onrender.com/api');
     this.boatsEndpoint = `${this.baseURL}/boats`;
   }
 

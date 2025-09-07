@@ -198,12 +198,12 @@ app.use('*', (req, res) => {
 });
 
 // Démarrage du serveur
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`🚀 Serveur SailingLoc démarré sur le port ${PORT}`);
-  console.log(`🌐 API disponible sur http://localhost:${PORT}/api`);
-  console.log(`🔗 MongoDB URI: ${process.env.MONGODB_URI ? 'Configuré' : 'Non configuré'}`);
-  console.log(`🔑 JWT Secret: ${process.env.JWT_SECRET ? 'Configuré' : 'Non configuré'}`);
-});
+// app.listen(PORT, '0.0.0.0', () => {
+//   console.log(`🚀 Serveur SailingLoc démarré sur le port ${PORT}`);
+//   console.log(`🌐 API disponible sur http://localhost:${PORT}/api`);
+//   console.log(`🔗 MongoDB URI: ${process.env.MONGODB_URI ? 'Configuré' : 'Non configuré'}`);
+//   console.log(`🔑 JWT Secret: ${process.env.JWT_SECRET ? 'Configuré' : 'Non configuré'}`);
+// });
 
 // Gestion propre de l'arrêt du serveur
 process.on('SIGTERM', () => {
