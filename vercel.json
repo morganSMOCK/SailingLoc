@@ -2,17 +2,12 @@
   "version": 2,
   "builds": [
     {
-      "src": "server/server.cjs",
-      "use": "@vercel/node"
-    },
-    {
       "src": "package.json",
       "use": "@vercel/static-build",
       "config": { "distDir": "dist" }
     }
   ],
   "routes": [
-    { "src": "/api/(.*)", "dest": "/server/server.cjs" },
     { "src": "/assets/(.*)", "dest": "/dist/assets/$1" },
     { "src": "/(boats|services|contact|boats_detail|test-navigation)", "dest": "/dist/$1.html" },
     { "src": "/(.*\\.(?:html|js|css|svg|png|jpg|jpeg|gif|webp|ico|json|map))", "dest": "/dist/$1" },
@@ -21,12 +16,7 @@
   ],
   
   "env": {
-    "MONGODB_URI": "mongodb+srv://ProjetM1G2:Thc8XKw6dpfs0Aag@projetm1g2.vmsnfdz.mongodb.net/ProjetM1G2?retryWrites=true&w=majority&appName=ProjetM1G2",
-    "JWT_SECRET": "superSecretKey",
-    "NODE_ENV": "production",
-    "BREVO_API_KEY": "xsmtpsib-ced374c2fb78385ccc9cd04a19553e31b85a51008f6160d7d3fa22da3776ef2c-QAUq9hdSZ4LTgWrN",
-    "CONTACT_TO_EMAIL": "sailingloc98@gmail.com",
-    "CONTACT_FROM_EMAIL": "no-reply@sailingloc.com"
+    "NODE_ENV": "production"
   }
 }
 
