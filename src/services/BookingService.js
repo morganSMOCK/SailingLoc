@@ -6,9 +6,8 @@ export class BookingService {
   constructor() {
     // URL de base de l'API (auto-détection env)
     const isBrowser = typeof window !== 'undefined';
-    const isVercel = isBrowser && window.location.hostname.endsWith('.vercel.app');
     const envBase = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_BASE) ? import.meta.env.VITE_API_BASE : '';
-    this.baseURL = isVercel ? '/api' : (envBase || 'https://sailingloc.onrender.com/api');
+    this.baseURL = isBrowser ? '/api' : (envBase || 'https://sailingloc.onrender.com/api');
     this.bookingsEndpoint = `${this.baseURL}/bookings`;
   }
 
