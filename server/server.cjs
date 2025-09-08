@@ -206,12 +206,16 @@ app.use('*', (req, res) => {
 // });
 
 // Gestion propre de l'arrêt du serveur
-process.on('SIGTERM', () => {
+process.on('SIGTERM', async () => {
   console.log('🛑 Arrêt du serveur...');
-  mongoose.connection.close(() => {
+  try {
+    await mongoose.connection.close();
     console.log('📦 Connexion MongoDB fermée');
     process.exit(0);
-  });
+  } catch (error) {
+    console.error('❌ Erreur lors de la fermeture de MongoDB:', error);
+    process.exit(1);
+  }
 });
 
 if (process.env.VERCEL) {
