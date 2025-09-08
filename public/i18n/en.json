@@ -1,0 +1,22 @@
+{
+  "nav.home": "Home",
+  "nav.boats": "Boats",
+  "nav.services": "Services",
+  "nav.contact": "Contact",
+  "auth.login": "Log in",
+  "auth.register": "Sign up",
+  "auth.logout": "Log out",
+  "hero.title": "Sail towards your <span class=\"gradient-text\">dreams</span>",
+  "hero.subtitle": "Discover our exceptional fleet and enjoy unforgettable adventures on Europe's most beautiful waters",
+  "search.destination": "Destination",
+  "search.departure": "Departure",
+  "search.return": "Return",
+  "search.passengers": "Passengers",
+  "search.button": "Search",
+  "results.title": "Results",
+  "results.subtitle": "Showing boats matching your search",
+  "footer.legal": "Legal",
+  "footer.services": "Services",
+  "footer.copyright": "&copy; 2024 SailingLoc. All rights reserved."
+}
+
