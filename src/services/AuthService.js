@@ -113,29 +113,36 @@ export class AuthService {
   async logout() {
     try {
       const token = this.getAuthToken();
+      const logoutUrl = `${this.authEndpoint}/logout`;
+      console.log('🚪 AuthService.logout appelé');
+      console.log('📍 URL:', logoutUrl);
       
-      const registerUrl = `${this.authEndpoint}/register`;
-      console.log('📝 AuthService.register appelé');
-      console.log('📍 URL:', registerUrl);
-      console.log('📊 Données:', { ...userData, password: userData.password ? '***' : 'vide' });
-      
-      const response = await fetch(registerUrl, {
+      const response = await fetch(logoutUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
         }
       });
 
-      const data = await response.json();
+      let data;
+      try {
+        data = await response.json();
+      } catch (_) {
+        data = { success: response.ok };
+      }
       
       if (!response.ok) {
         throw new Error(data.message || 'Erreur lors de la déconnexion');
       }
 
+      // Nettoyer les données locales après une déconnexion réussie
+      this.clearAuthData();
       return data;
     } catch (error) {
       console.error('Erreur lors de la déconnexion:', error);
+      // Nettoyer localement même si l'API échoue, pour éviter une session fantôme
+      this.clearAuthData();
       throw error;
     }
   }
