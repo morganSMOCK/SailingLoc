@@ -19,15 +19,19 @@
       </div>
       
       <div class="nav-menu" id="nav-menu">
-        <a href="index.html" class="nav-link active">Accueil</a>
-        <a href="boats.html" class="nav-link">Bateaux</a>
-        <a href="services.html" class="nav-link">Services</a>
-        <a href="contact.html" class="nav-link">Contact</a>
+        <a href="index.html" class="nav-link active" data-i18n="nav.home">Accueil</a>
+        <a href="boats.html" class="nav-link" data-i18n="nav.boats">Bateaux</a>
+        <a href="services.html" class="nav-link" data-i18n="nav.services">Services</a>
+        <a href="contact.html" class="nav-link" data-i18n="nav.contact">Contact</a>
       </div>
       
       <div class="nav-auth">
-        <button id="login-btn" class="btn-secondary">Connexion</button>
-        <button id="register-btn" class="btn-primary">Inscription</button>
+        <select id="langSwitcher" aria-label="Language" style="margin-right:12px">
+          <option value="fr">FR </option>
+          <option value="en">EN</option>
+        </select>
+        <button id="login-btn" class="btn-secondary" data-i18n="auth.login">Connexion</button>
+        <button id="register-btn" class="btn-primary" data-i18n="auth.register">Inscription</button>
         
         <!-- Menu utilisateur (caché par défaut) -->
         <div id="user-menu" class="user-menu" style="display: none;">
@@ -72,29 +76,25 @@
   <!-- Hero Section -->
   <section id="home" class="hero">
     <div class="hero-content">
-      <h1 class="hero-title">
-        Naviguez vers vos <span class="gradient-text">rêves</span>
-      </h1>
-      <p class="hero-subtitle">
-        Découvrez notre flotte exceptionnelle de bateaux et vivez des aventures inoubliables sur les plus belles eaux d'Europe
-      </p>
+      <h1 class="hero-title" data-i18n="hero.title">Naviguez vers vos <span class="gradient-text">rêves</span></h1>
+      <p class="hero-subtitle" data-i18n="hero.subtitle">Découvrez notre flotte exceptionnelle de bateaux et vivez des aventures inoubliables sur les plus belles eaux d'Europe</p>
       
       <!-- Barre de recherche -->
       <div class="search-bar">
         <div class="search-field">
-          <label>Destination</label>
-          <input type="text" id="search-location" placeholder="Où souhaitez-vous naviguer ?">
+          <label data-i18n="search.destination">Destination</label>
+          <input type="text" id="search-location" placeholder="Où souhaitez-vous naviguer ?" data-i18n="search.placeholder" data-i18n-placeholder>
         </div>
         <div class="search-field">
-          <label>Départ</label>
+          <label data-i18n="search.departure">Départ</label>
           <input type="date" id="search-start-date">
         </div>
         <div class="search-field">
-          <label>Retour</label>
+          <label data-i18n="search.return">Retour</label>
           <input type="date" id="search-end-date">
         </div>
         <div class="search-field">
-          <label>Passagers</label>
+          <label data-i18n="search.passengers">Passagers</label>
           <select id="search-guests">
             <option value="">Nombre</option>
             <option value="2">2 personnes</option>
@@ -104,7 +104,7 @@
             <option value="10">10+ personnes</option>
           </select>
         </div>
-        <button id="search-btn" class="btn-primary search-btn">
+        <button id="search-btn" class="btn-primary search-btn" data-i18n="search.button">
           <span>🔍</span>
           Rechercher
         </button>
@@ -118,8 +118,8 @@
   <section id="boats" class="boats-section">
     <div class="container">
       <div class="section-header">
-        <h2>Résultats</h2>
-        <p>Affichage des bateaux correspondant à votre recherche</p>
+        <h2 data-i18n="results.title">Résultats</h2>
+        <p data-i18n="results.subtitle">Affichage des bateaux correspondant à votre recherche</p>
       </div>
 
       <!-- Loading -->
