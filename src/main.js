@@ -5,6 +5,7 @@ import { BoatService } from './services/BoatService.js';
 import { BookingService } from './services/BookingService.js';
 import { PaymentService } from './services/PaymentService.js';
 import { UIManager } from './utils/UIManager.js';
+import { I18n } from './utils/i18n.js';
 import { StorageManager } from './utils/StorageManager.js';
 
 /**
@@ -37,6 +38,8 @@ class SailingLocApp {
   async init() {
     try {
       console.log('🚀 Initialisation de SailingLoc...');
+      // i18n
+      await I18n.init();
       
       // Vérification de l'authentification existante
       await this.checkAuthStatus();
