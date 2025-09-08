@@ -6,12 +6,15 @@
   "scripts": {
     "dev": "vite",
     "server": "node server/server.cjs",
+    "dev:full": "concurrently \"npm run server\" \"npm run dev\" --names \"SERVER,CLIENT\" --prefix-colors \"blue,green\"",
+    "check": "node check-setup.js",
     "build": "vite build",
     "preview": "vite preview",
     "start": "node server/server.cjs",
     "postinstall": "echo 'Installation terminée'"
   },
   "devDependencies": {
+    "concurrently": "^9.2.1",
     "vite": "^5.4.2"
   },
   "dependencies": {
