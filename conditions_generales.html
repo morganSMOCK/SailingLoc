@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SailingLoc - Location de bateaux</title>
-  <meta name="description" content="Louez le bateau de vos rêves avec SailingLoc. Voiliers, catamarans, yachts disponibles partout en France et en Europe.">
+  <title>SailingLoc - Conditions Générales</title>
   <link rel="stylesheet" href="/src/style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,7 +18,7 @@
       </div>
       
       <div class="nav-menu" id="nav-menu">
-        <a href="index.html" class="nav-link active" data-i18n="nav.home">Accueil</a>
+        <a href="index.html" class="nav-link" data-i18n="nav.home">Accueil</a>
         <a href="boats.html" class="nav-link" data-i18n="nav.boats">Bateaux</a>
         <a href="services.html" class="nav-link" data-i18n="nav.services">Services</a>
         <a href="contact.html" class="nav-link" data-i18n="nav.contact">Contact</a>
@@ -73,72 +72,62 @@
     </div>
   </nav>
 
-  <!-- Hero Section -->
-  <section id="home" class="hero">
-    <div class="hero-content">
-      <h1 class="hero-title" data-i18n="hero.title">Naviguez vers vos <span class="gradient-text">rêves</span></h1>
-      <p class="hero-subtitle" data-i18n="hero.subtitle">Découvrez notre flotte exceptionnelle de bateaux et vivez des aventures inoubliables sur les plus belles eaux d'Europe</p>
-      
-      <!-- Barre de recherche -->
-      <div class="search-bar">
-        <div class="search-field">
-          <label data-i18n="search.destination">Destination</label>
-          <input type="text" id="search-location" placeholder="Où souhaitez-vous naviguer ?" data-i18n="search.placeholder" data-i18n-placeholder>
-        </div>
-        <div class="search-field">
-          <label data-i18n="search.departure">Départ</label>
-          <input type="date" id="search-start-date">
-        </div>
-        <div class="search-field">
-          <label data-i18n="search.return">Retour</label>
-          <input type="date" id="search-end-date">
-        </div>
-        <div class="search-field">
-          <label data-i18n="search.passengers">Passagers</label>
-          <select id="search-guests">
-            <option value="">Nombre</option>
-            <option value="2">2 personnes</option>
-            <option value="4">4 personnes</option>
-            <option value="6">6 personnes</option>
-            <option value="8">8 personnes</option>
-            <option value="10">10+ personnes</option>
-          </select>
-        </div>
-        <button id="search-btn" class="btn-primary search-btn" data-i18n="search.button">
-          <span>🔍</span>
-          Rechercher
-        </button>
-      </div>
-    </div>
-  </section>
+  <main class="container content-section">
+    <h1>Conditions Générales d'Utilisation</h1>
+    <p>Dernière mise à jour : 1er janvier 2024</p>
 
+    <h2>1. Introduction</h2>
+    <p>Bienvenue sur SailingLoc. En accédant à notre site web et en utilisant nos services, vous acceptez les présentes Conditions Générales d'Utilisation (CGU). Veuillez les lire attentivement.</p>
 
+    <h2>2. Définitions</h2>
+    <ul>
+      <li><strong>SailingLoc :</strong> Désigne la plateforme de location de bateaux.</li>
+      <li><strong>Utilisateur :</strong> Toute personne physique ou morale qui accède au site et utilise ses services.</li>
+      <li><strong>Propriétaire :</strong> Utilisateur proposant son bateau à la location via SailingLoc.</li>
+      <li><strong>Locataire :</strong> Utilisateur louant un bateau via SailingLoc.</li>
+    </ul>
 
-  <!-- Section Bateaux (résultats de recherche) -->
-  <section id="boats" class="boats-section">
-    <div class="container">
-      <div class="section-header">
-        <h2 data-i18n="results.title">Résultats</h2>
-        <p data-i18n="results.subtitle">Affichage des bateaux correspondant à votre recherche</p>
-      </div>
+    <h2>3. Accès au Service</h2>
+    <p>L'accès à la plateforme est gratuit. La création d'un compte est nécessaire pour louer ou proposer un bateau.</p>
 
-      <!-- Loading -->
-      <div id="boats-loading" class="loading-spinner" style="display: none;">
-        <div class="spinner"></div>
-        <p>Chargement des bateaux...</p>
-      </div>
+    <h2>4. Comptes Utilisateurs</h2>
+    <p>Les Utilisateurs doivent fournir des informations exactes et complètes lors de l'inscription. Ils sont responsables de la confidentialité de leurs identifiants de connexion.</p>
 
-      <!-- Grille des bateaux -->
-      <div id="boats-grid" class="boats-grid"></div>
+    <h2>5. Réservation et Location de Bateaux</h2>
+    <p>Les conditions spécifiques de chaque location (prix, dates, assurances, etc.) sont détaillées sur les pages des annonces. SailingLoc agit comme un intermédiaire entre Propriétaires et Locataires.</p>
 
-      <!-- Pagination -->
-      <div id="boats-pagination" class="pagination" style="display: none;">
-        <button id="prev-page" class="btn-page">Précédent</button>
-        <div id="page-numbers" class="page-numbers"></div>
-        <button id="next-page" class="btn-page">Suivant</button>
-      </div>
-    </div>
-  </section>
+    <h2>6. Obligations des Utilisateurs</h2>
+    <h3>6.1. Locataires</h3>
+    <ul>
+      <li>Respecter les conditions de location.</li>
+      <li>Posséder les permis ou qualifications nécessaires.</li>
+      <li>Restituer le bateau en bon état.</li>
+    </ul>
+    <h3>6.2. Propriétaires</h3>
+    <ul>
+      <li>Fournir des informations exactes sur le bateau.</li>
+      <li>S'assurer que le bateau est conforme aux réglementations.</li>
+      <li>Maintenir le bateau en bon état de fonctionnement.</li>
+    </ul>
+
+    <h2>7. Paiement</h2>
+    <p>Les paiements sont sécurisés et traités par notre prestataire de services de paiement. Les tarifs et les modalités de paiement sont indiqués sur le site.</p>
+
+    <h2>8. Annulation</h2>
+    <p>Les politiques d'annulation varient selon les annonces et sont définies par les Propriétaires. Les frais d'annulation peuvent s'appliquer.</p>
+
+    <h2>9. Responsabilité</h2>
+    <p>SailingLoc ne peut être tenu responsable des litiges entre Propriétaires et Locataires. Nous nous efforçons de faciliter la communication et la résolution des problèmes.</p>
+
+    <h2>10. Propriété Intellectuelle</h2>
+    <p>Tous les contenus du site (textes, images, logos) sont la propriété exclusive de SailingLoc ou de ses partenaires et sont protégés par le droit d'auteur.</p>
+
+    <h2>11. Modification des CGU</h2>
+    <p>SailingLoc se réserve le droit de modifier les présentes CGU à tout moment. Les modifications prendront effet dès leur publication sur le site.</p>
+
+    <h2>12. Droit Applicable et Juridiction Compétente</h2>
+    <p>Les présentes CGU sont régies par le droit français. Tout litige relatif à leur interprétation ou exécution sera soumis aux tribunaux compétents.</p>
+  </main>
 
   <!-- Footer -->
   <footer class="footer">
@@ -381,7 +370,6 @@
       </div>
     </div>
   </div>
-
 
   <!-- Modale des détails de bateau -->
   <div id="boat-modal" class="modal modal-large">

@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SailingLoc - Location de bateaux</title>
-  <meta name="description" content="Louez le bateau de vos rêves avec SailingLoc. Voiliers, catamarans, yachts disponibles partout en France et en Europe.">
+  <title>SailingLoc - Politique de Confidentialité</title>
   <link rel="stylesheet" href="/src/style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,7 +18,7 @@
       </div>
       
       <div class="nav-menu" id="nav-menu">
-        <a href="index.html" class="nav-link active" data-i18n="nav.home">Accueil</a>
+        <a href="index.html" class="nav-link" data-i18n="nav.home">Accueil</a>
         <a href="boats.html" class="nav-link" data-i18n="nav.boats">Bateaux</a>
         <a href="services.html" class="nav-link" data-i18n="nav.services">Services</a>
         <a href="contact.html" class="nav-link" data-i18n="nav.contact">Contact</a>
@@ -73,72 +72,66 @@
     </div>
   </nav>
 
-  <!-- Hero Section -->
-  <section id="home" class="hero">
-    <div class="hero-content">
-      <h1 class="hero-title" data-i18n="hero.title">Naviguez vers vos <span class="gradient-text">rêves</span></h1>
-      <p class="hero-subtitle" data-i18n="hero.subtitle">Découvrez notre flotte exceptionnelle de bateaux et vivez des aventures inoubliables sur les plus belles eaux d'Europe</p>
-      
-      <!-- Barre de recherche -->
-      <div class="search-bar">
-        <div class="search-field">
-          <label data-i18n="search.destination">Destination</label>
-          <input type="text" id="search-location" placeholder="Où souhaitez-vous naviguer ?" data-i18n="search.placeholder" data-i18n-placeholder>
-        </div>
-        <div class="search-field">
-          <label data-i18n="search.departure">Départ</label>
-          <input type="date" id="search-start-date">
-        </div>
-        <div class="search-field">
-          <label data-i18n="search.return">Retour</label>
-          <input type="date" id="search-end-date">
-        </div>
-        <div class="search-field">
-          <label data-i18n="search.passengers">Passagers</label>
-          <select id="search-guests">
-            <option value="">Nombre</option>
-            <option value="2">2 personnes</option>
-            <option value="4">4 personnes</option>
-            <option value="6">6 personnes</option>
-            <option value="8">8 personnes</option>
-            <option value="10">10+ personnes</option>
-          </select>
-        </div>
-        <button id="search-btn" class="btn-primary search-btn" data-i18n="search.button">
-          <span>🔍</span>
-          Rechercher
-        </button>
-      </div>
-    </div>
-  </section>
+  <main class="container content-section">
+    <h1>Politique de Confidentialité</h1>
+    <p>Dernière mise à jour : 1er janvier 2024</p>
 
+    <h2>1. Introduction</h2>
+    <p>SailingLoc s'engage à protéger la confidentialité de vos données personnelles. Cette politique de confidentialité explique comment nous collectons, utilisons, divulguons et protégeons vos informations lorsque vous utilisez notre site web et nos services.</p>
 
+    <h2>2. Données Collectées</h2>
+    <p>Nous collectons les types de données suivants :</p>
+    <ul>
+      <li><strong>Informations d'identification :</strong> Nom, prénom, adresse e-mail, numéro de téléphone, adresse postale.</li>
+      <li><strong>Informations de connexion :</strong> Adresse IP, type de navigateur, système d'exploitation, pages visitées, temps passé sur le site.</li>
+      <li><strong>Informations de paiement :</strong> Données relatives aux transactions (mais pas les détails complets de votre carte bancaire, qui sont gérés par un prestataire de paiement sécurisé).</li>
+      <li><strong>Informations sur les bateaux :</strong> Pour les propriétaires, les détails des bateaux proposés à la location.</li>
+    </ul>
 
-  <!-- Section Bateaux (résultats de recherche) -->
-  <section id="boats" class="boats-section">
-    <div class="container">
-      <div class="section-header">
-        <h2 data-i18n="results.title">Résultats</h2>
-        <p data-i18n="results.subtitle">Affichage des bateaux correspondant à votre recherche</p>
-      </div>
+    <h2>3. Utilisation des Données</h2>
+    <p>Nous utilisons vos données pour :</p>
+    <ul>
+      <li>Fournir et améliorer nos services de location de bateaux.</li>
+      <li>Gérer votre compte utilisateur et vos réservations.</li>
+      <li>Communiquer avec vous concernant votre compte ou nos services.</li>
+      <li>Personnaliser votre expérience sur le site.</li>
+      <li>Assurer la sécurité de notre plateforme.</li>
+      <li>Se conformer aux obligations légales.</li>
+    </ul>
 
-      <!-- Loading -->
-      <div id="boats-loading" class="loading-spinner" style="display: none;">
-        <div class="spinner"></div>
-        <p>Chargement des bateaux...</p>
-      </div>
+    <h2>4. Partage des Données</h2>
+    <p>Nous ne partageons vos données personnelles qu'avec :</p>
+    <ul>
+      <li>Les propriétaires de bateaux (pour les locataires) et les locataires (pour les propriétaires) afin de faciliter les réservations.</li>
+      <li>Nos prestataires de services tiers (traitement des paiements, hébergement, analyse de données) qui sont tenus de respecter la confidentialité de vos données.</li>
+      <li>Les autorités compétentes si la loi l'exige.</li>
+    </ul>
+    <p>Nous ne vendons ni ne louons vos données personnelles à des tiers à des fins de marketing.</p>
 
-      <!-- Grille des bateaux -->
-      <div id="boats-grid" class="boats-grid"></div>
+    <h2>5. Sécurité des Données</h2>
+    <p>Nous mettons en œuvre des mesures de sécurité techniques et organisationnelles appropriées pour protéger vos données contre l'accès non autorisé, la modification, la divulgation ou la destruction.</p>
 
-      <!-- Pagination -->
-      <div id="boats-pagination" class="pagination" style="display: none;">
-        <button id="prev-page" class="btn-page">Précédent</button>
-        <div id="page-numbers" class="page-numbers"></div>
-        <button id="next-page" class="btn-page">Suivant</button>
-      </div>
-    </div>
-  </section>
+    <h2>6. Vos Droits</h2>
+    <p>Conformément au Règlement Général sur la Protection des Données (RGPD), vous disposez des droits suivants :</p>
+    <ul>
+      <li><strong>Droit d'accès :</strong> Obtenir des informations sur les données que nous détenons vous concernant.</li>
+      <li><strong>Droit de rectification :</strong> Demander la correction de données inexactes.</li>
+      <li><strong>Droit à l'effacement :</strong> Demander la suppression de vos données.</li>
+      <li><strong>Droit à la limitation du traitement :</strong> Demander la limitation du traitement de vos données.</li>
+      <li><strong>Droit à la portabilité des données :</strong> Recevoir vos données dans un format structuré et couramment utilisé.</li>
+      <li><strong>Droit d'opposition :</strong> Vous opposer au traitement de vos données.</li>
+    </ul>
+    <p>Pour exercer ces droits, veuillez nous contacter à l'adresse suivante : [Votre adresse e-mail de contact].</p>
+
+    <h2>7. Cookies</h2>
+    <p>Notre site utilise des cookies pour améliorer votre expérience. Vous pouvez gérer vos préférences en matière de cookies via les paramètres de votre navigateur.</p>
+
+    <h2>8. Modifications de la Politique de Confidentialité</h2>
+    <p>Nous pouvons mettre à jour cette politique de confidentialité de temps à autre. Toute modification sera publiée sur cette page avec la date de la dernière mise à jour.</p>
+
+    <h2>9. Contact</h2>
+    <p>Pour toute question concernant cette politique de confidentialité, veuillez nous contacter à : contact@sailingloc.com</p>
+  </main>
 
   <!-- Footer -->
   <footer class="footer">
@@ -288,7 +281,7 @@
               </div>
               <div class="form-group">
                 <input type="text" id="profile-postal" placeholder="Code postal">
-              </div>
+              }
             </div>
             <button type="submit" class="btn-primary">Mettre à jour</button>
           </form>
@@ -381,7 +374,6 @@
       </div>
     </div>
   </div>
-
 
   <!-- Modale des détails de bateau -->
   <div id="boat-modal" class="modal modal-large">

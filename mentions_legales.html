@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SailingLoc - Location de bateaux</title>
-  <meta name="description" content="Louez le bateau de vos rêves avec SailingLoc. Voiliers, catamarans, yachts disponibles partout en France et en Europe.">
+  <title>SailingLoc - Mentions Légales</title>
   <link rel="stylesheet" href="/src/style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,7 +18,7 @@
       </div>
       
       <div class="nav-menu" id="nav-menu">
-        <a href="index.html" class="nav-link active" data-i18n="nav.home">Accueil</a>
+        <a href="index.html" class="nav-link" data-i18n="nav.home">Accueil</a>
         <a href="boats.html" class="nav-link" data-i18n="nav.boats">Bateaux</a>
         <a href="services.html" class="nav-link" data-i18n="nav.services">Services</a>
         <a href="contact.html" class="nav-link" data-i18n="nav.contact">Contact</a>
@@ -73,72 +72,50 @@
     </div>
   </nav>
 
-  <!-- Hero Section -->
-  <section id="home" class="hero">
-    <div class="hero-content">
-      <h1 class="hero-title" data-i18n="hero.title">Naviguez vers vos <span class="gradient-text">rêves</span></h1>
-      <p class="hero-subtitle" data-i18n="hero.subtitle">Découvrez notre flotte exceptionnelle de bateaux et vivez des aventures inoubliables sur les plus belles eaux d'Europe</p>
-      
-      <!-- Barre de recherche -->
-      <div class="search-bar">
-        <div class="search-field">
-          <label data-i18n="search.destination">Destination</label>
-          <input type="text" id="search-location" placeholder="Où souhaitez-vous naviguer ?" data-i18n="search.placeholder" data-i18n-placeholder>
-        </div>
-        <div class="search-field">
-          <label data-i18n="search.departure">Départ</label>
-          <input type="date" id="search-start-date">
-        </div>
-        <div class="search-field">
-          <label data-i18n="search.return">Retour</label>
-          <input type="date" id="search-end-date">
-        </div>
-        <div class="search-field">
-          <label data-i18n="search.passengers">Passagers</label>
-          <select id="search-guests">
-            <option value="">Nombre</option>
-            <option value="2">2 personnes</option>
-            <option value="4">4 personnes</option>
-            <option value="6">6 personnes</option>
-            <option value="8">8 personnes</option>
-            <option value="10">10+ personnes</option>
-          </select>
-        </div>
-        <button id="search-btn" class="btn-primary search-btn" data-i18n="search.button">
-          <span>🔍</span>
-          Rechercher
-        </button>
-      </div>
-    </div>
-  </section>
+  <main class="container content-section">
+    <h1>Mentions Légales</h1>
+    <p>Dernière mise à jour : 1er janvier 2024</p>
 
+    <h2>1. Informations Légales</h2>
+    <ul>
+      <li><strong>Nom de la société :</strong> SailingLoc</li>
+      <li><strong>Forme juridique :</strong> Société par Actions Simplifiée (SAS)</li>
+      <li><strong>Siège social :</strong> 45 rue de la Loire (La Rochelle)</li>
+      <li><strong>Capital social :</strong> 15 000€</li>
+      <li><strong>Numéro d'immatriculation (RCS/SIRET) :</strong> 746 345 935</li>
+      <li><strong>Numéro de TVA intracommunautaire :</strong> FR42923456789</li>
+      <li><strong>Adresse e-mail :</strong> contact@sailingloc.com</li>
+      <li><strong>Téléphone :</strong> 01 45 23 98 76</li>
+    </ul>
 
+    <h2>2. Directeur de la Publication</h2>
+    <ul>
+      <li><strong>Nom :</strong> Anas OUIFI</li>
+      <li><strong>Contact :</strong> ouifi.anas.sio@gmail.com</li>
+    </ul>
 
-  <!-- Section Bateaux (résultats de recherche) -->
-  <section id="boats" class="boats-section">
-    <div class="container">
-      <div class="section-header">
-        <h2 data-i18n="results.title">Résultats</h2>
-        <p data-i18n="results.subtitle">Affichage des bateaux correspondant à votre recherche</p>
-      </div>
+    <h2>3. Hébergeur du Site</h2>
+    <ul>
+      <li><strong>Nom de l'hébergeur :</strong> Vercel</li>
+      <li><strong>Adresse :</strong> 340 S Lemon Ave #4133 Walnut, CA 91789</li>
+      <li><strong>Téléphone :</strong> (559) 288-7060</li>
+    </ul>
 
-      <!-- Loading -->
-      <div id="boats-loading" class="loading-spinner" style="display: none;">
-        <div class="spinner"></div>
-        <p>Chargement des bateaux...</p>
-      </div>
+    <h2>4. Propriété Intellectuelle</h2>
+    <p>Le site SailingLoc, y compris son contenu, textes, images, vidéos, et logos, est la propriété exclusive de SailingLoc ou de ses partenaires. Toute reproduction, représentation, modification, publication, adaptation de tout ou partie des éléments du site, quel que soit le moyen ou le procédé utilisé, est interdite, sauf autorisation écrite préalable de SailingLoc.</p>
 
-      <!-- Grille des bateaux -->
-      <div id="boats-grid" class="boats-grid"></div>
+    <h2>5. Données Personnelles</h2>
+    <p>SailingLoc s'engage à protéger la confidentialité de vos données personnelles. Pour plus d'informations, veuillez consulter notre <a href="politique_confidentialite.html">Politique de Confidentialité</a>.</p>
 
-      <!-- Pagination -->
-      <div id="boats-pagination" class="pagination" style="display: none;">
-        <button id="prev-page" class="btn-page">Précédent</button>
-        <div id="page-numbers" class="page-numbers"></div>
-        <button id="next-page" class="btn-page">Suivant</button>
-      </div>
-    </div>
-  </section>
+    <h2>6. Liens Hypertextes</h2>
+    <p>Le site SailingLoc peut contenir des liens hypertextes vers d'autres sites. SailingLoc ne peut être tenu responsable du contenu de ces sites externes.</p>
+
+    <h2>7. Limitation de Responsabilité</h2>
+    <p>SailingLoc s'efforce d'assurer l'exactitude et la mise à jour des informations diffusées sur ce site, mais ne peut garantir l'exactitude, l'exhaustivité, ou l'actualité des informations. L'utilisateur reconnaît utiliser ces informations sous sa responsabilité exclusive.</p>
+
+    <h2>8. Droit Applicable et Juridiction Compétente</h2>
+    <p>Les présentes mentions légales sont régies par le droit français. En cas de litige, les tribunaux français seront seuls compétents.</p>
+  </main>
 
   <!-- Footer -->
   <footer class="footer">
@@ -381,7 +358,6 @@
       </div>
     </div>
   </div>
-
 
   <!-- Modale des détails de bateau -->
   <div id="boat-modal" class="modal modal-large">
