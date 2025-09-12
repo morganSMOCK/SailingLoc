@@ -76,11 +76,12 @@ export class BoatService {
   }
 
   /**
-   * Création d'un nouveau bateau (propriétaires uniquement)
-   * @param {Object} boatData - Données du bateau
+   * Création d'un nouveau bateau
+
+  * @param {FormData} formData - Données du formulaire
    * @returns {Promise<Object>} Bateau créé
    */
-  async createBoat(boatData) {
+  async createBoat(formData) {
     try {
       const token = this.getAuthToken();
       
@@ -91,10 +92,10 @@ export class BoatService {
       const response = await fetch(this.boatsEndpoint, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
+          // Ne pas définir Content-Type pour FormData, le navigateur le fait automatiquement
         },
-        body: JSON.stringify(boatData)
+        body: formData
       });
 
       const data = await response.json();
@@ -509,7 +510,16 @@ export class BoatService {
    */
   getAuthToken() {
     try {
-      return localStorage.getItem('sailingloc_token');
+      // Utiliser le StorageManager pour la cohérence
+      if (window.app && window.app.storageManager) {
+        const token = window.app.storageManager.getToken();
+        console.log('🔐 [BOAT SERVICE] Token récupéré via StorageManager:', token ? 'Présent' : 'Absent');
+        return token;
+      }
+      // Fallback direct si l'app n'est pas disponible
+      const token = localStorage.getItem('sailingloc_token');
+      console.log('🔐 [BOAT SERVICE] Token récupéré via localStorage:', token ? 'Présent' : 'Absent');
+      return token;
     } catch (error) {
       console.error('Erreur lors de la récupération du token:', error);
       return null;

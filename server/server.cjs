@@ -32,6 +32,9 @@ app.options('*', cors());
 // Parsers
 app.use(express.json());
 
+// Servir les fichiers statiques (images uploadées)
+app.use('/uploads', express.static('uploads'));
+
 // Routes API
 app.use('/api/auth', authRoutes);
 app.use('/api/boats', boatRoutes);
