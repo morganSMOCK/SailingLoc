@@ -8,6 +8,7 @@ const {
   checkResourceOwnership,
   logUserAction 
 } = require('../middleware/auth.cjs');
+const { uploadBoatImages, handleUploadError } = require('../middleware/upload.cjs');
 const Boat = require('../models/Boat.cjs');
 
 // Routes publiques (avec authentification optionnelle)
@@ -62,6 +63,8 @@ router.get('/:id/availability',
 router.post('/', 
   authenticateToken,
   requireOwner,
+  uploadBoatImages,
+  handleUploadError,
   logUserAction('BOAT_CREATE'),
   boatController.createBoat
 );
