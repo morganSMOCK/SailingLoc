@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const multer = require("multer");
 const path = require("path");
-const Boat = require("../models/Boat");
+const Boat = require("../models/Boat.cjs");
 const { isAuthenticated } = require("../middleware/auth"); // si tu as un middleware auth
 
 // ✅ Multer configuration
