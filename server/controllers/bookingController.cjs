@@ -2,6 +2,96 @@ const Booking = require('../models/Booking.cjs');
 const Boat = require('../models/Boat.cjs');
 const User = require('../models/User.cjs');
 
+// Mapping des valeurs françaises vers les valeurs enum anglaises pour les réservations
+const bookingStatusMapping = {
+  'en_attente': 'pending',
+  'confirmée': 'confirmed',
+  'payée': 'paid',
+  'active': 'active',
+  'terminée': 'completed',
+  'annulée': 'cancelled',
+  'remboursée': 'refunded'
+};
+
+const paymentMethodMapping = {
+  'carte_bancaire': 'stripe',
+  'paypal': 'paypal',
+  'virement': 'bank_transfer',
+  'espèces': 'cash'
+};
+
+const licenseTypeMapping = {
+  'permis_plaisance': 'permis_plaisance',
+  'permis_cotier': 'permis_cotier',
+  'permis_hauturier': 'permis_hauturier',
+  'autre': 'autre'
+};
+
+const damageSeverityMapping = {
+  'mineur': 'minor',
+  'modéré': 'moderate',
+  'majeur': 'major'
+};
+
+const sourceMapping = {
+  'site_web': 'website',
+  'application_mobile': 'mobile_app',
+  'téléphone': 'phone',
+  'email': 'email'
+};
+
+// Mapping inverse pour l'affichage
+const bookingStatusMappingToFrench = {
+  'pending': 'en_attente',
+  'confirmed': 'confirmée',
+  'paid': 'payée',
+  'active': 'active',
+  'completed': 'terminée',
+  'cancelled': 'annulée',
+  'refunded': 'remboursée'
+};
+
+const paymentMethodMappingToFrench = {
+  'stripe': 'carte_bancaire',
+  'paypal': 'paypal',
+  'bank_transfer': 'virement',
+  'cash': 'espèces'
+};
+
+const damageSeverityMappingToFrench = {
+  'minor': 'mineur',
+  'moderate': 'modéré',
+  'major': 'majeur'
+};
+
+const sourceMappingToFrench = {
+  'website': 'site_web',
+  'mobile_app': 'application_mobile',
+  'phone': 'téléphone',
+  'email': 'email'
+};
+
+// Fonction pour convertir les données de réservation en français
+const convertBookingToFrench = (booking) => {
+  const bookingObj = booking.toObject ? booking.toObject() : booking;
+  return {
+    ...bookingObj,
+    status: bookingStatusMappingToFrench[bookingObj.status] || bookingObj.status,
+    payment: bookingObj.payment ? {
+      ...bookingObj.payment,
+      method: paymentMethodMappingToFrench[bookingObj.payment.method] || bookingObj.payment.method
+    } : bookingObj.payment,
+    checkOut: bookingObj.checkOut ? {
+      ...bookingObj.checkOut,
+      damages: bookingObj.checkOut.damages ? bookingObj.checkOut.damages.map(damage => ({
+        ...damage,
+        severity: damageSeverityMappingToFrench[damage.severity] || damage.severity
+      })) : bookingObj.checkOut.damages
+    } : bookingObj.checkOut,
+    source: sourceMappingToFrench[bookingObj.source] || bookingObj.source
+  };
+};
+
 // Création d'une nouvelle réservation
 exports.createBooking = async (req, res) => {
   try {
@@ -72,6 +162,12 @@ exports.createBooking = async (req, res) => {
     // Calcul du montant total
     const totalAmount = pricing.total + additionalServicesCost + skipperCost;
 
+    // Conversion des données françaises vers anglaises
+    const convertedRenterExperience = renterExperience ? {
+      ...renterExperience,
+      licenseType: licenseTypeMapping[renterExperience.licenseType] || renterExperience.licenseType
+    } : renterExperience;
+
     // Création de la réservation
     const booking = new Booking({
       boat: boatId,
@@ -93,7 +189,7 @@ exports.createBooking = async (req, res) => {
         totalAmount
       },
       emergencyContact,
-      renterExperience,
+      renterExperience: convertedRenterExperience,
       specialRequests,
       skipperRequested,
       additionalServices,
@@ -114,10 +210,13 @@ exports.createBooking = async (req, res) => {
       { path: 'owner', select: 'firstName lastName email phone' }
     ]);
 
+    // Conversion de la réservation en français
+    const bookingInFrench = convertBookingToFrench(booking);
+
     res.status(201).json({
       success: true,
       message: 'Réservation créée avec succès',
-      data: { booking }
+      data: { booking: bookingInFrench }
     });
 
   } catch (error) {
@@ -148,7 +247,8 @@ exports.getUserBookings = async (req, res) => {
 
     // Filtrage par statut
     if (status) {
-      query.status = status;
+      // Conversion du statut français vers anglais pour la requête
+      query.status = bookingStatusMapping[status] || status;
     }
 
     const bookings = await Booking.find(query)
@@ -161,10 +261,13 @@ exports.getUserBookings = async (req, res) => {
 
     const total = await Booking.countDocuments(query);
 
+    // Conversion des réservations en français
+    const bookingsInFrench = bookings.map(convertBookingToFrench);
+
     res.json({
       success: true,
       data: {
-        bookings,
+        bookings: bookingsInFrench,
         pagination: {
           page: parseInt(page),
           limit: parseInt(limit),
@@ -212,9 +315,12 @@ exports.getBookingById = async (req, res) => {
       });
     }
 
+    // Conversion de la réservation en français
+    const bookingInFrench = convertBookingToFrench(booking);
+
     res.json({
       success: true,
-      data: { booking }
+      data: { booking: bookingInFrench }
     });
 
   } catch (error) {
