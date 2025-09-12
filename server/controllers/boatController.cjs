@@ -273,6 +273,9 @@ exports.createBoat = async (req, res) => {
       'yacht': 'yacht',
       'autre': 'other'
     };
+    
+    console.log('🔍 [BOAT] Mapping des types:', typeMapping);
+    console.log('🔍 [BOAT] Test mapping bateau_moteur:', typeMapping['bateau_moteur']);
 
     const categoryMapping = {
       'luxe': 'luxury',
@@ -282,6 +285,10 @@ exports.createBoat = async (req, res) => {
     
 
     // Préparation des données du bateau
+    console.log('🔍 [BOAT] Type reçu:', req.body.type);
+    console.log('🔍 [BOAT] Type mappé:', typeMapping[req.body.type]);
+    console.log('🔍 [BOAT] Type final:', typeMapping[req.body.type] || req.body.type);
+    
     const boatData = {
       name: req.body.name,
       description: req.body.description,
@@ -354,6 +361,7 @@ exports.createBoat = async (req, res) => {
     }
 
     console.log('✅ [BOAT] Validation réussie, création du bateau...');
+    console.log('🔍 [BOAT] Type final avant création:', boatData.type);
     const boat = new Boat(boatData);
     await boat.save();
 
