@@ -1,5 +1,16 @@
 const Boat = require('../models/Boat.cjs');
 const User = require('../models/User.cjs');
+const multer = require('multer');
+const path = require('path');
+const express = require('express');
+const router = express.Router();
+const { createBoat } = require('../controllers/boatController.cjs'); // Chemin exact
+
+
+
+
+
+
 
 // Récupération de tous les bateaux avec filtres
 exports.getAllBoats = async (req, res) => {
@@ -146,6 +157,32 @@ exports.getBoatById = async (req, res) => {
   }
 };
 
+// Route pour créer un bateau avec images
+router.post('/api/boats', upload.array('images', 10), createBoat);
+
+module.exports = router;
+
+// Destination et nom des fichiers
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, 'uploads/boats'),
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, uniqueSuffix + path.extname(file.originalname));
+  }
+});
+
+const upload = multer({
+  storage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB max
+  fileFilter: (req, file, cb) => {
+    const ext = path.extname(file.originalname).toLowerCase();
+    if (['.jpg', '.jpeg', '.png', '.webp'].includes(ext)) cb(null, true);
+    else cb(new Error('Seuls les fichiers JPG, PNG et WebP sont autorisés'));
+  }
+});
+
+module.exports = upload;
+
 // Création d'un nouveau bateau (propriétaires uniquement)
 exports.createBoat = async (req, res) => {
   try {
@@ -190,6 +227,7 @@ exports.createBoat = async (req, res) => {
         return fallback;
       }
     };
+    
 
     // Préparation des données du bateau
     const boatData = {

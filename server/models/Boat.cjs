@@ -26,10 +26,7 @@ const upload = multer({
 });
 
 // POST /api/boats
-router.post(
-  "/boats",
-  isAuthenticated,
-  upload.array("images", 10), // "images" = nom du champ FormData
+router.post("/boats",isAuthenticated,upload.array("images", 10), // "images" = nom du champ FormData
   async (req, res) => {
     try {
       console.log("BODY:", req.body);
