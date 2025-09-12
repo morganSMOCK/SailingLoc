@@ -1,81 +1,197 @@
-const express = require("express");
-const router = express.Router();
-const multer = require("multer");
-const path = require("path");
-const Boat = require("../models/Boat.cjs");
-const { isAuthenticated } = require("../middleware/auth.cjs"); // si tu as un middleware auth
+const mongoose = require('mongoose');
 
-// ✅ Multer configuration
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/"); // assure-toi que le dossier existe sur Render
+const boatSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: [true, 'Le nom du bateau est requis'],
+    trim: true,
+    maxlength: [100, 'Le nom ne peut pas dépasser 100 caractères']
   },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + "-" + file.originalname);
+  description: {
+    type: String,
+    required: [true, 'La description est requise'],
+    trim: true,
+    maxlength: [1000, 'La description ne peut pas dépasser 1000 caractères']
+  },
+  type: {
+    type: String,
+    required: [true, 'Le type de bateau est requis'],
+    enum: ['sailboat', 'motorboat', 'catamaran', 'yacht', 'other'],
+    default: 'sailboat'
+  },
+  category: {
+    type: String,
+    enum: ['luxury', 'standard', 'budget'],
+    default: 'standard'
+  },
+  specifications: {
+    length: {
+      type: Number,
+      required: [true, 'La longueur est requise'],
+      min: [1, 'La longueur doit être positive']
+    },
+    width: {
+      type: Number,
+      min: [1, 'La largeur doit être positive']
+    },
+    draft: {
+      type: Number,
+      min: [0, 'Le tirant d\'eau doit être positif']
+    },
+    engine: {
+      type: String,
+      trim: true
+    },
+    fuelType: {
+      type: String,
+      enum: ['diesel', 'gasoline', 'electric', 'hybrid', 'wind'],
+      default: 'diesel'
+    }
+  },
+  capacity: {
+    maxPeople: {
+      type: Number,
+      required: [true, 'La capacité maximale est requise'],
+      min: [1, 'La capacité doit être d\'au moins 1 personne']
+    },
+    cabins: {
+      type: Number,
+      min: [0, 'Le nombre de cabines doit être positif']
+    },
+    bathrooms: {
+      type: Number,
+      min: [0, 'Le nombre de salles de bain doit être positif']
+    }
+  },
+  location: {
+    city: {
+      type: String,
+      required: [true, 'La ville est requise'],
+      trim: true
+    },
+    marina: {
+      type: String,
+      required: [true, 'Le port de plaisance est requis'],
+      trim: true
+    },
+    country: {
+      type: String,
+      default: 'France',
+      trim: true
+    },
+    coordinates: {
+      latitude: {
+        type: Number,
+        min: -90,
+        max: 90
+      },
+      longitude: {
+        type: Number,
+        min: -180,
+        max: 180
+      }
+    }
+  },
+  pricing: {
+    dailyRate: {
+      type: Number,
+      required: [true, 'Le tarif journalier est requis'],
+      min: [0, 'Le tarif doit être positif']
+    },
+    securityDeposit: {
+      type: Number,
+      min: [0, 'La caution doit être positive']
+    },
+    currency: {
+      type: String,
+      default: 'EUR',
+      enum: ['EUR', 'USD', 'GBP']
+    }
+  },
+  owner: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: [true, 'Le propriétaire est requis']
+  },
+  status: {
+    type: String,
+    enum: ['available', 'booked', 'maintenance', 'inactive'],
+    default: 'available'
+  },
+  isActive: {
+    type: Boolean,
+    default: true
+  },
+  images: [{
+    url: {
+      type: String,
+      required: true
+    },
+    isMain: {
+      type: Boolean,
+      default: false
+    },
+    alt: {
+      type: String,
+      trim: true
+    }
+  }],
+  amenities: [{
+    type: String,
+    trim: true
+  }],
+  rules: [{
+    type: String,
+    trim: true
+  }],
+  availability: {
+    startDate: {
+      type: Date
+    },
+    endDate: {
+      type: Date
+    }
   }
+}, {
+  timestamps: true,
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true }
 });
 
-const upload = multer({
-  storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB max
-  fileFilter: (req, file, cb) => {
-    const ext = path.extname(file.originalname).toLowerCase();
-    if ([".jpg", ".jpeg", ".png", ".webp"].includes(ext)) cb(null, true);
-    else cb(new Error("Seuls JPG, PNG, WebP sont autorisés"));
-  }
+// Index pour les recherches
+boatSchema.index({ name: 'text', description: 'text' });
+boatSchema.index({ 'location.city': 1 });
+boatSchema.index({ type: 1 });
+boatSchema.index({ status: 1 });
+boatSchema.index({ owner: 1 });
+
+// Virtual pour l'URL complète des images
+boatSchema.virtual('imageUrls').get(function() {
+  return this.images.map(img => ({
+    ...img.toObject(),
+    fullUrl: img.url.startsWith('http') ? img.url : `${process.env.BASE_URL || 'http://localhost:3000'}/${img.url}`
+  }));
 });
 
-// POST /api/boats
-router.post("/boats",isAuthenticated,upload.array("images", 10), // "images" = nom du champ FormData
-  async (req, res) => {
-    try {
-      console.log("BODY:", req.body);
-      console.log("FILES:", req.files);
+// Méthode pour obtenir l'image principale
+boatSchema.methods.getMainImage = function() {
+  const mainImage = this.images.find(img => img.isMain);
+  return mainImage || this.images[0] || null;
+};
 
-      // Créer le bateau avec conversion des champs numériques
-      const boat = new Boat({
-        name: req.body.name,
-        description: req.body.description,
-        type: req.body.type,
-        category: req.body.category,
-        specifications: {
-          length: Number(req.body["specifications[length]"]),
-          width: Number(req.body["specifications[width]"])
-        },
-        capacity: {
-          maxPeople: Number(req.body["capacity[maxPeople]"])
-        },
-        location: {
-          city: req.body["location[city]"],
-          marina: req.body["location[marina]"],
-          country: "France"
-        },
-        pricing: {
-          dailyRate: Number(req.body["pricing[dailyRate]"]),
-          securityDeposit: Number(req.body["pricing[securityDeposit]"])
-        },
-        owner: req.user._id,
-        status: "available",
-        isActive: true,
-        images: req.files.map(f => ({ url: f.path, isMain: false }))
-      });
-
-      await boat.save();
-
-      res.json({
-        success: true,
-        message: "Bateau ajouté avec succès",
-        boat
-      });
-    } catch (err) {
-      console.error("Erreur lors de la création du bateau :", err);
-      res.status(500).json({
-        success: false,
-        message: "Erreur lors de la création du bateau",
-        error: err.message
+// Middleware pre-save pour s'assurer qu'une seule image principale
+boatSchema.pre('save', function(next) {
+  if (this.images && this.images.length > 0) {
+    const mainImages = this.images.filter(img => img.isMain);
+    if (mainImages.length === 0) {
+      this.images[0].isMain = true;
+    } else if (mainImages.length > 1) {
+      mainImages.forEach((img, index) => {
+        img.isMain = index === 0;
       });
     }
   }
-);
+  next();
+});
 
-module.exports = router;
+module.exports = mongoose.model('Boat', boatSchema);
