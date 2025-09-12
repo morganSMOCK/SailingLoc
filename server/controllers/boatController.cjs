@@ -266,7 +266,7 @@ exports.createBoat = async (req, res) => {
 
     // Validation des données avant création
     console.log('🔍 [BOAT] Validation des données...');
-IX DE LAJOUT    if (!boatData.name || boatData.name.trim() === '') {
+    if (!boatData.name || boatData.name.trim() === '') {
       throw new Error('Le nom du bateau est obligatoire');
     }
     if (!boatData.description || boatData.description.trim() === '') {
