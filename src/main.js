@@ -57,6 +57,9 @@ class SailingLocApp {
       // Configuration de la navigation
       this.setupNavigation();
       
+      // Initialisation de la gestion des bateaux si nécessaire
+      this.initBoatManagement();
+      
       console.log('✅ SailingLoc initialisé avec succès');
       
     } catch (error) {
@@ -824,11 +827,11 @@ class SailingLocApp {
    */
   async showMyBoats() {
     try {
-      this.uiManager.showModal('my-boats-modal');
-      await this.loadOwnerBoats();
+      // Rediriger vers la page de gestion des bateaux
+      window.location.href = 'boat-management.html';
     } catch (error) {
-      console.error('Erreur lors de l\'affichage des bateaux:', error);
-      this.uiManager.showNotification('Erreur lors du chargement des bateaux', 'error');
+      console.error('Erreur lors de la redirection:', error);
+      this.uiManager.showNotification('Erreur lors de la redirection', 'error');
     }
   }
 
@@ -1676,6 +1679,436 @@ class SailingLocApp {
     // Ici, on pourrait ouvrir une modale de réservation
     // Pour l'instant, on affiche juste une notification
     this.uiManager.showNotification('Fonctionnalité de réservation en cours de développement', 'info');
+  }
+
+  /**
+   * Initialisation de la gestion des bateaux
+   */
+  initBoatManagement() {
+    console.log('🚤 Initialisation de la gestion des bateaux...');
+    
+    // Vérifier si nous sommes sur la page de gestion des bateaux
+    if (window.location.pathname.includes('boat-management.html')) {
+      this.setupBoatManagementEventListeners();
+      this.loadBoatManagementData();
+    }
+  }
+
+  /**
+   * Configuration des écouteurs d'événements pour la gestion des bateaux
+   */
+  setupBoatManagementEventListeners() {
+    // Bouton d'ajout de bateau
+    const addBoatBtn = document.getElementById('add-boat-btn');
+    if (addBoatBtn) {
+      addBoatBtn.addEventListener('click', () => {
+        window.location.href = 'index.html#add-boat';
+      });
+    }
+
+    // Filtres
+    const statusFilter = document.getElementById('status-filter');
+    const typeFilter = document.getElementById('type-filter');
+    const searchInput = document.getElementById('search-input');
+    const searchBtn = document.getElementById('search-btn');
+
+    if (statusFilter) {
+      statusFilter.addEventListener('change', () => this.filterBoats());
+    }
+    if (typeFilter) {
+      typeFilter.addEventListener('change', () => this.filterBoats());
+    }
+    if (searchInput) {
+      searchInput.addEventListener('input', () => this.debounceSearch());
+    }
+    if (searchBtn) {
+      searchBtn.addEventListener('click', () => this.filterBoats());
+    }
+
+    // Contrôles de vue
+    const gridViewBtn = document.getElementById('grid-view-btn');
+    const listViewBtn = document.getElementById('list-view-btn');
+
+    if (gridViewBtn) {
+      gridViewBtn.addEventListener('click', () => this.setViewMode('grid'));
+    }
+    if (listViewBtn) {
+      listViewBtn.addEventListener('click', () => this.setViewMode('list'));
+    }
+
+    // Pagination
+    const prevPageBtn = document.getElementById('prev-page-btn');
+    const nextPageBtn = document.getElementById('next-page-btn');
+
+    if (prevPageBtn) {
+      prevPageBtn.addEventListener('click', () => this.changePage(-1));
+    }
+    if (nextPageBtn) {
+      nextPageBtn.addEventListener('click', () => this.changePage(1));
+    }
+
+    // Bouton de retry
+    const retryBtn = document.getElementById('retry-btn');
+    if (retryBtn) {
+      retryBtn.addEventListener('click', () => this.loadBoatManagementData());
+    }
+
+    // Bouton d'ajout du premier bateau
+    const addFirstBoatBtn = document.getElementById('add-first-boat-btn');
+    if (addFirstBoatBtn) {
+      addFirstBoatBtn.addEventListener('click', () => {
+        window.location.href = 'index.html#add-boat';
+      });
+    }
+  }
+
+  /**
+   * Chargement des données de gestion des bateaux
+   */
+  async loadBoatManagementData() {
+    try {
+      this.showLoadingState();
+      
+      // Charger les statistiques et les bateaux en parallèle
+      const [statsResponse, boatsResponse] = await Promise.all([
+        this.boatService.getBoatStats(),
+        this.boatService.getOwnerBoats()
+      ]);
+
+      if (statsResponse.success) {
+        this.updateStats(statsResponse.data.overview);
+      }
+
+      if (boatsResponse.success) {
+        this.displayBoats(boatsResponse.data.boats);
+        this.updatePagination(boatsResponse.data.pagination);
+      }
+
+      this.hideLoadingState();
+    } catch (error) {
+      console.error('Erreur lors du chargement des données:', error);
+      this.showErrorState(error.message);
+    }
+  }
+
+  /**
+   * Affichage de l'état de chargement
+   */
+  showLoadingState() {
+    const loadingMessage = document.getElementById('loading-message');
+    const errorMessage = document.getElementById('error-message');
+    const emptyMessage = document.getElementById('empty-message');
+    const boatsGrid = document.getElementById('boats-grid');
+
+    if (loadingMessage) loadingMessage.style.display = 'block';
+    if (errorMessage) errorMessage.style.display = 'none';
+    if (emptyMessage) emptyMessage.style.display = 'none';
+    if (boatsGrid) boatsGrid.style.display = 'none';
+  }
+
+  /**
+   * Masquage de l'état de chargement
+   */
+  hideLoadingState() {
+    const loadingMessage = document.getElementById('loading-message');
+    if (loadingMessage) loadingMessage.style.display = 'none';
+  }
+
+  /**
+   * Affichage de l'état d'erreur
+   */
+  showErrorState(message) {
+    const loadingMessage = document.getElementById('loading-message');
+    const errorMessage = document.getElementById('error-message');
+    const errorText = document.getElementById('error-text');
+    const emptyMessage = document.getElementById('empty-message');
+    const boatsGrid = document.getElementById('boats-grid');
+
+    if (loadingMessage) loadingMessage.style.display = 'none';
+    if (errorMessage) errorMessage.style.display = 'block';
+    if (errorText) errorText.textContent = message;
+    if (emptyMessage) emptyMessage.style.display = 'none';
+    if (boatsGrid) boatsGrid.style.display = 'none';
+  }
+
+  /**
+   * Mise à jour des statistiques
+   */
+  updateStats(stats) {
+    const totalBoats = document.getElementById('total-boats');
+    const availableBoats = document.getElementById('available-boats');
+    const totalBookings = document.getElementById('total-bookings');
+    const totalRevenue = document.getElementById('total-revenue');
+
+    if (totalBoats) totalBoats.textContent = stats.totalBoats || 0;
+    if (availableBoats) availableBoats.textContent = stats.availableBoats || 0;
+    if (totalBookings) totalBookings.textContent = stats.totalBookings || 0;
+    if (totalRevenue) totalRevenue.textContent = `${stats.totalRevenue || 0}€`;
+  }
+
+  /**
+   * Affichage des bateaux
+   */
+  displayBoats(boats) {
+    const boatsGrid = document.getElementById('boats-grid');
+    const emptyMessage = document.getElementById('empty-message');
+    const errorMessage = document.getElementById('error-message');
+
+    if (!boatsGrid) return;
+
+    if (boats.length === 0) {
+      boatsGrid.style.display = 'none';
+      if (emptyMessage) emptyMessage.style.display = 'block';
+      if (errorMessage) errorMessage.style.display = 'none';
+      return;
+    }
+
+    boatsGrid.style.display = 'grid';
+    if (emptyMessage) emptyMessage.style.display = 'none';
+    if (errorMessage) errorMessage.style.display = 'none';
+
+    boatsGrid.innerHTML = boats.map(boat => this.createBoatCard(boat)).join('');
+  }
+
+  /**
+   * Création d'une carte de bateau
+   */
+  createBoatCard(boat) {
+    const statusClass = boat.status || 'available';
+    const statusText = this.getStatusText(boat.status);
+    const typeText = this.getTypeText(boat.type);
+    const mainImage = boat.images?.find(img => img.isMain)?.url || boat.images?.[0]?.url || '/public/boat-icon.svg';
+
+    return `
+      <div class="boat-management-card ${!boat.isActive ? 'inactive' : ''}" data-boat-id="${boat._id}">
+        <img src="${mainImage}" alt="${boat.name}" class="boat-card-image" onerror="this.src='/public/boat-icon.svg'">
+        <div class="boat-card-content">
+          <div class="boat-card-header">
+            <div>
+              <h3 class="boat-card-title">${boat.name}</h3>
+              <span class="boat-card-type">${typeText}</span>
+            </div>
+            <span class="boat-card-status ${statusClass}">${statusText}</span>
+          </div>
+          
+          <div class="boat-card-info">
+            <div class="boat-info-item">
+              <span class="boat-info-icon">👥</span>
+              <span>${boat.capacity?.maxPeople || 0} personnes</span>
+            </div>
+            <div class="boat-info-item">
+              <span class="boat-info-icon">📏</span>
+              <span>${boat.specifications?.length || 0}m</span>
+            </div>
+            <div class="boat-info-item">
+              <span class="boat-info-icon">💰</span>
+              <span>${boat.pricing?.dailyRate || 0}€/jour</span>
+            </div>
+            <div class="boat-info-item">
+              <span class="boat-info-icon">📍</span>
+              <span>${boat.location?.city || 'N/A'}</span>
+            </div>
+          </div>
+          
+          <div class="boat-card-actions">
+            <button class="boat-action-btn" onclick="window.app.editBoat('${boat._id}')">
+              <span>✏️</span>
+              Modifier
+            </button>
+            <button class="boat-action-btn" onclick="window.app.manageImages('${boat._id}')">
+              <span>🖼️</span>
+              Images
+            </button>
+            ${boat.isActive ? 
+              `<button class="boat-action-btn danger" onclick="window.app.deleteBoat('${boat._id}')">
+                <span>🗑️</span>
+                Supprimer
+              </button>` :
+              `<button class="boat-action-btn primary" onclick="window.app.restoreBoat('${boat._id}')">
+                <span>🔄</span>
+                Restaurer
+              </button>`
+            }
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  /**
+   * Obtention du texte du statut
+   */
+  getStatusText(status) {
+    const statusMap = {
+      'available': 'Disponible',
+      'booked': 'Réservé',
+      'maintenance': 'Maintenance',
+      'inactive': 'Inactif'
+    };
+    return statusMap[status] || 'Inconnu';
+  }
+
+  /**
+   * Obtention du texte du type
+   */
+  getTypeText(type) {
+    const typeMap = {
+      'sailboat': 'Voilier',
+      'motorboat': 'Bateau à moteur',
+      'catamaran': 'Catamaran',
+      'yacht': 'Yacht',
+      'other': 'Autre'
+    };
+    return typeMap[type] || type;
+  }
+
+  /**
+   * Filtrage des bateaux
+   */
+  async filterBoats() {
+    const status = document.getElementById('status-filter')?.value;
+    const type = document.getElementById('type-filter')?.value;
+    const search = document.getElementById('search-input')?.value;
+
+    try {
+      this.showLoadingState();
+      
+      const params = {};
+      if (status) params.status = status;
+      if (type) params.type = type;
+      if (search) params.search = search;
+
+      const response = await this.boatService.getOwnerBoats(params);
+      
+      if (response.success) {
+        this.displayBoats(response.data.boats);
+        this.updatePagination(response.data.pagination);
+      }
+    } catch (error) {
+      console.error('Erreur lors du filtrage:', error);
+      this.showErrorState('Erreur lors du filtrage des bateaux');
+    }
+  }
+
+  /**
+   * Recherche avec debounce
+   */
+  debounceSearch() {
+    clearTimeout(this.searchTimeout);
+    this.searchTimeout = setTimeout(() => {
+      this.filterBoats();
+    }, 500);
+  }
+
+  /**
+   * Définition du mode d'affichage
+   */
+  setViewMode(mode) {
+    const boatsGrid = document.getElementById('boats-grid');
+    const gridViewBtn = document.getElementById('grid-view-btn');
+    const listViewBtn = document.getElementById('list-view-btn');
+
+    if (boatsGrid) {
+      boatsGrid.className = mode === 'grid' ? 'boats-grid' : 'boats-grid list-view';
+    }
+
+    if (gridViewBtn) {
+      gridViewBtn.classList.toggle('active', mode === 'grid');
+    }
+    if (listViewBtn) {
+      listViewBtn.classList.toggle('active', mode === 'list');
+    }
+  }
+
+  /**
+   * Changement de page
+   */
+  async changePage(direction) {
+    // Implémentation de la pagination
+    console.log('Changement de page:', direction);
+  }
+
+  /**
+   * Mise à jour de la pagination
+   */
+  updatePagination(pagination) {
+    const paginationEl = document.getElementById('pagination');
+    const pageInfo = document.getElementById('page-info');
+    const prevBtn = document.getElementById('prev-page-btn');
+    const nextBtn = document.getElementById('next-page-btn');
+
+    if (!paginationEl || !pagination) return;
+
+    paginationEl.style.display = pagination.pages > 1 ? 'flex' : 'none';
+
+    if (pageInfo) {
+      pageInfo.textContent = `Page ${pagination.page} sur ${pagination.pages}`;
+    }
+
+    if (prevBtn) {
+      prevBtn.disabled = pagination.page <= 1;
+    }
+    if (nextBtn) {
+      nextBtn.disabled = pagination.page >= pagination.pages;
+    }
+  }
+
+  /**
+   * Édition d'un bateau
+   */
+  editBoat(boatId) {
+    this.uiManager.showNotification('Fonctionnalité d\'édition en cours de développement', 'info');
+    // TODO: Implémenter l'édition
+  }
+
+  /**
+   * Gestion des images d'un bateau
+   */
+  manageImages(boatId) {
+    this.uiManager.showNotification('Fonctionnalité de gestion d\'images en cours de développement', 'info');
+    // TODO: Implémenter la gestion des images
+  }
+
+  /**
+   * Suppression d'un bateau
+   */
+  async deleteBoat(boatId) {
+    if (!confirm('Êtes-vous sûr de vouloir supprimer ce bateau ?')) {
+      return;
+    }
+
+    try {
+      const response = await this.boatService.deleteBoat(boatId);
+      
+      if (response.success) {
+        this.uiManager.showNotification('Bateau supprimé avec succès', 'success');
+        await this.loadBoatManagementData();
+      } else {
+        throw new Error(response.message);
+      }
+    } catch (error) {
+      console.error('Erreur lors de la suppression:', error);
+      this.uiManager.showNotification(`Erreur: ${error.message}`, 'error');
+    }
+  }
+
+  /**
+   * Restauration d'un bateau
+   */
+  async restoreBoat(boatId) {
+    try {
+      const response = await this.boatService.restoreBoat(boatId);
+      
+      if (response.success) {
+        this.uiManager.showNotification('Bateau restauré avec succès', 'success');
+        await this.loadBoatManagementData();
+      } else {
+        throw new Error(response.message);
+      }
+    } catch (error) {
+      console.error('Erreur lors de la restauration:', error);
+      this.uiManager.showNotification(`Erreur: ${error.message}`, 'error');
+    }
   }
 }
 
