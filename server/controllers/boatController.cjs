@@ -226,20 +226,20 @@ exports.createBoat = async (req, res) => {
       type: req.body.type,
       category: req.body.category || 'standard',
       specifications: {
-        length: parseFloat(req.body['specifications[length]']) || 0,
-        width: parseFloat(req.body['specifications[width]']) || 0
+        length: parseFloat(req.body.specifications?.length || req.body['specifications[length]'] || 0),
+        width: parseFloat(req.body.specifications?.width || req.body['specifications[width]'] || 0)
       },
       capacity: {
-        maxPeople: parseInt(req.body['capacity[maxPeople]']) || 0
+        maxPeople: parseInt(req.body.capacity?.maxPeople || req.body['capacity[maxPeople]'] || 0)
       },
       location: {
-        city: req.body['location[city]'] || '',
-        marina: req.body['location[marina]'] || '',
-        country: req.body['location[country]'] || 'France'
+        city: req.body.location?.city || req.body['location[city]'] || '',
+        marina: req.body.location?.marina || req.body['location[marina]'] || '',
+        country: req.body.location?.country || req.body['location[country]'] || 'France'
       },
       pricing: {
-        dailyRate: parseFloat(req.body['pricing[dailyRate]']) || 0,
-        securityDeposit: parseFloat(req.body['pricing[securityDeposit]']) || 0
+        dailyRate: parseFloat(req.body.pricing?.dailyRate || req.body['pricing[dailyRate]'] || 0),
+        securityDeposit: parseFloat(req.body.pricing?.securityDeposit || req.body['pricing[securityDeposit]'] || 0)
       },
       owner: userId,
       status: 'available',
