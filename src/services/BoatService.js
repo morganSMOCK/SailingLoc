@@ -397,6 +397,163 @@ export class BoatService {
   }
 
   /**
+   * Mise à jour d'un bateau
+   * @param {string} boatId - ID du bateau à mettre à jour
+   * @param {Object} boatData - Données du bateau à mettre à jour
+   * @param {File[]} images - Nouvelles images (optionnel)
+   * @returns {Promise<Object>} Bateau mis à jour
+   */
+  async updateBoat(boatId, boatData, images = null) {
+    try {
+      const token = this.getAuthToken();
+      if (!token) {
+        throw new Error('Authentification requise');
+      }
+
+      const formData = new FormData();
+      
+      // Ajouter les données du bateau
+      Object.keys(boatData).forEach(key => {
+        if (boatData[key] !== undefined && boatData[key] !== null) {
+          if (typeof boatData[key] === 'object') {
+            formData.append(key, JSON.stringify(boatData[key]));
+          } else {
+            formData.append(key, boatData[key]);
+          }
+        }
+      });
+
+      // Ajouter les nouvelles images si présentes
+      if (images && images.length > 0) {
+        images.forEach(image => {
+          formData.append('images', image);
+        });
+      }
+
+      const response = await fetch(`${this.boatsEndpoint}/${boatId}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: formData
+      });
+
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || 'Erreur lors de la mise à jour du bateau');
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour du bateau:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Suppression d'un bateau
+   * @param {string} boatId - ID du bateau à supprimer
+   * @param {boolean} force - Forcer la suppression même avec des réservations actives
+   * @returns {Promise<Object>} Résultat de la suppression
+   */
+  async deleteBoat(boatId, force = false) {
+    try {
+      const token = this.getAuthToken();
+      if (!token) {
+        throw new Error('Authentification requise');
+      }
+
+      const queryParams = force ? '?force=true' : '';
+      const response = await fetch(`${this.boatsEndpoint}/${boatId}${queryParams}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || 'Erreur lors de la suppression du bateau');
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Erreur lors de la suppression du bateau:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Restauration d'un bateau supprimé
+   * @param {string} boatId - ID du bateau à restaurer
+   * @returns {Promise<Object>} Bateau restauré
+   */
+  async restoreBoat(boatId) {
+    try {
+      const token = this.getAuthToken();
+      if (!token) {
+        throw new Error('Authentification requise');
+      }
+
+      const response = await fetch(`${this.boatsEndpoint}/${boatId}/restore`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || 'Erreur lors de la restauration du bateau');
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Erreur lors de la restauration du bateau:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Définir une image comme principale
+   * @param {string} boatId - ID du bateau
+   * @param {string} imageId - ID de l'image à définir comme principale
+   * @returns {Promise<Object>} Résultat de l'opération
+   */
+  async setMainImage(boatId, imageId) {
+    try {
+      const token = this.getAuthToken();
+      if (!token) {
+        throw new Error('Authentification requise');
+      }
+
+      const response = await fetch(`${this.boatsEndpoint}/${boatId}/images/${imageId}/main`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || 'Erreur lors de la définition de l\'image principale');
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Erreur lors de la définition de l\'image principale:', error);
+      throw error;
+    }
+  }
+
+  /**
    * Récupération des types de bateaux disponibles
    * @returns {Array} Liste des types de bateaux
    */
