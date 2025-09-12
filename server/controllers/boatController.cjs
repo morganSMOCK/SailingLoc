@@ -3,6 +3,31 @@ const User = require('../models/User.cjs');
 const multer = require('multer');
 const path = require('path');
 
+// Mapping des valeurs enum anglaises vers françaises pour l'affichage
+const typeMappingToFrench = {
+  'sailboat': 'voilier',
+  'motorboat': 'bateau à moteur',
+  'catamaran': 'catamaran',
+  'yacht': 'yacht',
+  'other': 'autre'
+};
+
+const categoryMappingToFrench = {
+  'luxury': 'luxe',
+  'standard': 'standard',
+  'budget': 'budget'
+};
+
+// Fonction pour convertir les données du bateau en français
+const convertBoatToFrench = (boat) => {
+  const boatObj = boat.toObject ? boat.toObject() : boat;
+  return {
+    ...boatObj,
+    type: typeMappingToFrench[boatObj.type] || boatObj.type,
+    category: categoryMappingToFrench[boatObj.category] || boatObj.category
+  };
+};
+
 
 
 
@@ -37,7 +62,15 @@ exports.getAllBoats = async (req, res) => {
 
     // Filtrage par type de bateau
     if (type) {
-      query.type = type;
+      // Conversion du type français vers anglais pour la requête
+      const typeMapping = {
+        'voilier': 'sailboat',
+        'bateau à moteur': 'motorboat',
+        'catamaran': 'catamaran',
+        'yacht': 'yacht',
+        'autre': 'other'
+      };
+      query.type = typeMapping[type] || type;
     }
 
     // Filtrage par ville
@@ -47,7 +80,13 @@ exports.getAllBoats = async (req, res) => {
 
     // Filtrage par catégorie
     if (category) {
-      query.category = category;
+      // Conversion de la catégorie française vers anglaise pour la requête
+      const categoryMapping = {
+        'luxe': 'luxury',
+        'standard': 'standard',
+        'budget': 'budget'
+      };
+      query.category = categoryMapping[category] || category;
     }
 
     // Filtrage par prix
@@ -86,10 +125,13 @@ exports.getAllBoats = async (req, res) => {
     // Comptage total pour la pagination
     const total = await Boat.countDocuments(query);
 
+    // Conversion des bateaux en français
+    const boatsInFrench = boats.map(convertBoatToFrench);
+
     res.json({
       success: true,
       data: {
-        boats,
+        boats: boatsInFrench,
         pagination: {
           page: parseInt(page),
           limit: parseInt(limit),
@@ -140,9 +182,12 @@ exports.getBoatById = async (req, res) => {
       });
     }
 
+    // Conversion du bateau en français
+    const boatInFrench = convertBoatToFrench(boat);
+
     res.json({
       success: true,
-      data: { boat }
+      data: { boat: boatInFrench }
     });
 
   } catch (error) {
@@ -217,14 +262,29 @@ exports.createBoat = async (req, res) => {
         return fallback;
       }
     };
+
+    // Mapping des valeurs françaises vers les valeurs enum anglaises
+    const typeMapping = {
+      'voilier': 'sailboat',
+      'bateau à moteur': 'motorboat',
+      'catamaran': 'catamaran',
+      'yacht': 'yacht',
+      'autre': 'other'
+    };
+
+    const categoryMapping = {
+      'luxe': 'luxury',
+      'standard': 'standard',
+      'budget': 'budget'
+    };
     
 
     // Préparation des données du bateau
     const boatData = {
       name: req.body.name,
       description: req.body.description,
-      type: req.body.type,
-      category: req.body.category || 'standard',
+      type: typeMapping[req.body.type] || req.body.type,
+      category: categoryMapping[req.body.category] || req.body.category || 'standard',
       specifications: {
         length: parseFloat(req.body.specifications?.length || req.body['specifications[length]'] || 0),
         width: parseFloat(req.body.specifications?.width || req.body['specifications[width]'] || 0)
@@ -300,10 +360,13 @@ exports.createBoat = async (req, res) => {
 
     console.log('✅ [BOAT] Bateau créé avec succès:', boat._id);
 
+    // Conversion du bateau en français
+    const boatInFrench = convertBoatToFrench(boat);
+
     res.status(201).json({
       success: true,
       message: 'Bateau créé avec succès',
-      data: { boat }
+      data: { boat: boatInFrench }
     });
 
   } catch (error) {
@@ -351,17 +414,41 @@ exports.updateBoat = async (req, res) => {
       });
     }
 
+    // Conversion des données d'entrée françaises vers anglaises
+    const updateData = { ...req.body };
+    if (updateData.type) {
+      const typeMapping = {
+        'voilier': 'sailboat',
+        'bateau à moteur': 'motorboat',
+        'catamaran': 'catamaran',
+        'yacht': 'yacht',
+        'autre': 'other'
+      };
+      updateData.type = typeMapping[updateData.type] || updateData.type;
+    }
+    if (updateData.category) {
+      const categoryMapping = {
+        'luxe': 'luxury',
+        'standard': 'standard',
+        'budget': 'budget'
+      };
+      updateData.category = categoryMapping[updateData.category] || updateData.category;
+    }
+
     // Mise à jour du bateau
     const updatedBoat = await Boat.findByIdAndUpdate(
       id,
-      { $set: req.body },
+      { $set: updateData },
       { new: true, runValidators: true }
     ).populate('owner', 'firstName lastName email');
+
+    // Conversion du bateau en français
+    const boatInFrench = convertBoatToFrench(updatedBoat);
 
     res.json({
       success: true,
       message: 'Bateau mis à jour avec succès',
-      data: { boat: updatedBoat }
+      data: { boat: boatInFrench }
     });
 
   } catch (error) {
@@ -429,10 +516,13 @@ exports.getOwnerBoats = async (req, res) => {
 
     const total = await Boat.countDocuments({ owner: userId });
 
+    // Conversion des bateaux en français
+    const boatsInFrench = boats.map(convertBoatToFrench);
+
     res.json({
       success: true,
       data: {
-        boats,
+        boats: boatsInFrench,
         pagination: {
           page: parseInt(page),
           limit: parseInt(limit),
@@ -519,10 +609,13 @@ exports.searchNearby = async (req, res) => {
       }
     }).populate('owner', 'firstName lastName rating');
 
+    // Conversion des bateaux en français
+    const boatsInFrench = boats.map(convertBoatToFrench);
+
     res.json({
       success: true,
       data: {
-        boats,
+        boats: boatsInFrench,
         searchCenter: {
           latitude: parseFloat(latitude),
           longitude: parseFloat(longitude)
@@ -581,6 +674,12 @@ exports.getBoatStats = async (req, res) => {
       }
     ]);
 
+    // Conversion des types de bateaux en français dans les statistiques
+    const typeStatsInFrench = typeStats.map(stat => ({
+      ...stat,
+      _id: typeMappingToFrench[stat._id] || stat._id
+    }));
+
     res.json({
       success: true,
       data: {
@@ -592,7 +691,7 @@ exports.getBoatStats = async (req, res) => {
           totalBookings: 0,
           averageRating: 0
         },
-        byType: typeStats
+        byType: typeStatsInFrench
       }
     });
 
