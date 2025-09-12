@@ -149,28 +149,128 @@ exports.getBoatById = async (req, res) => {
 // Création d'un nouveau bateau (propriétaires uniquement)
 exports.createBoat = async (req, res) => {
   try {
+    console.log('🔐 [BOAT] Début de création de bateau');
+    console.log('🔐 [BOAT] req.user:', req.user);
+    
     const userId = req.user.userId;
+    console.log('🔐 [BOAT] User ID:', userId);
 
     // Vérifier que l'utilisateur est propriétaire ou admin
     const user = await User.findById(userId);
+    console.log('🔐 [BOAT] Utilisateur trouvé:', user ? { id: user._id, email: user.email, role: user.role } : 'Non trouvé');
+    
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'Utilisateur non trouvé'
+      });
+    }
+    
     if (!['owner', 'admin'].includes(user.role)) {
+      console.log('❌ [BOAT] Rôle insuffisant:', user.role);
       return res.status(403).json({
         success: false,
         message: 'Seuls les propriétaires peuvent ajouter des bateaux'
       });
     }
 
-    // Création du bateau avec le propriétaire
-    const boatData = {
-      ...req.body,
-      owner: userId
+    console.log('📝 [BOAT] Création d\'un nouveau bateau par:', user.email);
+    console.log('📊 [BOAT] Données reçues:', req.body);
+    console.log('📁 [BOAT] Fichiers reçus:', req.files ? req.files.length : 0);
+    console.log('🔍 [BOAT] Headers:', req.headers);
+    console.log('🔍 [BOAT] Content-Type:', req.get('Content-Type'));
+
+    // Helper pour parser un champ qui peut être objet ou JSON string
+    const parseField = (value, fallback = {}) => {
+      if (value === undefined || value === null || value === '') return fallback;
+      if (typeof value === 'object') return value;
+      try {
+        return JSON.parse(value);
+      } catch (_e) {
+        return fallback;
+      }
     };
 
+    // Préparation des données du bateau
+    const boatData = {
+      name: req.body.name,
+      description: req.body.description,
+      type: req.body.type,
+      category: req.body.category || 'standard',
+      specifications: {
+        length: parseFloat(req.body['specifications[length]']) || 0,
+        width: parseFloat(req.body['specifications[width]']) || 0
+      },
+      capacity: {
+        maxPeople: parseInt(req.body['capacity[maxPeople]']) || 0
+      },
+      location: {
+        city: req.body['location[city]'] || '',
+        marina: req.body['location[marina]'] || '',
+        country: req.body['location[country]'] || 'France'
+      },
+      pricing: {
+        dailyRate: parseInt(req.body['pricing[dailyRate]']) || 0,
+        securityDeposit: parseInt(req.body['pricing[securityDeposit]']) || 0
+      },
+      owner: userId,
+      status: 'available',
+      isActive: true
+    };
+
+    // Gestion des images si présentes
+    if (req.files && req.files.length > 0) {
+      boatData.images = req.files.map(file => ({
+        url: `/uploads/boats/${file.filename}`,
+        filename: file.filename,
+        originalName: file.originalname,
+        size: file.size,
+        mimetype: file.mimetype
+      }));
+      
+      // Image principale (première image)
+      if (boatData.images.length > 0) {
+        boatData.mainImage = boatData.images[0].url;
+      }
+    }
+
+    console.log('🚤 [BOAT] Données finales du bateau:', boatData);
+
+    // Validation des données avant création
+    console.log('🔍 [BOAT] Validation des données...');
+    if (!boatData.name) {
+      throw new Error('Le nom du bateau est obligatoire');
+    }
+    if (!boatData.description) {
+      throw new Error('La description est obligatoire');
+    }
+    if (!boatData.type) {
+      throw new Error('Le type de bateau est obligatoire');
+    }
+    if (!boatData.specifications.length || boatData.specifications.length <= 0) {
+      throw new Error('La longueur doit être positive');
+    }
+    if (!boatData.capacity.maxPeople || boatData.capacity.maxPeople <= 0) {
+      throw new Error('Le nombre maximum de personnes doit être positif');
+    }
+    if (!boatData.location.city) {
+      throw new Error('La ville est obligatoire');
+    }
+    if (!boatData.location.marina) {
+      throw new Error('Le port d\'attache est obligatoire');
+    }
+    if (!boatData.pricing.dailyRate || boatData.pricing.dailyRate <= 0) {
+      throw new Error('Le tarif journalier doit être positif');
+    }
+
+    console.log('✅ [BOAT] Validation réussie, création du bateau...');
     const boat = new Boat(boatData);
     await boat.save();
 
     // Peupler les informations du propriétaire
     await boat.populate('owner', 'firstName lastName email');
+
+    console.log('✅ [BOAT] Bateau créé avec succès:', boat._id);
 
     res.status(201).json({
       success: true,
@@ -179,10 +279,22 @@ exports.createBoat = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Erreur lors de la création du bateau:', error);
+    console.error('❌ [BOAT] Erreur lors de la création du bateau:', error);
+    if (error.name === 'ValidationError') {
+      const errors = Object.entries(error.errors || {}).reduce((acc, [key, val]) => {
+        acc[key] = val.message;
+        return acc;
+      }, {});
+      return res.status(400).json({
+        success: false,
+        message: 'Données invalides pour la création du bateau',
+        errors
+      });
+    }
     res.status(500).json({
       success: false,
-      message: 'Erreur lors de la création du bateau'
+      message: 'Erreur lors de la création du bateau',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
   }
 };
