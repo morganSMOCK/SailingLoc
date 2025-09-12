@@ -27,6 +27,7 @@ class SailingLocApp {
     this.currentPage = 1;
     this.boatsPerPage = 12;
     this.currentFilters = {};
+    this.selectedImages = [];
     
     // Initialisation de l'application
     this.init();
@@ -69,23 +70,29 @@ class SailingLocApp {
    */
   async checkAuthStatus() {
     const token = this.storageManager.getToken();
+    console.log('🔐 [AUTH] Token trouvé:', token ? 'Oui' : 'Non');
     
     if (token) {
       try {
         // Vérification de la validité du token
         const response = await this.authService.verifyToken();
+        console.log('🔐 [AUTH] Vérification token:', response.success ? 'Valide' : 'Invalide');
         
         if (response.success) {
           this.currentUser = response.data.user;
+          console.log('🔐 [AUTH] Utilisateur connecté:', this.currentUser.email, 'Rôle:', this.currentUser.role);
           this.updateUIForAuthenticatedUser();
         } else {
           // Token invalide, nettoyage
+          console.log('🔐 [AUTH] Token invalide, nettoyage...');
           this.storageManager.clearAuth();
         }
       } catch (error) {
         console.error('Erreur lors de la vérification du token:', error);
         this.storageManager.clearAuth();
       }
+    } else {
+      console.log('🔐 [AUTH] Aucun token trouvé, utilisateur non connecté');
     }
   }
 
@@ -342,6 +349,9 @@ class SailingLocApp {
     if (addBoatForm) {
       addBoatForm.addEventListener('submit', (e) => this.handleAddBoat(e));
     }
+    
+    // Gestion de l'upload d'images
+    this.setupImageUpload();
     
     // Bouton de changement de mot de passe
     const changePasswordBtn = document.getElementById('change-password-btn');
@@ -1486,6 +1496,166 @@ class SailingLocApp {
       });
       
       sections.forEach(section => observer.observe(section));
+    }
+  }
+
+  /**
+   * Configuration de l'upload d'images
+   */
+  setupImageUpload() {
+    const fileInput = document.getElementById('boat-image-input');
+    const previewContainer = document.getElementById('image-preview-container');
+    
+    if (!fileInput || !previewContainer) return;
+    
+    // Changement de fichiers
+    fileInput.addEventListener('change', (e) => {
+      this.handleImageSelection(e.target.files);
+    });
+  }
+  
+  /**
+   * Gestion de la sélection d'images
+   */
+  handleImageSelection(files) {
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+    
+    Array.from(files).forEach(file => {
+      // Vérification de la taille
+      if (file.size > maxSize) {
+        this.uiManager.showNotification(`L'image ${file.name} est trop volumineuse (max 5MB)`, 'error');
+        return;
+      }
+      
+      // Vérification du type
+      if (!allowedTypes.includes(file.type)) {
+        this.uiManager.showNotification(`Format non supporté pour ${file.name}`, 'error');
+        return;
+      }
+      
+      // Ajout de l'image
+      this.selectedImages.push(file);
+      this.addImagePreview(file);
+    });
+  }
+  
+  /**
+   * Ajout d'un aperçu d'image
+   */
+  addImagePreview(file) {
+    const previewContainer = document.getElementById('image-preview-container');
+    const reader = new FileReader();
+    
+    reader.onload = (e) => {
+      const preview = document.createElement('div');
+      preview.className = 'image-preview';
+      preview.innerHTML = `
+        <img src="${e.target.result}" alt="Aperçu">
+        <button type="button" class="remove-image" onclick="app.removeImage('${file.name}')">×</button>
+      `;
+      previewContainer.appendChild(preview);
+    };
+    
+    reader.readAsDataURL(file);
+  }
+  
+  /**
+   * Suppression d'une image
+   */
+  removeImage(fileName) {
+    this.selectedImages = this.selectedImages.filter(file => file.name !== fileName);
+    this.updateImagePreviews();
+  }
+  
+  /**
+   * Mise à jour des aperçus d'images
+   */
+  updateImagePreviews() {
+    const previewContainer = document.getElementById('image-preview-container');
+    previewContainer.innerHTML = '';
+    
+    this.selectedImages.forEach(file => {
+      this.addImagePreview(file);
+    });
+  }
+  
+  /**
+   * Gestion de l'ajout de bateau
+   */
+  async handleAddBoat(e) {
+    e.preventDefault();
+    
+    if (!this.currentUser) {
+      this.uiManager.showNotification('Vous devez être connecté pour ajouter un bateau', 'error');
+      return;
+    }
+    
+    const formData = new FormData();
+    
+    // Données du formulaire
+    formData.append('name', document.getElementById('boat-name').value);
+    formData.append('type', document.getElementById('boat-type').value);
+    formData.append('description', document.getElementById('boat-description').value);
+    formData.append('category', document.getElementById('boat-category').value);
+    // Spécifications
+    formData.append('specifications[length]', document.getElementById('boat-length').value);
+    formData.append('specifications[width]', document.getElementById('boat-width').value);
+    
+    // Capacité
+    formData.append('capacity[maxPeople]', document.getElementById('boat-capacity').value);
+    
+    // Localisation
+    formData.append('location[city]', document.getElementById('boat-city').value);
+    formData.append('location[marina]', document.getElementById('boat-marina').value);
+    formData.append('location[country]', 'France');
+    
+    // Tarification
+    formData.append('pricing[dailyRate]', document.getElementById('boat-daily-rate').value);
+    formData.append('pricing[securityDeposit]', document.getElementById('boat-security-deposit').value);
+    
+    // Images
+    if (this.selectedImages && this.selectedImages.length > 0) {
+      this.selectedImages.forEach((file, index) => {
+        formData.append('images', file);
+      });
+    }
+    
+    try {
+      this.uiManager.showLoading('add-boat-form');
+      
+      const response = await fetch(`${this.boatService.boatsEndpoint}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${this.boatService.getAuthToken()}`
+        },
+        body: formData
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok && data.success) {
+        this.uiManager.showNotification('Bateau ajouté avec succès !', 'success');
+        this.uiManager.hideModal('add-boat-modal');
+        
+        // Reset du formulaire
+        document.getElementById('add-boat-form').reset();
+        this.selectedImages = [];
+        this.updateImagePreviews();
+        
+        // Recharger la liste des bateaux si le modal est ouvert
+        if (document.getElementById('my-boats-modal').classList.contains('active')) {
+          await this.loadOwnerBoats();
+        }
+      } else {
+        throw new Error(data.message || 'Erreur lors de l\'ajout du bateau');
+      }
+      
+    } catch (error) {
+      console.error('Erreur lors de l\'ajout du bateau:', error);
+      this.uiManager.showNotification(`Erreur: ${error.message}`, 'error');
+    } finally {
+      this.uiManager.hideLoading('add-boat-form');
     }
   }
 
