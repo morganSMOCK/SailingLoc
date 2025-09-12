@@ -68,6 +68,7 @@ exports.getAllBoats = async (req, res) => {
         'bateau à moteur': 'motorboat',
         'bateau_moteur': 'motorboat', // Variante avec underscore
         'semi_rigide': 'motorboat', // Semi-rigide = bateau à moteur
+        'peniche': 'motorboat', // Péniche = bateau à moteur
         'catamaran': 'catamaran',
         'yacht': 'yacht',
         'autre': 'other'
@@ -271,6 +272,7 @@ exports.createBoat = async (req, res) => {
       'bateau à moteur': 'motorboat',
       'bateau_moteur': 'motorboat', // Variante avec underscore
       'semi_rigide': 'motorboat', // Semi-rigide = bateau à moteur
+      'peniche': 'motorboat', // Péniche = bateau à moteur
       'catamaran': 'catamaran',
       'yacht': 'yacht',
       'autre': 'other'
@@ -279,6 +281,7 @@ exports.createBoat = async (req, res) => {
     console.log('🔍 [BOAT] Mapping des types:', typeMapping);
     console.log('🔍 [BOAT] Test mapping bateau_moteur:', typeMapping['bateau_moteur']);
     console.log('🔍 [BOAT] Test mapping semi_rigide:', typeMapping['semi_rigide']);
+    console.log('🔍 [BOAT] Test mapping peniche:', typeMapping['peniche']);
 
     const categoryMapping = {
       'luxe': 'luxury',
@@ -435,6 +438,7 @@ exports.updateBoat = async (req, res) => {
         'bateau à moteur': 'motorboat',
         'bateau_moteur': 'motorboat', // Variante avec underscore
         'semi_rigide': 'motorboat', // Semi-rigide = bateau à moteur
+        'peniche': 'motorboat', // Péniche = bateau à moteur
         'catamaran': 'catamaran',
         'yacht': 'yacht',
         'autre': 'other'
