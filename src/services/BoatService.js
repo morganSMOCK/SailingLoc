@@ -287,6 +287,51 @@ export class BoatService {
   }
 
   /**
+   * Récupération des bateaux du propriétaire connecté
+   * @param {Object} params - Paramètres de filtrage
+   * @returns {Promise<Object>} Liste des bateaux du propriétaire
+   */
+  async getOwnerBoats(params = {}) {
+    try {
+      const token = this.getAuthToken();
+      
+      if (!token) {
+        throw new Error('Authentification requise');
+      }
+
+      // Construction de l'URL avec les paramètres de requête
+      const queryParams = new URLSearchParams();
+      
+      Object.keys(params).forEach(key => {
+        if (params[key] !== undefined && params[key] !== '') {
+          queryParams.append(key, params[key]);
+        }
+      });
+
+      const url = `${this.boatsEndpoint}/owner/my-boats?${queryParams.toString()}`;
+      
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || 'Erreur lors de la récupération des bateaux du propriétaire');
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Erreur lors de la récupération des bateaux du propriétaire:', error);
+      throw error;
+    }
+  }
+
+  /**
    * Récupération des statistiques des bateaux
    * @returns {Promise<Object>} Statistiques
    */
