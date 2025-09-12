@@ -1585,64 +1585,64 @@ class SailingLocApp {
    */
   async handleAddBoat(e) {
     e.preventDefault();
-    
+  
     if (!this.currentUser) {
       this.uiManager.showNotification('Vous devez être connecté pour ajouter un bateau', 'error');
       return;
     }
-    
+  
     const formData = new FormData();
-    
+  
     // Données du formulaire
-    formData.append('name', document.getElementById('boat-name').value);
+    formData.append('name', document.getElementById('boat-name').value.trim());
     formData.append('type', document.getElementById('boat-type').value);
-    formData.append('description', document.getElementById('boat-description').value);
+    formData.append('description', document.getElementById('boat-description').value.trim());
     formData.append('category', document.getElementById('boat-category').value);
-    // Spécifications
-    formData.append('specifications[length]', document.getElementById('boat-length').value);
-    formData.append('specifications[width]', document.getElementById('boat-width').value);
-    
-    // Capacité
-    formData.append('capacity[maxPeople]', document.getElementById('boat-capacity').value);
-    
+  
+    // Spécifications (conversion en float)
+    formData.append('specifications[length]', parseFloat(document.getElementById('boat-length').value) || 0);
+    formData.append('specifications[width]', parseFloat(document.getElementById('boat-width').value) || 0);
+  
+    // Capacité (conversion en int)
+    formData.append('capacity[maxPeople]', parseInt(document.getElementById('boat-capacity').value, 10) || 0);
+  
     // Localisation
-    formData.append('location[city]', document.getElementById('boat-city').value);
-    formData.append('location[marina]', document.getElementById('boat-marina').value);
+    formData.append('location[city]', document.getElementById('boat-city').value.trim());
+    formData.append('location[marina]', document.getElementById('boat-marina').value.trim());
     formData.append('location[country]', 'France');
-    
-    // Tarification
-    formData.append('pricing[dailyRate]', document.getElementById('boat-daily-rate').value);
-    formData.append('pricing[securityDeposit]', document.getElementById('boat-security-deposit').value);
-    
+  
+    // Tarification (conversion en float)
+    formData.append('pricing[dailyRate]', parseFloat(document.getElementById('boat-daily-rate').value) || 0);
+    formData.append('pricing[securityDeposit]', parseFloat(document.getElementById('boat-security-deposit').value) || 0);
+  
     // Images
     if (this.selectedImages && this.selectedImages.length > 0) {
-      this.selectedImages.forEach((file, index) => {
-        formData.append('images', file);
-      });
+      this.selectedImages.forEach(file => formData.append('images', file));
     }
-    
+  
     try {
       this.uiManager.showLoading('add-boat-form');
-      
+  
       const response = await fetch(`${this.boatService.boatsEndpoint}`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${this.boatService.getAuthToken()}`
+          // Ne pas définir Content-Type pour FormData
         },
         body: formData
       });
-      
+  
       const data = await response.json();
-      
+  
       if (response.ok && data.success) {
         this.uiManager.showNotification('Bateau ajouté avec succès !', 'success');
         this.uiManager.hideModal('add-boat-modal');
-        
+  
         // Reset du formulaire
         document.getElementById('add-boat-form').reset();
         this.selectedImages = [];
         this.updateImagePreviews();
-        
+  
         // Recharger la liste des bateaux si le modal est ouvert
         if (document.getElementById('my-boats-modal').classList.contains('active')) {
           await this.loadOwnerBoats();
@@ -1650,7 +1650,6 @@ class SailingLocApp {
       } else {
         throw new Error(data.message || 'Erreur lors de l\'ajout du bateau');
       }
-      
     } catch (error) {
       console.error('Erreur lors de l\'ajout du bateau:', error);
       this.uiManager.showNotification(`Erreur: ${error.message}`, 'error');
@@ -1658,6 +1657,7 @@ class SailingLocApp {
       this.uiManager.hideLoading('add-boat-form');
     }
   }
+  
 
   /**
    * Initiation d'une réservation
