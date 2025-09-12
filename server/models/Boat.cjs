@@ -127,6 +127,22 @@ const boatSchema = new mongoose.Schema({
       type: String,
       required: true
     },
+    filename: {
+      type: String,
+      required: true
+    },
+    originalName: {
+      type: String,
+      required: true
+    },
+    size: {
+      type: Number,
+      required: true
+    },
+    mimetype: {
+      type: String,
+      required: true
+    },
     isMain: {
       type: Boolean,
       default: false
@@ -151,6 +167,13 @@ const boatSchema = new mongoose.Schema({
     endDate: {
       type: Date
     }
+  },
+  deletedAt: {
+    type: Date
+  },
+  deletedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
   }
 }, {
   timestamps: true,
