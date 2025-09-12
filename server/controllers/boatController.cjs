@@ -2,9 +2,6 @@ const Boat = require('../models/Boat.cjs');
 const User = require('../models/User.cjs');
 const multer = require('multer');
 const path = require('path');
-const express = require('express');
-const router = express.Router();
-const { createBoat } = require('../controllers/boatController.cjs'); // Chemin exact
 
 
 
@@ -157,12 +154,7 @@ exports.getBoatById = async (req, res) => {
   }
 };
 
-// Route pour créer un bateau avec images
-router.post('/api/boats', upload.array('images', 10), createBoat);
-
-module.exports = router;
-
-// Destination et nom des fichiers
+// Configuration Multer pour l'upload d'images
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, 'uploads/boats'),
   filename: (req, file, cb) => {
@@ -180,8 +172,6 @@ const upload = multer({
     else cb(new Error('Seuls les fichiers JPG, PNG et WebP sont autorisés'));
   }
 });
-
-module.exports = upload;
 
 // Création d'un nouveau bateau (propriétaires uniquement)
 exports.createBoat = async (req, res) => {
@@ -614,3 +604,6 @@ exports.getBoatStats = async (req, res) => {
     });
   }
 };
+
+// Export de la configuration Multer pour les routes
+module.exports.upload = upload;
