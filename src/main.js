@@ -1600,11 +1600,14 @@ class SailingLocApp {
     formData.append('category', document.getElementById('boat-category').value);
   
     // Spécifications (conversion en float)
-    formData.append('specifications[length]', parseFloat(document.getElementById('boat-length').value) || 0);
-    formData.append('specifications[width]', parseFloat(document.getElementById('boat-width').value) || 0);
+    const length = parseFloat(document.getElementById('boat-length').value);
+    const width = parseFloat(document.getElementById('boat-width').value);
+    formData.append('specifications[length]', isNaN(length) ? '' : length);
+    formData.append('specifications[width]', isNaN(width) ? '' : width);
   
     // Capacité (conversion en int)
-    formData.append('capacity[maxPeople]', parseInt(document.getElementById('boat-capacity').value, 10) || 0);
+    const maxPeople = parseInt(document.getElementById('boat-capacity').value, 10);
+    formData.append('capacity[maxPeople]', isNaN(maxPeople) ? '' : maxPeople);
   
     // Localisation
     formData.append('location[city]', document.getElementById('boat-city').value.trim());
@@ -1612,8 +1615,10 @@ class SailingLocApp {
     formData.append('location[country]', 'France');
   
     // Tarification (conversion en float)
-    formData.append('pricing[dailyRate]', parseFloat(document.getElementById('boat-daily-rate').value) || 0);
-    formData.append('pricing[securityDeposit]', parseFloat(document.getElementById('boat-security-deposit').value) || 0);
+    const dailyRate = parseFloat(document.getElementById('boat-daily-rate').value);
+    const securityDeposit = parseFloat(document.getElementById('boat-security-deposit').value);
+    formData.append('pricing[dailyRate]', isNaN(dailyRate) ? '' : dailyRate);
+    formData.append('pricing[securityDeposit]', isNaN(securityDeposit) ? '' : securityDeposit);
   
     // Images
     if (this.selectedImages && this.selectedImages.length > 0) {

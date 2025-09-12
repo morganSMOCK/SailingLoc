@@ -238,8 +238,8 @@ exports.createBoat = async (req, res) => {
         country: req.body['location[country]'] || 'France'
       },
       pricing: {
-        dailyRate: parseInt(req.body['pricing[dailyRate]']) || 0,
-        securityDeposit: parseInt(req.body['pricing[securityDeposit]']) || 0
+        dailyRate: parseFloat(req.body['pricing[dailyRate]']) || 0,
+        securityDeposit: parseFloat(req.body['pricing[securityDeposit]']) || 0
       },
       owner: userId,
       status: 'available',
@@ -266,29 +266,29 @@ exports.createBoat = async (req, res) => {
 
     // Validation des données avant création
     console.log('🔍 [BOAT] Validation des données...');
-    if (!boatData.name) {
+IX DE LAJOUT    if (!boatData.name || boatData.name.trim() === '') {
       throw new Error('Le nom du bateau est obligatoire');
     }
-    if (!boatData.description) {
+    if (!boatData.description || boatData.description.trim() === '') {
       throw new Error('La description est obligatoire');
     }
-    if (!boatData.type) {
+    if (!boatData.type || boatData.type.trim() === '') {
       throw new Error('Le type de bateau est obligatoire');
     }
     if (!boatData.specifications.length || boatData.specifications.length <= 0) {
-      throw new Error('La longueur doit être positive');
+      throw new Error('La longueur du bateau est obligatoire et doit être positive');
     }
     if (!boatData.capacity.maxPeople || boatData.capacity.maxPeople <= 0) {
-      throw new Error('Le nombre maximum de personnes doit être positif');
+      throw new Error('Le nombre maximum de personnes est obligatoire et doit être positif');
     }
-    if (!boatData.location.city) {
+    if (!boatData.location.city || boatData.location.city.trim() === '') {
       throw new Error('La ville est obligatoire');
     }
-    if (!boatData.location.marina) {
+    if (!boatData.location.marina || boatData.location.marina.trim() === '') {
       throw new Error('Le port d\'attache est obligatoire');
     }
     if (!boatData.pricing.dailyRate || boatData.pricing.dailyRate <= 0) {
-      throw new Error('Le tarif journalier doit être positif');
+      throw new Error('Le tarif journalier est obligatoire et doit être positif');
     }
 
     console.log('✅ [BOAT] Validation réussie, création du bateau...');
@@ -604,6 +604,4 @@ exports.getBoatStats = async (req, res) => {
     });
   }
 };
-
-// Export de la configuration Multer pour les routes
 module.exports.upload = upload;
