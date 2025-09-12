@@ -66,6 +66,7 @@ exports.getAllBoats = async (req, res) => {
       const typeMapping = {
         'voilier': 'sailboat',
         'bateau à moteur': 'motorboat',
+        'bateau_moteur': 'motorboat', // Variante avec underscore
         'catamaran': 'catamaran',
         'yacht': 'yacht',
         'autre': 'other'
@@ -267,6 +268,7 @@ exports.createBoat = async (req, res) => {
     const typeMapping = {
       'voilier': 'sailboat',
       'bateau à moteur': 'motorboat',
+      'bateau_moteur': 'motorboat', // Variante avec underscore
       'catamaran': 'catamaran',
       'yacht': 'yacht',
       'autre': 'other'
@@ -420,6 +422,7 @@ exports.updateBoat = async (req, res) => {
       const typeMapping = {
         'voilier': 'sailboat',
         'bateau à moteur': 'motorboat',
+        'bateau_moteur': 'motorboat', // Variante avec underscore
         'catamaran': 'catamaran',
         'yacht': 'yacht',
         'autre': 'other'
