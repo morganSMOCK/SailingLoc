@@ -2220,8 +2220,675 @@ textarea:focus-visible {
   transform: scale(1.1);
 }
 
+/* Styles pour la gestion des bateaux */
+.page-header {
+  background: var(--gradient-hero);
+  color: var(--white);
+  padding: var(--space-4xl) 0;
+  text-align: center;
+  margin-bottom: var(--space-2xl);
+}
+
+.page-header h1 {
+  font-size: var(--text-4xl);
+  font-weight: 700;
+  margin-bottom: var(--space-md);
+}
+
+.page-header p {
+  font-size: var(--text-lg);
+  opacity: 0.9;
+  margin-bottom: var(--space-xl);
+}
+
+.filters-section {
+  background: var(--white);
+  padding: var(--space-xl);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  margin-bottom: var(--space-xl);
+}
+
+.filters-row {
+  display: flex;
+  gap: var(--space-lg);
+  align-items: end;
+  flex-wrap: wrap;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.filter-group label {
+  font-weight: 600;
+  color: var(--gray-700);
+  font-size: var(--text-sm);
+}
+
+.filter-select {
+  padding: var(--space-sm) var(--space-md);
+  border: 2px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  background: var(--white);
+  transition: var(--transition);
+  min-width: 150px;
+}
+
+.filter-select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.1);
+}
+
+.search-group {
+  display: flex;
+  gap: var(--space-sm);
+  flex: 1;
+  min-width: 300px;
+}
+
+.search-input {
+  flex: 1;
+  padding: var(--space-sm) var(--space-md);
+  border: 2px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  transition: var(--transition);
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.1);
+}
+
+.stats-section {
+  margin-bottom: var(--space-2xl);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-lg);
+}
+
+.stat-card {
+  background: var(--white);
+  padding: var(--space-xl);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  transition: var(--transition);
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.stat-icon {
+  font-size: var(--text-3xl);
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--gradient-button);
+  border-radius: var(--radius-lg);
+  color: var(--white);
+}
+
+.stat-content h3 {
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  color: var(--gray-900);
+  margin-bottom: var(--space-xs);
+}
+
+.stat-content p {
+  color: var(--gray-600);
+  font-size: var(--text-sm);
+}
+
+.boats-section {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+}
+
+.boats-header {
+  padding: var(--space-xl);
+  border-bottom: 1px solid var(--gray-200);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.boats-header h2 {
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  color: var(--gray-900);
+}
+
+.view-controls {
+  display: flex;
+  gap: var(--space-sm);
+}
+
+.view-btn {
+  padding: var(--space-sm);
+  border: 2px solid var(--gray-200);
+  background: var(--white);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: var(--transition);
+  color: var(--gray-600);
+}
+
+.view-btn.active,
+.view-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: rgba(0, 102, 255, 0.05);
+}
+
+.boat-management-card {
+  background: var(--white);
+  border: 2px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: var(--transition);
+  position: relative;
+}
+
+.boat-management-card:hover {
+  border-color: var(--primary);
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+.boat-management-card.inactive {
+  opacity: 0.6;
+  border-color: var(--gray-300);
+}
+
+.boat-card-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  background: var(--gray-100);
+}
+
+.boat-card-content {
+  padding: var(--space-lg);
+}
+
+.boat-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  margin-bottom: var(--space-md);
+}
+
+.boat-card-title {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--gray-900);
+  margin-bottom: var(--space-xs);
+}
+
+.boat-card-type {
+  font-size: var(--text-sm);
+  color: var(--gray-600);
+  background: var(--gray-100);
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-sm);
+}
+
+.boat-card-status {
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.boat-card-status.available {
+  background: rgba(34, 197, 94, 0.1);
+  color: #16a34a;
+}
+
+.boat-card-status.booked {
+  background: rgba(251, 191, 36, 0.1);
+  color: #d97706;
+}
+
+.boat-card-status.maintenance {
+  background: rgba(239, 68, 68, 0.1);
+  color: #dc2626;
+}
+
+.boat-card-status.inactive {
+  background: rgba(107, 114, 128, 0.1);
+  color: #6b7280;
+}
+
+.boat-card-info {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-lg);
+}
+
+.boat-info-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-size: var(--text-sm);
+  color: var(--gray-600);
+}
+
+.boat-info-icon {
+  width: 16px;
+  height: 16px;
+  color: var(--primary);
+}
+
+.boat-card-actions {
+  display: flex;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+}
+
+.boat-action-btn {
+  flex: 1;
+  padding: var(--space-sm) var(--space-md);
+  border: 2px solid var(--gray-200);
+  background: var(--white);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+}
+
+.boat-action-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: rgba(0, 102, 255, 0.05);
+}
+
+.boat-action-btn.danger:hover {
+  border-color: #dc2626;
+  color: #dc2626;
+  background: rgba(220, 38, 38, 0.05);
+}
+
+.boat-action-btn.primary {
+  background: var(--primary);
+  color: var(--white);
+  border-color: var(--primary);
+}
+
+.boat-action-btn.primary:hover {
+  background: var(--primary-dark);
+  border-color: var(--primary-dark);
+}
+
+/* Messages d'état */
+.loading-message,
+.error-message,
+.empty-message {
+  text-align: center;
+  padding: var(--space-4xl);
+  color: var(--gray-600);
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid var(--gray-200);
+  border-top: 4px solid var(--primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto var(--space-lg);
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.error-icon,
+.empty-icon {
+  font-size: var(--text-4xl);
+  margin-bottom: var(--space-lg);
+}
+
+.empty-message h3 {
+  font-size: var(--text-xl);
+  color: var(--gray-800);
+  margin-bottom: var(--space-md);
+}
+
+/* Pagination */
+.pagination {
+  padding: var(--space-xl);
+  border-top: 1px solid var(--gray-200);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-lg);
+}
+
+.page-info {
+  font-size: var(--text-sm);
+  color: var(--gray-600);
+}
+
+/* Modals */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: var(--transition);
+}
+
+.modal.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal-content {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-2xl);
+  max-width: 500px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  transform: scale(0.9);
+  transition: var(--transition);
+}
+
+.modal.active .modal-content {
+  transform: scale(1);
+}
+
+.modal-content.large {
+  max-width: 800px;
+}
+
+.modal-header {
+  padding: var(--space-xl);
+  border-bottom: 1px solid var(--gray-200);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header h2 {
+  font-size: var(--text-xl);
+  font-weight: 700;
+  color: var(--gray-900);
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: var(--text-2xl);
+  color: var(--gray-400);
+  cursor: pointer;
+  padding: var(--space-sm);
+  border-radius: var(--radius-sm);
+  transition: var(--transition);
+}
+
+.modal-close:hover {
+  background: var(--gray-100);
+  color: var(--gray-600);
+}
+
+.modal-body {
+  padding: var(--space-xl);
+}
+
+.modal-footer {
+  padding: var(--space-xl);
+  border-top: 1px solid var(--gray-200);
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-md);
+}
+
+/* Gestion des images */
+.images-section {
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.images-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+}
+
+.image-item {
+  position: relative;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  aspect-ratio: 1;
+}
+
+.image-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.image-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  opacity: 0;
+  transition: var(--transition);
+}
+
+.image-item:hover .image-overlay {
+  opacity: 1;
+}
+
+.image-actions {
+  display: flex;
+  gap: var(--space-sm);
+}
+
+.image-action-btn {
+  padding: var(--space-sm);
+  background: var(--white);
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: var(--transition);
+  color: var(--gray-600);
+}
+
+.image-action-btn:hover {
+  background: var(--primary);
+  color: var(--white);
+}
+
+.image-action-btn.danger:hover {
+  background: #dc2626;
+}
+
+.main-image-badge {
+  position: absolute;
+  top: var(--space-sm);
+  left: var(--space-sm);
+  background: var(--primary);
+  color: var(--white);
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-xs);
+  font-weight: 600;
+}
+
+.add-images-section {
+  text-align: center;
+  padding: var(--space-lg);
+  border: 2px dashed var(--gray-300);
+  border-radius: var(--radius-md);
+  background: var(--gray-50);
+}
+
+/* Formulaires */
+.form-group {
+  margin-bottom: var(--space-lg);
+}
+
+.form-group label {
+  display: block;
+  font-weight: 600;
+  color: var(--gray-700);
+  margin-bottom: var(--space-sm);
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: var(--space-sm) var(--space-md);
+  border: 2px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  transition: var(--transition);
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.1);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+}
+
+.checkbox-group {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
+}
+
+.checkbox-group input[type="checkbox"] {
+  width: auto;
+  margin: 0;
+}
+
+.warning-icon {
+  font-size: var(--text-3xl);
+  text-align: center;
+  margin-bottom: var(--space-lg);
+}
+
+.delete-warning {
+  background: rgba(251, 191, 36, 0.1);
+  border: 1px solid rgba(251, 191, 36, 0.3);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  margin: var(--space-md) 0;
+}
+
+.active-bookings {
+  margin-top: var(--space-sm);
+}
+
+.booking-item {
+  background: var(--white);
+  padding: var(--space-sm);
+  border-radius: var(--radius-sm);
+  margin-bottom: var(--space-xs);
+  font-size: var(--text-sm);
+}
+
 @media (max-width: 768px) {
   .boat-details-content {
     grid-template-columns: 1fr;
+  }
+
+  /* Responsive pour la gestion des bateaux */
+  .filters-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-group {
+    min-width: auto;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .boats-header {
+    flex-direction: column;
+    gap: var(--space-md);
+    align-items: stretch;
+  }
+
+  .boat-card-actions {
+    flex-direction: column;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .modal-content {
+    width: 95%;
+    margin: var(--space-md);
+  }
+
+  .images-grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
   }
 }

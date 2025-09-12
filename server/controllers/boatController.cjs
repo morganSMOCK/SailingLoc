@@ -409,6 +409,7 @@ exports.createBoat = async (req, res) => {
 // Mise à jour d'un bateau
 exports.updateBoat = async (req, res) => {
   try {
+    console.log('🔄 [BOAT] Début de mise à jour du bateau');
     const { id } = req.params;
     const userId = req.user.userId;
 
@@ -430,21 +431,40 @@ exports.updateBoat = async (req, res) => {
       });
     }
 
+    console.log('📝 [BOAT] Mise à jour du bateau:', boat.name);
+    console.log('📊 [BOAT] Données reçues:', req.body);
+    console.log('📁 [BOAT] Fichiers reçus:', req.files ? req.files.length : 0);
+
+    // Helper pour parser un champ qui peut être objet ou JSON string
+    const parseField = (value, fallback = {}) => {
+      if (value === undefined || value === null || value === '') return fallback;
+      if (typeof value === 'object') return value;
+      try {
+        return JSON.parse(value);
+      } catch (_e) {
+        return fallback;
+      }
+    };
+
     // Conversion des données d'entrée françaises vers anglaises
     const updateData = { ...req.body };
+    
+    // Mapping des types
     if (updateData.type) {
       const typeMapping = {
         'voilier': 'sailboat',
         'bateau à moteur': 'motorboat',
-        'bateau_moteur': 'motorboat', // Variante avec underscore
-        'semi_rigide': 'motorboat', // Semi-rigide = bateau à moteur
-        'peniche': 'motorboat', // Péniche = bateau à moteur
+        'bateau_moteur': 'motorboat',
+        'semi_rigide': 'motorboat',
+        'peniche': 'motorboat',
         'catamaran': 'catamaran',
         'yacht': 'yacht',
         'autre': 'other'
       };
       updateData.type = typeMapping[updateData.type] || updateData.type;
     }
+    
+    // Mapping des catégories
     if (updateData.category) {
       const categoryMapping = {
         'luxe': 'luxury',
@@ -454,12 +474,109 @@ exports.updateBoat = async (req, res) => {
       updateData.category = categoryMapping[updateData.category] || updateData.category;
     }
 
+    // Traitement des spécifications
+    if (updateData.specifications) {
+      updateData.specifications = parseField(updateData.specifications);
+      if (updateData.specifications.length) {
+        updateData.specifications.length = parseFloat(updateData.specifications.length) || boat.specifications.length;
+      }
+      if (updateData.specifications.width) {
+        updateData.specifications.width = parseFloat(updateData.specifications.width) || boat.specifications.width;
+      }
+    }
+
+    // Traitement de la capacité
+    if (updateData.capacity) {
+      updateData.capacity = parseField(updateData.capacity);
+      if (updateData.capacity.maxPeople) {
+        updateData.capacity.maxPeople = parseInt(updateData.capacity.maxPeople) || boat.capacity.maxPeople;
+      }
+    }
+
+    // Traitement de la localisation
+    if (updateData.location) {
+      updateData.location = parseField(updateData.location);
+    }
+
+    // Traitement du pricing
+    if (updateData.pricing) {
+      updateData.pricing = parseField(updateData.pricing);
+      if (updateData.pricing.dailyRate) {
+        updateData.pricing.dailyRate = parseFloat(updateData.pricing.dailyRate) || boat.pricing.dailyRate;
+      }
+      if (updateData.pricing.securityDeposit) {
+        updateData.pricing.securityDeposit = parseFloat(updateData.pricing.securityDeposit) || boat.pricing.securityDeposit;
+      }
+    }
+
+    // Gestion des nouvelles images si présentes
+    if (req.files && req.files.length > 0) {
+      const newImages = req.files.map(file => ({
+        url: `/uploads/boats/${file.filename}`,
+        filename: file.filename,
+        originalName: file.originalname,
+        size: file.size,
+        mimetype: file.mimetype,
+        isMain: false
+      }));
+      
+      // Ajouter les nouvelles images aux existantes
+      updateData.images = [...(boat.images || []), ...newImages];
+      
+      // Si c'est la première image, la définir comme principale
+      if (boat.images.length === 0 && newImages.length > 0) {
+        updateData.images[0].isMain = true;
+      }
+    }
+
+    // Gestion de la suppression d'images (si des IDs d'images à supprimer sont fournis)
+    if (updateData.imagesToDelete && Array.isArray(updateData.imagesToDelete)) {
+      const imagesToDelete = JSON.parse(updateData.imagesToDelete);
+      updateData.images = (updateData.images || boat.images).filter(img => 
+        !imagesToDelete.includes(img._id?.toString())
+      );
+      delete updateData.imagesToDelete;
+    }
+
+    // Gestion de l'image principale
+    if (updateData.mainImageId) {
+      const mainImageId = updateData.mainImageId;
+      if (updateData.images) {
+        updateData.images = updateData.images.map(img => ({
+          ...img,
+          isMain: img._id?.toString() === mainImageId
+        }));
+      }
+      delete updateData.mainImageId;
+    }
+
+    console.log('🚤 [BOAT] Données finales de mise à jour:', updateData);
+
+    // Validation des données avant mise à jour
+    if (updateData.name !== undefined && (!updateData.name || updateData.name.trim() === '')) {
+      throw new Error('Le nom du bateau ne peut pas être vide');
+    }
+    if (updateData.description !== undefined && (!updateData.description || updateData.description.trim() === '')) {
+      throw new Error('La description ne peut pas être vide');
+    }
+    if (updateData.specifications?.length !== undefined && updateData.specifications.length <= 0) {
+      throw new Error('La longueur du bateau doit être positive');
+    }
+    if (updateData.capacity?.maxPeople !== undefined && updateData.capacity.maxPeople <= 0) {
+      throw new Error('Le nombre maximum de personnes doit être positif');
+    }
+    if (updateData.pricing?.dailyRate !== undefined && updateData.pricing.dailyRate <= 0) {
+      throw new Error('Le tarif journalier doit être positif');
+    }
+
     // Mise à jour du bateau
     const updatedBoat = await Boat.findByIdAndUpdate(
       id,
       { $set: updateData },
       { new: true, runValidators: true }
     ).populate('owner', 'firstName lastName email');
+
+    console.log('✅ [BOAT] Bateau mis à jour avec succès:', updatedBoat._id);
 
     // Conversion du bateau en français
     const boatInFrench = convertBoatToFrench(updatedBoat);
@@ -471,10 +588,22 @@ exports.updateBoat = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Erreur lors de la mise à jour du bateau:', error);
+    console.error('❌ [BOAT] Erreur lors de la mise à jour du bateau:', error);
+    if (error.name === 'ValidationError') {
+      const errors = Object.entries(error.errors || {}).reduce((acc, [key, val]) => {
+        acc[key] = val.message;
+        return acc;
+      }, {});
+      return res.status(400).json({
+        success: false,
+        message: 'Données invalides pour la mise à jour du bateau',
+        errors
+      });
+    }
     res.status(500).json({
       success: false,
-      message: 'Erreur lors de la mise à jour du bateau'
+      message: 'Erreur lors de la mise à jour du bateau',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
   }
 };
@@ -482,8 +611,10 @@ exports.updateBoat = async (req, res) => {
 // Suppression d'un bateau
 exports.deleteBoat = async (req, res) => {
   try {
+    console.log('🗑️ [BOAT] Début de suppression du bateau');
     const { id } = req.params;
     const userId = req.user.userId;
+    const { force = false } = req.query; // Paramètre pour forcer la suppression
 
     // Récupérer le bateau
     const boat = await Boat.findById(id);
@@ -503,21 +634,76 @@ exports.deleteBoat = async (req, res) => {
       });
     }
 
+    console.log('🔍 [BOAT] Vérification des réservations actives...');
+
+    // Vérifier s'il y a des réservations actives ou futures
+    const Booking = require('../models/Booking.cjs');
+    const activeBookings = await Booking.find({
+      boat: id,
+      status: { $in: ['confirmed', 'paid', 'in_progress'] },
+      endDate: { $gte: new Date() }
+    });
+
+    if (activeBookings.length > 0 && !force) {
+      return res.status(400).json({
+        success: false,
+        message: 'Impossible de supprimer ce bateau car il a des réservations actives ou futures',
+        data: {
+          activeBookings: activeBookings.length,
+          bookings: activeBookings.map(booking => ({
+            id: booking._id,
+            startDate: booking.startDate,
+            endDate: booking.endDate,
+            status: booking.status
+          }))
+        }
+      });
+    }
+
+    console.log('📊 [BOAT] Réservations trouvées:', activeBookings.length);
+
+    // Si force=true, annuler toutes les réservations futures
+    if (activeBookings.length > 0 && force) {
+      console.log('⚠️ [BOAT] Annulation forcée des réservations...');
+      await Booking.updateMany(
+        { 
+          boat: id, 
+          status: { $in: ['confirmed', 'paid'] },
+          startDate: { $gte: new Date() }
+        },
+        { 
+          status: 'cancelled',
+          cancellationReason: 'Bateau supprimé par le propriétaire',
+          cancelledAt: new Date(),
+          cancelledBy: userId
+        }
+      );
+    }
+
     // Désactiver le bateau au lieu de le supprimer (soft delete)
     boat.isActive = false;
     boat.status = 'inactive';
+    boat.deletedAt = new Date();
+    boat.deletedBy = userId;
     await boat.save();
+
+    console.log('✅ [BOAT] Bateau supprimé avec succès:', boat._id);
 
     res.json({
       success: true,
-      message: 'Bateau supprimé avec succès'
+      message: 'Bateau supprimé avec succès',
+      data: {
+        boatId: boat._id,
+        cancelledBookings: activeBookings.length
+      }
     });
 
   } catch (error) {
-    console.error('Erreur lors de la suppression du bateau:', error);
+    console.error('❌ [BOAT] Erreur lors de la suppression du bateau:', error);
     res.status(500).json({
       success: false,
-      message: 'Erreur lors de la suppression du bateau'
+      message: 'Erreur lors de la suppression du bateau',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
   }
 };
@@ -722,4 +908,198 @@ exports.getBoatStats = async (req, res) => {
     });
   }
 };
+// Restauration d'un bateau supprimé
+exports.restoreBoat = async (req, res) => {
+  try {
+    console.log('🔄 [BOAT] Début de restauration du bateau');
+    const { id } = req.params;
+    const userId = req.user.userId;
+
+    // Récupérer le bateau
+    const boat = await Boat.findById(id);
+    if (!boat) {
+      return res.status(404).json({
+        success: false,
+        message: 'Bateau non trouvé'
+      });
+    }
+
+    // Vérifier les droits de restauration
+    const user = await User.findById(userId);
+    if (boat.owner.toString() !== userId && user.role !== 'admin') {
+      return res.status(403).json({
+        success: false,
+        message: 'Non autorisé à restaurer ce bateau'
+      });
+    }
+
+    // Vérifier si le bateau est bien supprimé
+    if (boat.isActive) {
+      return res.status(400).json({
+        success: false,
+        message: 'Ce bateau n\'est pas supprimé'
+      });
+    }
+
+    // Restaurer le bateau
+    boat.isActive = true;
+    boat.status = 'available';
+    boat.deletedAt = undefined;
+    boat.deletedBy = undefined;
+    await boat.save();
+
+    console.log('✅ [BOAT] Bateau restauré avec succès:', boat._id);
+
+    // Conversion du bateau en français
+    const boatInFrench = convertBoatToFrench(boat);
+
+    res.json({
+      success: true,
+      message: 'Bateau restauré avec succès',
+      data: { boat: boatInFrench }
+    });
+
+  } catch (error) {
+    console.error('❌ [BOAT] Erreur lors de la restauration du bateau:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erreur lors de la restauration du bateau',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+};
+
+// Suppression d'une image spécifique d'un bateau
+exports.deleteBoatImage = async (req, res) => {
+  try {
+    console.log('🖼️ [BOAT] Début de suppression d\'image');
+    const { id, imageId } = req.params;
+    const userId = req.user.userId;
+
+    // Récupérer le bateau
+    const boat = await Boat.findById(id);
+    if (!boat) {
+      return res.status(404).json({
+        success: false,
+        message: 'Bateau non trouvé'
+      });
+    }
+
+    // Vérifier les droits de modification
+    const user = await User.findById(userId);
+    if (boat.owner.toString() !== userId && user.role !== 'admin') {
+      return res.status(403).json({
+        success: false,
+        message: 'Non autorisé à modifier ce bateau'
+      });
+    }
+
+    // Trouver l'image à supprimer
+    const imageIndex = boat.images.findIndex(img => img._id.toString() === imageId);
+    if (imageIndex === -1) {
+      return res.status(404).json({
+        success: false,
+        message: 'Image non trouvée'
+      });
+    }
+
+    const imageToDelete = boat.images[imageIndex];
+    const wasMainImage = imageToDelete.isMain;
+
+    // Supprimer l'image du tableau
+    boat.images.splice(imageIndex, 1);
+
+    // Si c'était l'image principale et qu'il reste des images, définir la première comme principale
+    if (wasMainImage && boat.images.length > 0) {
+      boat.images[0].isMain = true;
+    }
+
+    await boat.save();
+
+    console.log('✅ [BOAT] Image supprimée avec succès:', imageId);
+
+    res.json({
+      success: true,
+      message: 'Image supprimée avec succès',
+      data: {
+        deletedImageId: imageId,
+        remainingImages: boat.images.length,
+        newMainImage: boat.images.length > 0 ? boat.images[0]._id : null
+      }
+    });
+
+  } catch (error) {
+    console.error('❌ [BOAT] Erreur lors de la suppression de l\'image:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erreur lors de la suppression de l\'image',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+};
+
+// Définir une image comme principale
+exports.setMainImage = async (req, res) => {
+  try {
+    console.log('⭐ [BOAT] Début de définition d\'image principale');
+    const { id, imageId } = req.params;
+    const userId = req.user.userId;
+
+    // Récupérer le bateau
+    const boat = await Boat.findById(id);
+    if (!boat) {
+      return res.status(404).json({
+        success: false,
+        message: 'Bateau non trouvé'
+      });
+    }
+
+    // Vérifier les droits de modification
+    const user = await User.findById(userId);
+    if (boat.owner.toString() !== userId && user.role !== 'admin') {
+      return res.status(403).json({
+        success: false,
+        message: 'Non autorisé à modifier ce bateau'
+      });
+    }
+
+    // Trouver l'image à définir comme principale
+    const targetImage = boat.images.find(img => img._id.toString() === imageId);
+    if (!targetImage) {
+      return res.status(404).json({
+        success: false,
+        message: 'Image non trouvée'
+      });
+    }
+
+    // Retirer le statut principal de toutes les images
+    boat.images.forEach(img => {
+      img.isMain = false;
+    });
+
+    // Définir l'image cible comme principale
+    targetImage.isMain = true;
+
+    await boat.save();
+
+    console.log('✅ [BOAT] Image principale définie avec succès:', imageId);
+
+    res.json({
+      success: true,
+      message: 'Image principale définie avec succès',
+      data: {
+        mainImageId: imageId
+      }
+    });
+
+  } catch (error) {
+    console.error('❌ [BOAT] Erreur lors de la définition de l\'image principale:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erreur lors de la définition de l\'image principale',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+};
+
 module.exports.upload = upload;
