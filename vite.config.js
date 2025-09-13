@@ -11,6 +11,7 @@ export default defineConfig({
         boats_detail: resolve(__dirname, 'boats_detail.html'),
         contact: resolve(__dirname, 'contact.html'),
         services: resolve(__dirname, 'services.html'),
+        'boat-management': resolve(__dirname, 'boat-management.html'),
         test: resolve(__dirname, 'test-navigation.html')
       }
     }
