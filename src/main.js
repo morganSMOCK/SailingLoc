@@ -1877,11 +1877,11 @@ class SailingLocApp {
     const statusClass = boat.status || 'available';
     const statusText = this.getStatusText(boat.status);
     const typeText = this.getTypeText(boat.type);
-    const mainImage = boat.images?.find(img => img.isMain)?.url || boat.images?.[0]?.url || '/public/boat-icon.svg';
+    const mainImage = boat.images?.find(img => img.isMain)?.url || boat.images?.[0]?.url || 'boat-icon.svg';
 
     return `
       <div class="boat-management-card ${!boat.isActive ? 'inactive' : ''}" data-boat-id="${boat._id}">
-        <img src="${mainImage}" alt="${boat.name}" class="boat-card-image" onerror="this.src='/public/boat-icon.svg'">
+        <img src="${mainImage}" alt="${boat.name}" class="boat-card-image" onerror="this.src='boat-icon.svg'">
         <div class="boat-card-content">
           <div class="boat-card-header">
             <div>
