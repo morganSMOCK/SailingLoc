@@ -9,7 +9,7 @@
   ],
   "routes": [
     { "src": "/assets/(.*)", "dest": "/dist/assets/$1" },
-    { "src": "/(boats|services|contact|boats_detail|test-navigation)", "dest": "/dist/$1.html" },
+    { "src": "/(boats|services|contact|boats_detail|test-navigation|boat-management)", "dest": "/dist/$1.html" },
     { "src": "/(.*\\.(?:html|js|css|svg|png|jpg|jpeg|gif|webp|ico|json|map))", "dest": "/dist/$1" },
     { "src": "/", "dest": "/dist/index.html" },
     { "src": "/(.*)", "dest": "/dist/index.html" }
