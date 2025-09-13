@@ -1702,7 +1702,7 @@ class SailingLocApp {
     const addBoatBtn = document.getElementById('add-boat-btn');
     if (addBoatBtn) {
       addBoatBtn.addEventListener('click', () => {
-        window.location.href = 'index.html#add-boat';
+        this.showAddBoatModal();
       });
     }
 
@@ -2056,9 +2056,21 @@ class SailingLocApp {
   /**
    * Édition d'un bateau
    */
-  editBoat(boatId) {
-    this.uiManager.showNotification('Fonctionnalité d\'édition en cours de développement', 'info');
-    // TODO: Implémenter l'édition
+  async editBoat(boatId) {
+    try {
+      // Récupérer les données du bateau
+      const response = await this.boatService.getBoatById(boatId);
+      
+      if (response.success) {
+        const boat = response.data.boat;
+        this.showEditBoatModal(boat);
+      } else {
+        throw new Error(response.message);
+      }
+    } catch (error) {
+      console.error('Erreur lors de la récupération du bateau:', error);
+      this.uiManager.showNotification(`Erreur: ${error.message}`, 'error');
+    }
   }
 
   /**
@@ -2109,6 +2121,23 @@ class SailingLocApp {
       console.error('Erreur lors de la restauration:', error);
       this.uiManager.showNotification(`Erreur: ${error.message}`, 'error');
     }
+  }
+
+  /**
+   * Affichage de la modal d'ajout de bateau
+   */
+  showAddBoatModal() {
+    // Rediriger vers la page d'accueil avec le formulaire d'ajout
+    window.location.href = 'index.html#add-boat';
+  }
+
+  /**
+   * Affichage de la modal d'édition de bateau
+   */
+  showEditBoatModal(boat) {
+    // Pour l'instant, rediriger vers la page d'accueil avec l'ID du bateau
+    // TODO: Implémenter une vraie modal d'édition
+    window.location.href = `index.html#edit-boat-${boat._id}`;
   }
 }
 

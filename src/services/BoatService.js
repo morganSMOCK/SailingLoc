@@ -147,38 +147,6 @@ export class BoatService {
     }
   }
 
-  /**
-   * Suppression d'un bateau
-   * @param {string} boatId - ID du bateau
-   * @returns {Promise<Object>} Confirmation de suppression
-   */
-  async deleteBoat(boatId) {
-    try {
-      const token = this.getAuthToken();
-      
-      if (!token) {
-        throw new Error('Authentification requise');
-      }
-
-      const response = await fetch(`${this.boatsEndpoint}/${boatId}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-
-      const data = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(data.message || 'Erreur lors de la suppression du bateau');
-      }
-
-      return data;
-    } catch (error) {
-      console.error('Erreur lors de la suppression du bateau:', error);
-      throw error;
-    }
-  }
 
   /**
    * Récupération des bateaux d'un propriétaire
