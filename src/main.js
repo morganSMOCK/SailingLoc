@@ -1112,8 +1112,16 @@ class SailingLocApp {
     }
     
     boats.forEach(boat => {
-      const boatCard = this.createBoatCard(boat);
-      boatsGrid.appendChild(boatCard);
+      try {
+        const boatCard = this.createBoatCard(boat);
+        if (boatCard && boatCard.nodeType) {
+          boatsGrid.appendChild(boatCard);
+        } else {
+          console.error('Erreur: createBoatCard n\'a pas retourné un élément DOM valide pour le bateau:', boat);
+        }
+      } catch (error) {
+        console.error('Erreur lors de la création de la carte du bateau:', error, boat);
+      }
     });
   }
 
@@ -1121,41 +1129,69 @@ class SailingLocApp {
    * Création d'une carte de bateau
    */
   createBoatCard(boat) {
+    try {
+      // Validation des données du bateau
+      if (!boat || !boat._id) {
+        console.error('Données de bateau invalides:', boat);
+        return this.createErrorCard('Données de bateau invalides');
+      }
+
+      const card = document.createElement('div');
+      card.className = 'boat-card';
+      card.setAttribute('data-boat-id', boat._id);
+      
+      const mainImage = boat.mainImage || boat.images?.[0]?.url || 'https://images.pexels.com/photos/1001682/pexels-photo-1001682.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop';
+      
+      card.innerHTML = `
+        <div class="boat-image">
+          <img src="${mainImage}" alt="${boat.name || 'Bateau'}" loading="lazy">
+          <div class="boat-badge">${this.formatBoatType(boat.type || 'voilier')}</div>
+          <div class="boat-rating">
+            <span class="rating-stars">${this.renderStars(boat.rating?.average || 0)}</span>
+            <span class="rating-count">(${boat.rating?.totalReviews || 0})</span>
+          </div>
+        </div>
+        <div class="boat-content">
+          <h3 class="boat-name">${boat.name || 'Nom non disponible'}</h3>
+          <p class="boat-location">📍 ${boat.location?.city || 'Ville'}, ${boat.location?.country || 'Pays'}</p>
+          <div class="boat-specs">
+            <span class="spec">👥 ${boat.capacity?.maxPeople || 0} pers.</span>
+            <span class="spec">📏 ${boat.specifications?.length || 0}m</span>
+            ${boat.capacity?.cabins ? `<span class="spec">🛏️ ${boat.capacity.cabins} cabines</span>` : ''}
+          </div>
+          <div class="boat-price">
+            <span class="price">${boat.pricing?.dailyRate || 0}€</span>
+            <span class="price-unit">/jour</span>
+          </div>
+          <button class="btn-primary btn-full boat-details-btn">Voir les détails</button>
+        </div>
+      `;
+      
+      // Écouteur pour afficher les détails
+      const detailsBtn = card.querySelector('.boat-details-btn');
+      if (detailsBtn) {
+        detailsBtn.addEventListener('click', () => this.showBoatDetails(boat._id));
+      }
+      
+      return card;
+    } catch (error) {
+      console.error('Erreur lors de la création de la carte de bateau:', error, boat);
+      return this.createErrorCard('Erreur lors du chargement');
+    }
+  }
+
+  /**
+   * Création d'une carte d'erreur
+   */
+  createErrorCard(message) {
     const card = document.createElement('div');
-    card.className = 'boat-card';
-    card.setAttribute('data-boat-id', boat._id);
-    
-    const mainImage = boat.mainImage || boat.images?.[0]?.url || 'https://images.pexels.com/photos/1001682/pexels-photo-1001682.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop';
-    
+    card.className = 'boat-card error-card';
     card.innerHTML = `
-      <div class="boat-image">
-        <img src="${mainImage}" alt="${boat.name}" loading="lazy">
-        <div class="boat-badge">${this.formatBoatType(boat.type)}</div>
-        <div class="boat-rating">
-          <span class="rating-stars">${this.renderStars(boat.rating?.average || 0)}</span>
-          <span class="rating-count">(${boat.rating?.totalReviews || 0})</span>
-        </div>
-      </div>
       <div class="boat-content">
-        <h3 class="boat-name">${boat.name}</h3>
-        <p class="boat-location">📍 ${boat.location.city}, ${boat.location.country}</p>
-        <div class="boat-specs">
-          <span class="spec">👥 ${boat.capacity.maxPeople} pers.</span>
-          <span class="spec">📏 ${boat.specifications.length}m</span>
-          ${boat.capacity.cabins ? `<span class="spec">🛏️ ${boat.capacity.cabins} cabines</span>` : ''}
-        </div>
-        <div class="boat-price">
-          <span class="price">${boat.pricing.dailyRate}€</span>
-          <span class="price-unit">/jour</span>
-        </div>
-        <button class="btn-primary btn-full boat-details-btn">Voir les détails</button>
+        <h3>Erreur</h3>
+        <p>${message}</p>
       </div>
     `;
-    
-    // Écouteur pour afficher les détails
-    const detailsBtn = card.querySelector('.boat-details-btn');
-    detailsBtn.addEventListener('click', () => this.showBoatDetails(boat._id));
-    
     return card;
   }
 
