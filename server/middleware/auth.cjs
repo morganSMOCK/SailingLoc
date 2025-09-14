@@ -158,8 +158,26 @@ const checkResourceOwnership = (resourceModel, resourceIdParam = 'id') => {
 
       // Vérifier la propriété ou les droits admin
       const user = await User.findById(userId);
-      const isOwner = resource.owner && resource.owner.toString() === userId;
-      const isAdmin = user.role === 'admin';
+      
+      // Comparaison robuste des IDs (ObjectId vs String)
+      let isOwner = false;
+      if (resource.owner) {
+        const ownerId = resource.owner.toString();
+        const userIdStr = userId.toString();
+        isOwner = ownerId === userIdStr;
+        
+        // Logs détaillés pour le débogage
+        console.log('🔍 [OWNERSHIP DEBUG] Comparaison des IDs:');
+        console.log('🔍 [OWNERSHIP DEBUG] resource.owner (raw):', resource.owner);
+        console.log('🔍 [OWNERSHIP DEBUG] resource.owner (string):', ownerId);
+        console.log('🔍 [OWNERSHIP DEBUG] userId (raw):', userId);
+        console.log('🔍 [OWNERSHIP DEBUG] userId (string):', userIdStr);
+        console.log('🔍 [OWNERSHIP DEBUG] Types - owner:', typeof ownerId, 'user:', typeof userIdStr);
+        console.log('🔍 [OWNERSHIP DEBUG] Égalité stricte:', ownerId === userIdStr);
+        console.log('🔍 [OWNERSHIP DEBUG] Égalité loose:', ownerId == userIdStr);
+      }
+      
+      const isAdmin = user && user.role === 'admin';
 
       // Logs de débogage pour la vérification de propriété
       console.log('🔐 [CHECK OWNERSHIP] Vérification de propriété:');
