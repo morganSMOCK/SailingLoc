@@ -60,7 +60,20 @@ class SailingLocApp {
       // Initialisation de la gestion des bateaux si nécessaire
       this.initBoatManagement();
       
+      // Exposer des fonctions de débogage
+      window.debugSailingLoc = {
+        testBoatCard: (boatData) => {
+          console.log('Test de création de carte de bateau:', boatData);
+          const card = this.createBoatCard(boatData);
+          console.log('Résultat:', card);
+          return card;
+        },
+        loadBoats: () => this.loadBoats(),
+        getCurrentBoats: () => this.currentBoats || []
+      };
+      
       console.log('✅ SailingLoc initialisé avec succès');
+      console.log('🔧 Fonctions de débogage disponibles: window.debugSailingLoc');
       
     } catch (error) {
       console.error('❌ Erreur lors de l\'initialisation:', error);
@@ -1125,16 +1138,24 @@ class SailingLocApp {
       return;
     }
     
-    boats.forEach(boat => {
+    boats.forEach((boat, index) => {
       try {
+        console.log(`Création de la carte pour le bateau ${index + 1}:`, boat.name, boat._id);
         const boatCard = this.createBoatCard(boat);
         if (boatCard && boatCard.nodeType) {
           boatsGrid.appendChild(boatCard);
+          console.log(`✅ Carte créée avec succès pour: ${boat.name}`);
         } else {
-          console.error('Erreur: createBoatCard n\'a pas retourné un élément DOM valide pour le bateau:', boat);
+          console.error('❌ Erreur: createBoatCard n\'a pas retourné un élément DOM valide pour le bateau:', boat);
+          // Créer une carte d'erreur à la place
+          const errorCard = this.createErrorCard(`Erreur: ${boat.name || 'Bateau inconnu'}`);
+          boatsGrid.appendChild(errorCard);
         }
       } catch (error) {
-        console.error('Erreur lors de la création de la carte du bateau:', error, boat);
+        console.error('❌ Erreur lors de la création de la carte du bateau:', error, boat);
+        // Créer une carte d'erreur à la place
+        const errorCard = this.createErrorCard(`Erreur: ${boat.name || 'Bateau inconnu'}`);
+        boatsGrid.appendChild(errorCard);
       }
     });
   }
@@ -1154,27 +1175,51 @@ class SailingLocApp {
       card.className = 'boat-card';
       card.setAttribute('data-boat-id', boat._id);
       
-      const mainImage = boat.mainImage || boat.images?.[0]?.url || 'https://images.pexels.com/photos/1001682/pexels-photo-1001682.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop';
+      // Gestion des images - essayer plusieurs sources
+      let mainImage = 'https://images.pexels.com/photos/1001682/pexels-photo-1001682.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop';
+      
+      if (boat.mainImage) {
+        mainImage = boat.mainImage;
+      } else if (boat.images && boat.images.length > 0) {
+        // Chercher une image avec URL
+        const imageWithUrl = boat.images.find(img => img.url);
+        if (imageWithUrl) {
+          mainImage = imageWithUrl.url;
+        }
+      } else if (boat.imageUrls && boat.imageUrls.length > 0) {
+        mainImage = boat.imageUrls[0];
+      }
+      
+      // Nettoyer les données pour éviter les erreurs d'affichage
+      const boatName = (boat.name || 'Nom non disponible').replace(/[<>]/g, '');
+      const boatType = this.formatBoatType(boat.type || 'voilier');
+      const city = (boat.location?.city || 'Ville').replace(/[<>]/g, '');
+      const country = (boat.location?.country || 'Pays').replace(/[<>]/g, '');
+      const maxPeople = boat.capacity?.maxPeople || 0;
+      const length = boat.specifications?.length || 0;
+      const dailyRate = boat.pricing?.dailyRate || 0;
+      const rating = boat.rating?.average || 0;
+      const totalReviews = boat.rating?.totalReviews || 0;
       
       card.innerHTML = `
         <div class="boat-image">
-          <img src="${mainImage}" alt="${boat.name || 'Bateau'}" loading="lazy">
-          <div class="boat-badge">${this.formatBoatType(boat.type || 'voilier')}</div>
+          <img src="${mainImage}" alt="${boatName}" loading="lazy" onerror="this.src='https://images.pexels.com/photos/1001682/pexels-photo-1001682.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop'">
+          <div class="boat-badge">${boatType}</div>
           <div class="boat-rating">
-            <span class="rating-stars">${this.renderStars(boat.rating?.average || 0)}</span>
-            <span class="rating-count">(${boat.rating?.totalReviews || 0})</span>
+            <span class="rating-stars">${this.renderStars(rating)}</span>
+            <span class="rating-count">(${totalReviews})</span>
           </div>
         </div>
         <div class="boat-content">
-          <h3 class="boat-name">${boat.name || 'Nom non disponible'}</h3>
-          <p class="boat-location">📍 ${boat.location?.city || 'Ville'}, ${boat.location?.country || 'Pays'}</p>
+          <h3 class="boat-name">${boatName}</h3>
+          <p class="boat-location">📍 ${city}, ${country}</p>
           <div class="boat-specs">
-            <span class="spec">👥 ${boat.capacity?.maxPeople || 0} pers.</span>
-            <span class="spec">📏 ${boat.specifications?.length || 0}m</span>
+            <span class="spec">👥 ${maxPeople} pers.</span>
+            <span class="spec">📏 ${length}m</span>
             ${boat.capacity?.cabins ? `<span class="spec">🛏️ ${boat.capacity.cabins} cabines</span>` : ''}
           </div>
           <div class="boat-price">
-            <span class="price">${boat.pricing?.dailyRate || 0}€</span>
+            <span class="price">${dailyRate}€</span>
             <span class="price-unit">/jour</span>
           </div>
           <button class="btn-primary btn-full boat-details-btn">Voir les détails</button>
@@ -1218,6 +1263,7 @@ class SailingLocApp {
       'catamaran': 'Catamaran',
       'yacht': 'Yacht',
       'bateau_moteur': 'Bateau à moteur',
+      'bateau à moteur': 'Bateau à moteur',
       'semi_rigide': 'Semi-rigide',
       'peniche': 'Péniche'
     };
