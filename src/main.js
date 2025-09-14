@@ -1165,29 +1165,40 @@ class SailingLocApp {
    */
   createBoatCard(boat) {
     try {
+      console.log('🔍 [DEBUG] Début de createBoatCard pour:', boat.name, boat._id);
+      
       // Validation des données du bateau
       if (!boat || !boat._id) {
-        console.error('Données de bateau invalides:', boat);
+        console.error('❌ [DEBUG] Données de bateau invalides:', boat);
         return this.createErrorCard('Données de bateau invalides');
       }
 
+      console.log('✅ [DEBUG] Validation des données OK');
+      
       const card = document.createElement('div');
       card.className = 'boat-card';
       card.setAttribute('data-boat-id', boat._id);
+      
+      console.log('✅ [DEBUG] Élément DOM créé');
       
       // Gestion des images - essayer plusieurs sources
       let mainImage = 'https://images.pexels.com/photos/1001682/pexels-photo-1001682.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop';
       
       if (boat.mainImage) {
         mainImage = boat.mainImage;
+        console.log('🖼️ [DEBUG] Image principale trouvée:', mainImage);
       } else if (boat.images && boat.images.length > 0) {
         // Chercher une image avec URL
         const imageWithUrl = boat.images.find(img => img.url);
         if (imageWithUrl) {
           mainImage = imageWithUrl.url;
+          console.log('🖼️ [DEBUG] Image dans tableau trouvée:', mainImage);
         }
       } else if (boat.imageUrls && boat.imageUrls.length > 0) {
         mainImage = boat.imageUrls[0];
+        console.log('🖼️ [DEBUG] Image URL trouvée:', mainImage);
+      } else {
+        console.log('🖼️ [DEBUG] Aucune image trouvée, utilisation de l\'image par défaut');
       }
       
       // Nettoyer les données pour éviter les erreurs d'affichage
@@ -1201,12 +1212,24 @@ class SailingLocApp {
       const rating = boat.rating?.average || 0;
       const totalReviews = boat.rating?.totalReviews || 0;
       
+      console.log('✅ [DEBUG] Données nettoyées:', { boatName, boatType, city, country, maxPeople, length, dailyRate, rating, totalReviews });
+      
+      // Test de la fonction renderStars
+      let starsHTML;
+      try {
+        starsHTML = this.renderStars(rating);
+        console.log('⭐ [DEBUG] Étoiles générées:', starsHTML);
+      } catch (starsError) {
+        console.error('❌ [DEBUG] Erreur dans renderStars:', starsError);
+        starsHTML = '☆☆☆☆☆';
+      }
+      
       card.innerHTML = `
         <div class="boat-image">
           <img src="${mainImage}" alt="${boatName}" loading="lazy" onerror="this.src='https://images.pexels.com/photos/1001682/pexels-photo-1001682.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop'">
           <div class="boat-badge">${boatType}</div>
           <div class="boat-rating">
-            <span class="rating-stars">${this.renderStars(rating)}</span>
+            <span class="rating-stars">${starsHTML}</span>
             <span class="rating-count">(${totalReviews})</span>
           </div>
         </div>
@@ -1226,15 +1249,23 @@ class SailingLocApp {
         </div>
       `;
       
+      console.log('✅ [DEBUG] innerHTML défini');
+      
       // Écouteur pour afficher les détails
       const detailsBtn = card.querySelector('.boat-details-btn');
       if (detailsBtn) {
         detailsBtn.addEventListener('click', () => this.showBoatDetails(boat._id));
+        console.log('✅ [DEBUG] Écouteur d\'événement ajouté');
+      } else {
+        console.warn('⚠️ [DEBUG] Bouton de détails non trouvé');
       }
       
+      console.log('🎉 [DEBUG] Carte créée avec succès pour:', boat.name);
       return card;
     } catch (error) {
-      console.error('Erreur lors de la création de la carte de bateau:', error, boat);
+      console.error('❌ [DEBUG] Erreur lors de la création de la carte de bateau:', error);
+      console.error('❌ [DEBUG] Stack trace:', error.stack);
+      console.error('❌ [DEBUG] Données du bateau:', boat);
       return this.createErrorCard('Erreur lors du chargement');
     }
   }
