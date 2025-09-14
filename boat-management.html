@@ -9,51 +9,67 @@
 </head>
 <body>
     <!-- Navigation -->
-    <nav class="navbar">
+    <nav id="navbar" class="navbar">
         <div class="nav-container">
-            <div class="nav-logo">
-                <a href="index.html">
-                    <img src="boat-icon.svg" alt="SailingLoc" class="logo">
-                    <span class="logo-text">SailingLoc</span>
+          <div class="nav-brand">
+            <h2>⛵ SailingLoc</h2>
+          </div>
+          
+          <div class="nav-menu" id="nav-menu">
+            <a href="index.html" class="nav-link active" data-i18n="nav.home">Accueil</a>
+            <a href="boats.html" class="nav-link" data-i18n="nav.boats">Bateaux</a>
+      <a href="experience.html" class="nav-link" data-i18n="nav.experience">Experience</a>
+            <a href="contact.html" class="nav-link" data-i18n="nav.contact">Contact</a>
+          </div>
+          
+          <div class="nav-auth">
+            <select id="langSwitcher" aria-label="Language" style="margin-right:12px">
+              <option value="fr">FR </option>
+              <option value="en">EN</option>
+            </select>
+            <button id="login-btn" class="btn-secondary" data-i18n="auth.login">Connexion</button>
+            <button id="register-btn" class="btn-primary" data-i18n="auth.register">Inscription</button>
+            
+            <!-- Menu utilisateur (caché par défaut) -->
+            <div id="user-menu" class="user-menu" style="display: none;">
+              <div class="user-avatar" id="user-avatar">
+                <span id="user-initials">JD</span>
+              </div>
+              <div class="user-dropdown" id="user-dropdown">
+                <div class="user-info">
+                  <div class="user-name" id="user-name">John Doe</div>
+                  
+                  <div class="user-email" id="user-email">john@example.com</div>
+                </div>
+                <div class="dropdown-divider"></div>
+                <a href="#" id="profile-link" class="dropdown-item">
+                  <span class="dropdown-icon">👤</span>
+                  Mon Profil
                 </a>
+                <a href="#" id="bookings-link" class="dropdown-item">
+                  <span class="dropdown-icon">📋</span>
+                  Mes Réservations
+                </a>
+                <a href="#" id="boats-link" class="dropdown-item" style="display: none;">
+                  <span class="dropdown-icon">🛥️</span>
+                  Mes Bateaux
+                </a>
+                <div class="dropdown-divider"></div>
+                <a href="#" id="logout-link" class="dropdown-item logout">
+                  <span class="dropdown-icon">🚪</span>
+                  Déconnexion
+                </a>
+              </div>
             </div>
-            
-            <div class="nav-menu" id="nav-menu">
-                <a href="index.html" class="nav-link">Accueil</a>
-                <a href="boats.html" class="nav-link">Bateaux</a>
-                <a href="services.html" class="nav-link">Services</a>
-                <a href="contact.html" class="nav-link">Contact</a>
-                
-                <!-- Menu utilisateur connecté -->
-                <div class="user-menu" id="user-menu" style="display: none;">
-                    <div class="user-dropdown">
-                        <button class="user-button" id="user-button">
-                            <span id="user-name">Utilisateur</span>
-                            <i class="dropdown-arrow">▼</i>
-                        </button>
-                        <div class="dropdown-content" id="dropdown-content">
-                            <a href="#" id="profile-link">Mon Profil</a>
-                            <a href="boat-management.html" id="boats-link">Mes Bateaux</a>
-                            <a href="#" id="bookings-link">Mes Réservations</a>
-                            <a href="#" id="logout-link">Déconnexion</a>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Boutons de connexion/inscription -->
-                <div class="auth-buttons" id="auth-buttons">
-                    <button class="btn btn-outline" id="login-btn">Connexion</button>
-                    <button class="btn btn-primary" id="register-btn">Inscription</button>
-                </div>
-            </div>
-            
-            <div class="hamburger" id="hamburger">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
+          </div>
+          
+          <div class="mobile-menu-toggle" id="mobile-menu-toggle">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
         </div>
-    </nav>
+      </nav>
 
     <!-- Contenu principal -->
     <main class="main-content">
@@ -124,12 +140,6 @@
                             <p>Réservations</p>
                         </div>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">💰</div>
-                        <div class="stat-content">
-                            <h3 id="total-revenue">0€</h3>
-                            <p>Revenus</p>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -189,6 +199,212 @@
             </div>
         </div>
     </main>
+
+    <!-- Modale de connexion -->
+    <div id="login-modal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Connexion</h2>
+          <button class="modal-close">&times;</button>
+        </div>
+        <form id="login-form" class="auth-form">
+          <div class="form-group">
+            <label for="login-email">Email</label>
+            <input type="email" id="login-email" placeholder="votre@email.com" required>
+          </div>
+          <div class="form-group">
+            <label for="login-password">Mot de passe</label>
+            <input type="password" id="login-password" placeholder="Votre mot de passe" required>
+          </div>
+          <button type="submit" class="btn-primary btn-full">Se connecter</button>
+          <p class="auth-switch">
+            Pas encore de compte ? 
+            <a href="#" id="switch-to-register">Inscrivez-vous</a>
+          </p>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modale d'inscription -->
+    <div id="register-modal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Inscription</h2>
+          <button class="modal-close">&times;</button>
+        </div>
+        <form id="register-form" class="auth-form">
+          <div class="form-row">
+            <div class="form-group">
+              <input type="text" id="register-firstname" placeholder="Prénom" required>
+            </div>
+            <div class="form-group">
+              <input type="text" id="register-lastname" placeholder="Nom" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <input type="email" id="register-email" placeholder="Email" required>
+          </div>
+          <div class="form-group">
+            <input type="password" id="register-password" placeholder="Mot de passe" required>
+          </div>
+          <div class="form-group">
+            <input type="tel" id="register-phone" placeholder="Téléphone">
+          </div>
+          <div class="form-group">
+            <select id="register-role" required>
+              <option value="">Je suis...</option>
+              <option value="client">Client (je veux louer)</option>
+              <option value="owner">Propriétaire (je veux louer mon bateau)</option>
+            </select>
+          </div>
+          <button type="submit" class="btn-primary btn-full">S'inscrire</button>
+          <p class="auth-switch">
+            Déjà un compte ? 
+            <a href="#" id="switch-to-login">Connectez-vous</a>
+          </p>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modale de profil -->
+    <div id="profile-modal" class="modal modal-large">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Mon Profil</h2>
+          <button class="modal-close">&times;</button>
+        </div>
+        
+        <div class="profile-tabs">
+          <button class="tab-btn active" data-tab="profile-info">Informations</button>
+          <button class="tab-btn" data-tab="profile-security">Sécurité</button>
+          <button class="tab-btn" data-tab="profile-preferences">Préférences</button>
+        </div>
+        
+        <div class="profile-content">
+          <!-- Onglet Informations -->
+          <div id="profile-info" class="tab-content active">
+            <form id="profile-form" class="profile-form">
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Prénom</label>
+                  <input type="text" id="profile-firstname" required>
+                </div>
+                <div class="form-group">
+                  <label>Nom</label>
+                  <input type="text" id="profile-lastname" required>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="profile-email" readonly>
+              </div>
+              <div class="form-group">
+                <label>Téléphone</label>
+                <input type="tel" id="profile-phone">
+              </div>
+              <button type="submit" class="btn-primary">Mettre à jour</button>
+            </form>
+          </div>
+          
+          <!-- Onglet Sécurité -->
+          <div id="profile-security" class="tab-content">
+            <form id="change-password-form" class="profile-form">
+              <div class="form-group">
+                <label>Mot de passe actuel</label>
+                <input type="password" id="current-password" required>
+              </div>
+              <div class="form-group">
+                <label>Nouveau mot de passe</label>
+                <input type="password" id="new-password" required>
+              </div>
+              <div class="form-group">
+                <label>Confirmer le nouveau mot de passe</label>
+                <input type="password" id="confirm-password" required>
+              </div>
+              <button type="submit" class="btn-primary">Changer le mot de passe</button>
+            </form>
+          </div>
+          
+          <!-- Onglet Préférences -->
+          <div id="profile-preferences" class="tab-content">
+            <div class="preferences-form">
+              <div class="form-group">
+                <label>
+                  <input type="checkbox" id="email-notifications">
+                  Recevoir des notifications par email
+                </label>
+              </div>
+              <div class="form-group">
+                <label>
+                  <input type="checkbox" id="sms-notifications">
+                  Recevoir des notifications par SMS
+                </label>
+              </div>
+              <button type="button" class="btn-primary">Sauvegarder les préférences</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modale des réservations -->
+    <div id="bookings-modal" class="modal modal-large">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Mes Réservations</h2>
+          <button class="modal-close">&times;</button>
+        </div>
+        
+        <div class="bookings-filters">
+          <select id="bookings-status-filter">
+            <option value="">Tous les statuts</option>
+            <option value="pending">En attente</option>
+            <option value="confirmed">Confirmée</option>
+            <option value="paid">Payée</option>
+            <option value="active">En cours</option>
+            <option value="completed">Terminée</option>
+            <option value="cancelled">Annulée</option>
+          </select>
+          <button id="refresh-bookings" class="btn-secondary">Actualiser</button>
+        </div>
+        
+        <div id="bookings-list" class="bookings-list">
+          <!-- Les réservations seront chargées dynamiquement -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Modale des bateaux du propriétaire -->
+    <div id="my-boats-modal" class="modal modal-large">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Mes Bateaux</h2>
+          <button class="modal-close">&times;</button>
+        </div>
+        
+        <div class="boats-actions">
+          <button id="add-boat-btn" class="btn-primary">Ajouter un bateau</button>
+          <button id="refresh-boats" class="btn-secondary">Actualiser</button>
+        </div>
+        
+        <div id="my-boats-list" class="my-boats-list">
+          <!-- Les bateaux seront chargés dynamiquement -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Modale des détails de bateau -->
+    <div id="boat-modal" class="modal modal-large">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 id="boat-modal-title">Détails du bateau</h2>
+          <button class="modal-close">&times;</button>
+        </div>
+        <div id="boat-details" class="boat-details">
+          <!-- Les détails seront chargés dynamiquement -->
+        </div>
+      </div>
+    </div>
 
     <!-- Modal de modification de bateau -->
     <div class="modal" id="edit-boat-modal">

@@ -12,7 +12,14 @@ export default defineConfig({
         contact: resolve(__dirname, 'contact.html'),
         services: resolve(__dirname, 'services.html'),
         'boat-management': resolve(__dirname, 'boat-management.html'),
-        test: resolve(__dirname, 'test-navigation.html')
+        experience: resolve(__dirname, 'experience.html'),
+        test: resolve(__dirname, 'test-navigation.html'),
+        'test-simple-boat': resolve(__dirname, 'test-simple-boat.html'),
+        'test-api-direct': resolve(__dirname, 'test-api-direct.html'),
+        'debug-boats': resolve(__dirname, 'debug-boats.html'),
+        'test-boat-card': resolve(__dirname, 'test-boat-card.html'),
+        'clear-cache': resolve(__dirname, 'clear-cache.html'),
+        'test-index': resolve(__dirname, 'test-index.html')
       }
     }
   },

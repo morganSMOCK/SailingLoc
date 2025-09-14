@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Réservation - SailingLoc</title>
+  <link rel="stylesheet" href="/src/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav id="navbar" class="navbar">
+    <div class="nav-container">
+      <div class="nav-brand">
+        <h2>⛵ SailingLoc</h2>
+      </div>
+      
+      <div class="nav-menu" id="nav-menu">
+        <a href="index.html" class="nav-link">Accueil</a>
+        <a href="boats.html" class="nav-link">Bateaux</a>
+        <a href="experience.html" class="nav-link">Experience</a>
+        <a href="contact.html" class="nav-link">Contact</a>
+      </div>
+      
+      <div class="nav-auth">
+        <button id="login-btn" class="btn-secondary">Connexion</button>
+        <button id="register-btn" class="btn-primary">Inscription</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="container">
+      <div class="test-header">
+        <h1>Test du Système de Réservation</h1>
+        <p>Cette page permet de tester le processus de réservation complet</p>
+      </div>
+
+      <div class="test-sections">
+        <!-- Section 1: Test de la page de réservation -->
+        <div class="test-section">
+          <h2>
+            <i class="fas fa-calendar-check"></i>
+            Test de la Page de Réservation
+          </h2>
+          <p>Testez le formulaire de réservation étape par étape</p>
+          
+          <div class="test-actions">
+            <button class="btn-primary" onclick="testBookingPage()">
+              <i class="fas fa-play"></i>
+              Tester la page de réservation
+            </button>
+            <button class="btn-secondary" onclick="testBookingWithData()">
+              <i class="fas fa-database"></i>
+              Tester avec des données pré-remplies
+            </button>
+          </div>
+        </div>
+
+        <!-- Section 2: Test de la page de confirmation -->
+        <div class="test-section">
+          <h2>
+            <i class="fas fa-check-circle"></i>
+            Test de la Page de Confirmation
+          </h2>
+          <p>Testez l'affichage de la confirmation de réservation</p>
+          
+          <div class="test-actions">
+            <button class="btn-primary" onclick="testConfirmationPage()">
+              <i class="fas fa-play"></i>
+              Tester la page de confirmation
+            </button>
+          </div>
+        </div>
+
+        <!-- Section 3: Test du processus complet -->
+        <div class="test-section">
+          <h2>
+            <i class="fas fa-route"></i>
+            Test du Processus Complet
+          </h2>
+          <p>Testez le parcours complet depuis la sélection d'un bateau</p>
+          
+          <div class="test-actions">
+            <button class="btn-primary" onclick="testCompleteProcess()">
+              <i class="fas fa-play"></i>
+              Tester le processus complet
+            </button>
+          </div>
+        </div>
+
+        <!-- Section 4: Test des données de démonstration -->
+        <div class="test-section">
+          <h2>
+            <i class="fas fa-info-circle"></i>
+            Données de Test
+          </h2>
+          <p>Informations pour tester le système</p>
+          
+          <div class="test-data">
+            <h3>Comptes de test :</h3>
+            <ul>
+              <li><strong>Client :</strong> client@sailingloc.com / password123</li>
+              <li><strong>Propriétaire :</strong> owner@sailingloc.com / password123</li>
+            </ul>
+            
+            <h3>Bateaux de test :</h3>
+            <ul>
+              <li><strong>ID :</strong> 507f1f77bcf86cd799439011 (Voilier Élégance)</li>
+              <li><strong>ID :</strong> 507f1f77bcf86cd799439012 (Catamaran Horizon)</li>
+              <li><strong>ID :</strong> 507f1f77bcf86cd799439013 (Yacht de Luxe)</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Résultats des tests -->
+      <div class="test-results" id="test-results" style="display: none;">
+        <h2>Résultats des Tests</h2>
+        <div id="test-output"></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>⛵ SailingLoc</h3>
+          <p>Votre partenaire de confiance pour la location de bateaux de luxe</p>
+        </div>
+      </div>
+      
+      <div class="footer-bottom">
+        <p>&copy; 2024 SailingLoc. Tous droits réservés.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Fonctions de test
+    function testBookingPage() {
+      // Test avec un bateau de démonstration
+      const boatId = '507f1f77bcf86cd799439011';
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() + 7);
+      const endDate = new Date();
+      endDate.setDate(endDate.getDate() + 10);
+      
+      const url = `booking.html?boatId=${boatId}&startDate=${startDate.toISOString().split('T')[0]}&endDate=${endDate.toISOString().split('T')[0]}`;
+      window.open(url, '_blank');
+      
+      logTest('Test de la page de réservation lancé', 'success');
+    }
+
+    function testBookingWithData() {
+      // Test avec des données pré-remplies
+      const boatId = '507f1f77bcf86cd799439012';
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() + 14);
+      const endDate = new Date();
+      endDate.setDate(endDate.getDate() + 17);
+      
+      const url = `booking.html?boatId=${boatId}&startDate=${startDate.toISOString().split('T')[0]}&endDate=${endDate.toISOString().split('T')[0]}`;
+      window.open(url, '_blank');
+      
+      logTest('Test avec données pré-remplies lancé', 'success');
+    }
+
+    function testConfirmationPage() {
+      // Test de la page de confirmation (avec un ID fictif)
+      const bookingId = '507f1f77bcf86cd799439999';
+      const url = `booking-confirmation.html?id=${bookingId}`;
+      window.open(url, '_blank');
+      
+      logTest('Test de la page de confirmation lancé', 'success');
+    }
+
+    function testCompleteProcess() {
+      // Test du processus complet
+      logTest('Démarrage du test du processus complet...', 'info');
+      
+      // Étape 1: Sélection d'un bateau
+      setTimeout(() => {
+        logTest('Étape 1: Redirection vers la page des bateaux', 'info');
+        window.open('boats.html', '_blank');
+      }, 1000);
+      
+      // Étape 2: Détail du bateau
+      setTimeout(() => {
+        logTest('Étape 2: Redirection vers le détail d\'un bateau', 'info');
+        const boatId = '507f1f77bcf86cd799439011';
+        window.open(`boats_detail.html?id=${boatId}`, '_blank');
+      }, 2000);
+      
+      // Étape 3: Réservation
+      setTimeout(() => {
+        logTest('Étape 3: Redirection vers la page de réservation', 'info');
+        testBookingPage();
+      }, 3000);
+    }
+
+    function logTest(message, type = 'info') {
+      const results = document.getElementById('test-results');
+      const output = document.getElementById('test-output');
+      
+      results.style.display = 'block';
+      
+      const timestamp = new Date().toLocaleTimeString();
+      const logEntry = document.createElement('div');
+      logEntry.className = `test-log test-log-${type}`;
+      logEntry.innerHTML = `
+        <span class="test-time">[${timestamp}]</span>
+        <span class="test-message">${message}</span>
+      `;
+      
+      output.appendChild(logEntry);
+      output.scrollTop = output.scrollHeight;
+    }
+
+    // Initialisation
+    document.addEventListener('DOMContentLoaded', function() {
+      logTest('Page de test chargée', 'success');
+      logTest('Système de réservation prêt pour les tests', 'info');
+    });
+  </script>
+
+  <style>
+    .test-header {
+      text-align: center;
+      margin-bottom: var(--space-4xl);
+      padding: var(--space-4xl);
+      background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+      border-radius: var(--radius-2xl);
+      color: var(--white);
+    }
+
+    .test-header h1 {
+      font-size: var(--text-3xl);
+      font-weight: 700;
+      margin-bottom: var(--space-md);
+    }
+
+    .test-header p {
+      font-size: var(--text-lg);
+      opacity: 0.9;
+    }
+
+    .test-sections {
+      display: grid;
+      gap: var(--space-2xl);
+      margin-bottom: var(--space-4xl);
+    }
+
+    .test-section {
+      background: var(--white);
+      border-radius: var(--radius-2xl);
+      padding: var(--space-2xl);
+      box-shadow: var(--shadow-xl);
+      border: 1px solid var(--gray-200);
+    }
+
+    .test-section h2 {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      font-size: var(--text-xl);
+      font-weight: 600;
+      color: var(--gray-900);
+      margin-bottom: var(--space-md);
+    }
+
+    .test-section h2 i {
+      color: var(--primary);
+    }
+
+    .test-section p {
+      color: var(--gray-600);
+      margin-bottom: var(--space-lg);
+    }
+
+    .test-actions {
+      display: flex;
+      gap: var(--space-md);
+      flex-wrap: wrap;
+    }
+
+    .test-data {
+      background: var(--gray-50);
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+    }
+
+    .test-data h3 {
+      font-size: var(--text-base);
+      font-weight: 600;
+      color: var(--gray-900);
+      margin-bottom: var(--space-sm);
+    }
+
+    .test-data ul {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 var(--space-lg) 0;
+    }
+
+    .test-data li {
+      font-size: var(--text-sm);
+      color: var(--gray-600);
+      margin-bottom: var(--space-xs);
+      padding-left: var(--space-md);
+      position: relative;
+    }
+
+    .test-data li::before {
+      content: "•";
+      color: var(--primary);
+      position: absolute;
+      left: 0;
+    }
+
+    .test-results {
+      background: var(--white);
+      border-radius: var(--radius-2xl);
+      padding: var(--space-2xl);
+      box-shadow: var(--shadow-xl);
+      border: 1px solid var(--gray-200);
+    }
+
+    .test-results h2 {
+      font-size: var(--text-xl);
+      font-weight: 600;
+      color: var(--gray-900);
+      margin-bottom: var(--space-lg);
+    }
+
+    #test-output {
+      max-height: 400px;
+      overflow-y: auto;
+      background: var(--gray-50);
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+    }
+
+    .test-log {
+      display: flex;
+      gap: var(--space-sm);
+      margin-bottom: var(--space-xs);
+      font-size: var(--text-sm);
+      font-family: 'Courier New', monospace;
+    }
+
+    .test-time {
+      color: var(--gray-500);
+      font-weight: 500;
+    }
+
+    .test-log-success .test-message {
+      color: #059669;
+    }
+
+    .test-log-error .test-message {
+      color: #dc2626;
+    }
+
+    .test-log-info .test-message {
+      color: #2563eb;
+    }
+
+    .test-log-warning .test-message {
+      color: #d97706;
+    }
+  </style>
+</body>
+</html>

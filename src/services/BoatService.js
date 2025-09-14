@@ -264,8 +264,12 @@ export class BoatService {
       const token = this.getAuthToken();
       
       if (!token) {
+        console.error('❌ [BOAT SERVICE] Token manquant pour getOwnerBoats');
         throw new Error('Authentification requise');
       }
+
+      console.log('🚤 [BOAT SERVICE] Récupération des bateaux du propriétaire');
+      console.log('🔐 [BOAT SERVICE] Token présent:', token ? 'Oui' : 'Non');
 
       // Construction de l'URL avec les paramètres de requête
       const queryParams = new URLSearchParams();
@@ -277,6 +281,7 @@ export class BoatService {
       });
 
       const url = `${this.boatsEndpoint}/owner/my-boats?${queryParams.toString()}`;
+      console.log('📡 [BOAT SERVICE] URL getOwnerBoats:', url);
       
       const response = await fetch(url, {
         method: 'GET',
@@ -286,15 +291,31 @@ export class BoatService {
         }
       });
 
+      console.log('📡 [BOAT SERVICE] Réponse getOwnerBoats:', {
+        status: response.status,
+        statusText: response.statusText,
+        ok: response.ok
+      });
+
       const data = await response.json();
       
       if (!response.ok) {
-        throw new Error(data.message || 'Erreur lors de la récupération des bateaux du propriétaire');
+        console.error('❌ [BOAT SERVICE] Erreur getOwnerBoats:', data);
+        
+        // Gestion spécifique des erreurs d'authentification
+        if (response.status === 401) {
+          throw new Error('Authentification requise - Token expiré ou invalide');
+        } else if (response.status === 403) {
+          throw new Error('Permissions insuffisantes pour accéder aux bateaux');
+        } else {
+          throw new Error(data.message || 'Erreur lors de la récupération des bateaux du propriétaire');
+        }
       }
 
+      console.log('✅ [BOAT SERVICE] Bateaux récupérés avec succès:', data.data?.boats?.length || 0, 'bateaux');
       return data;
     } catch (error) {
-      console.error('Erreur lors de la récupération des bateaux du propriétaire:', error);
+      console.error('❌ [BOAT SERVICE] Erreur lors de la récupération des bateaux du propriétaire:', error);
       throw error;
     }
   }
@@ -308,8 +329,12 @@ export class BoatService {
       const token = this.getAuthToken();
       
       if (!token) {
+        console.error('❌ [BOAT SERVICE] Token manquant pour getBoatStats');
         throw new Error('Authentification requise');
       }
+
+      console.log('📊 [BOAT SERVICE] Récupération des statistiques des bateaux');
+      console.log('🔐 [BOAT SERVICE] Token présent:', token ? 'Oui' : 'Non');
 
       const response = await fetch(`${this.boatsEndpoint}/stats/overview`, {
         method: 'GET',
@@ -319,15 +344,31 @@ export class BoatService {
         }
       });
 
+      console.log('📡 [BOAT SERVICE] Réponse getBoatStats:', {
+        status: response.status,
+        statusText: response.statusText,
+        ok: response.ok
+      });
+
       const data = await response.json();
       
       if (!response.ok) {
-        throw new Error(data.message || 'Erreur lors de la récupération des statistiques');
+        console.error('❌ [BOAT SERVICE] Erreur getBoatStats:', data);
+        
+        // Gestion spécifique des erreurs d'authentification
+        if (response.status === 401) {
+          throw new Error('Authentification requise - Token expiré ou invalide');
+        } else if (response.status === 403) {
+          throw new Error('Permissions insuffisantes pour accéder aux statistiques');
+        } else {
+          throw new Error(data.message || 'Erreur lors de la récupération des statistiques');
+        }
       }
 
+      console.log('✅ [BOAT SERVICE] Statistiques récupérées avec succès');
       return data;
     } catch (error) {
-      console.error('Erreur lors de la récupération des statistiques:', error);
+      console.error('❌ [BOAT SERVICE] Erreur lors de la récupération des statistiques:', error);
       throw error;
     }
   }
@@ -474,11 +515,20 @@ export class BoatService {
     try {
       const token = this.getAuthToken();
       if (!token) {
+        console.error('❌ [BOAT SERVICE] Token manquant pour la suppression');
         throw new Error('Authentification requise');
       }
 
+      console.log('🗑️ [BOAT SERVICE] Suppression du bateau:', boatId);
+      console.log('🔐 [BOAT SERVICE] Token présent:', token ? 'Oui' : 'Non');
+      console.log('🔐 [BOAT SERVICE] Token (premiers caractères):', token ? token.substring(0, 20) + '...' : 'N/A');
+
       const queryParams = force ? '?force=true' : '';
-      const response = await fetch(`${this.boatsEndpoint}/${boatId}${queryParams}`, {
+      const url = `${this.boatsEndpoint}/${boatId}${queryParams}`;
+      
+      console.log('📡 [BOAT SERVICE] URL de suppression:', url);
+
+      const response = await fetch(url, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -486,15 +536,31 @@ export class BoatService {
         }
       });
 
+      console.log('📡 [BOAT SERVICE] Réponse HTTP:', {
+        status: response.status,
+        statusText: response.statusText,
+        ok: response.ok
+      });
+
       const data = await response.json();
       
       if (!response.ok) {
-        throw new Error(data.message || 'Erreur lors de la suppression du bateau');
+        console.error('❌ [BOAT SERVICE] Erreur de suppression:', data);
+        
+        // Gestion spécifique des erreurs d'authentification
+        if (response.status === 401) {
+          throw new Error('Authentification requise - Token expiré ou invalide');
+        } else if (response.status === 403) {
+          throw new Error('Permissions insuffisantes pour supprimer ce bateau');
+        } else {
+          throw new Error(data.message || 'Erreur lors de la suppression du bateau');
+        }
       }
 
+      console.log('✅ [BOAT SERVICE] Suppression réussie:', data);
       return data;
     } catch (error) {
-      console.error('Erreur lors de la suppression du bateau:', error);
+      console.error('❌ [BOAT SERVICE] Erreur lors de la suppression du bateau:', error);
       throw error;
     }
   }

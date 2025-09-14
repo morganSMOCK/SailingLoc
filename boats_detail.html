@@ -393,8 +393,8 @@
             const dailyRate = parseInt(document.getElementById('boat-price').textContent.replace('€', ''));
             const totalPrice = days * dailyRate;
             
-            // Redirection vers la page de réservation
-            const bookingUrl = `booking.html?boatId=${boatId}&startDate=${startDate}&endDate=${endDate}&totalPrice=${totalPrice}`;
+            // Redirection vers la nouvelle page de réservation
+            const bookingUrl = `booking.html?boatId=${boatId}&startDate=${startDate}&endDate=${endDate}`;
             window.location.href = bookingUrl;
         }
 

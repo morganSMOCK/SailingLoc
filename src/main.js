@@ -28,6 +28,8 @@ class SailingLocApp {
     this.boatsPerPage = 12;
     this.currentFilters = {};
     this.selectedImages = [];
+    this.isLoadingBoats = false;
+    this.currentBoats = [];
     
     // Initialisation de l'application
     this.init();
@@ -60,7 +62,20 @@ class SailingLocApp {
       // Initialisation de la gestion des bateaux si nécessaire
       this.initBoatManagement();
       
+      // Exposer des fonctions de débogage
+      window.debugSailingLoc = {
+        testBoatCard: (boatData) => {
+          console.log('Test de création de carte de bateau:', boatData);
+          const card = this.createBoatCard(boatData);
+          console.log('Résultat:', card);
+          return card;
+        },
+        loadBoats: () => this.loadBoats(),
+        getCurrentBoats: () => this.currentBoats || []
+      };
+      
       console.log('✅ SailingLoc initialisé avec succès');
+      console.log('🔧 Fonctions de débogage disponibles: window.debugSailingLoc');
       
     } catch (error) {
       console.error('❌ Erreur lors de l\'initialisation:', error);
@@ -73,29 +88,40 @@ class SailingLocApp {
    */
   async checkAuthStatus() {
     const token = this.storageManager.getToken();
+    const user = this.storageManager.getUser();
     console.log('🔐 [AUTH] Token trouvé:', token ? 'Oui' : 'Non');
+    console.log('🔐 [AUTH] User trouvé:', user ? 'Oui' : 'Non');
     
-    if (token) {
+    if (token && user) {
+      // Utiliser les données du localStorage en premier
+      this.currentUser = user;
+      console.log('🔐 [AUTH] Utilisateur chargé depuis localStorage:', this.currentUser.email, 'Rôle:', this.currentUser.role);
+      this.updateUIForAuthenticatedUser();
+      
       try {
-        // Vérification de la validité du token
+        // Vérification de la validité du token en arrière-plan
         const response = await this.authService.verifyToken();
         console.log('🔐 [AUTH] Vérification token:', response.success ? 'Valide' : 'Invalide');
         
-        if (response.success) {
+        if (response.success && response.data.user) {
+          // Mettre à jour avec les données fraîches du serveur
           this.currentUser = response.data.user;
-          console.log('🔐 [AUTH] Utilisateur connecté:', this.currentUser.email, 'Rôle:', this.currentUser.role);
-          this.updateUIForAuthenticatedUser();
+          this.storageManager.setUser(this.currentUser);
+          console.log('🔐 [AUTH] Utilisateur mis à jour depuis le serveur');
         } else {
           // Token invalide, nettoyage
           console.log('🔐 [AUTH] Token invalide, nettoyage...');
           this.storageManager.clearAuth();
+          this.currentUser = null;
         }
       } catch (error) {
         console.error('Erreur lors de la vérification du token:', error);
-        this.storageManager.clearAuth();
+        // En cas d'erreur réseau, garder l'utilisateur du localStorage
+        console.log('🔐 [AUTH] Erreur réseau, conservation de l\'utilisateur localStorage');
       }
     } else {
-      console.log('🔐 [AUTH] Aucun token trouvé, utilisateur non connecté');
+      console.log('🔐 [AUTH] Aucun token ou utilisateur trouvé, utilisateur non connecté');
+      this.currentUser = null;
     }
   }
 
@@ -1054,11 +1080,25 @@ class SailingLocApp {
    * Chargement des bateaux
    */
   async loadBoats(filters = {}, page = 1) {
+    // Protection contre les appels multiples simultanés
+    if (this.isLoadingBoats) {
+      console.log('⏳ Chargement déjà en cours, annulation de la requête');
+      return;
+    }
+    
+    this.isLoadingBoats = true;
+    
     try {
       const boatsGrid = document.getElementById('boats-grid');
       const boatsLoading = document.getElementById('boats-loading');
       
       if (boatsLoading) boatsLoading.style.display = 'block';
+      
+      // Vider la grille immédiatement pour éviter les doublons
+      if (boatsGrid) {
+        boatsGrid.innerHTML = '';
+        console.log('🧹 Grille vidée avant le chargement');
+      }
       
       const queryParams = {
         page,
@@ -1074,6 +1114,8 @@ class SailingLocApp {
       console.log('📡 Réponse API:', response);
       
       if (response.success) {
+        // Stocker les bateaux pour éviter les re-rendus
+        this.currentBoats = response.data.boats;
         this.renderBoats(response.data.boats);
         this.renderPagination(response.data.pagination);
         this.currentPage = page;
@@ -1089,6 +1131,7 @@ class SailingLocApp {
       this.uiManager.showNotification(`Erreur de connexion: ${error.message}`, 'error');
       this.renderBoats([]); // Afficher "aucun bateau"
     } finally {
+      this.isLoadingBoats = false;
       const boatsLoading = document.getElementById('boats-loading');
       if (boatsLoading) boatsLoading.style.display = 'none';
     }
@@ -1099,10 +1142,21 @@ class SailingLocApp {
    */
   renderBoats(boats) {
     const boatsGrid = document.getElementById('boats-grid');
-    if (!boatsGrid) return;
+    if (!boatsGrid) {
+      console.warn('⚠️ Grille de bateaux non trouvée');
+      return;
+    }
     
-    // Vider la grille
+    console.log(`🎨 Rendu de ${boats.length} bateaux`);
+    
+    // Vider la grille complètement
     boatsGrid.innerHTML = '';
+    
+    // Vérifier que la grille est bien vide
+    if (boatsGrid.children.length > 0) {
+      console.warn('⚠️ La grille n\'était pas vide, vidage forcé');
+      boatsGrid.innerHTML = '';
+    }
     
     if (boats.length === 0) {
       boatsGrid.innerHTML = `
@@ -1111,21 +1165,44 @@ class SailingLocApp {
           <p>Essayez de modifier vos critères de recherche</p>
         </div>
       `;
+      console.log('📭 Aucun bateau à afficher');
       return;
     }
     
-    boats.forEach(boat => {
+    // Créer un fragment pour optimiser les performances
+    const fragment = document.createDocumentFragment();
+    let successCount = 0;
+    let errorCount = 0;
+    
+    boats.forEach((boat, index) => {
       try {
+        console.log(`🔧 Création de la carte pour le bateau ${index + 1}:`, boat.name, boat._id);
         const boatCard = this.createBoatCard(boat);
         if (boatCard && boatCard.nodeType) {
-          boatsGrid.appendChild(boatCard);
+          fragment.appendChild(boatCard);
+          successCount++;
+          console.log(`✅ Carte créée avec succès pour: ${boat.name}`);
         } else {
-          console.error('Erreur: createBoatCard n\'a pas retourné un élément DOM valide pour le bateau:', boat);
+          console.error('❌ Erreur: createBoatCard n\'a pas retourné un élément DOM valide pour le bateau:', boat);
+          // Créer une carte d'erreur à la place
+          const errorCard = this.createErrorCard(`Erreur: ${boat.name || 'Bateau inconnu'}`);
+          fragment.appendChild(errorCard);
+          errorCount++;
         }
       } catch (error) {
-        console.error('Erreur lors de la création de la carte du bateau:', error, boat);
+        console.error('❌ Erreur lors de la création de la carte du bateau:', error, boat);
+        // Créer une carte d'erreur à la place
+        const errorCard = this.createErrorCard(`Erreur: ${boat.name || 'Bateau inconnu'}`);
+        fragment.appendChild(errorCard);
+        errorCount++;
       }
     });
+    
+    // Ajouter tous les éléments d'un coup
+    boatsGrid.appendChild(fragment);
+    
+    console.log(`🎉 Rendu terminé: ${successCount} cartes créées, ${errorCount} erreurs`);
+    console.log(`📊 Total d'éléments dans la grille: ${boatsGrid.children.length}`);
   }
 
   /**
@@ -1133,52 +1210,107 @@ class SailingLocApp {
    */
   createBoatCard(boat) {
     try {
+      console.log('🔍 [DEBUG] Début de createBoatCard pour:', boat.name, boat._id);
+      
       // Validation des données du bateau
       if (!boat || !boat._id) {
-        console.error('Données de bateau invalides:', boat);
+        console.error('❌ [DEBUG] Données de bateau invalides:', boat);
         return this.createErrorCard('Données de bateau invalides');
       }
 
+      console.log('✅ [DEBUG] Validation des données OK');
+      
       const card = document.createElement('div');
       card.className = 'boat-card';
       card.setAttribute('data-boat-id', boat._id);
       
-      const mainImage = boat.mainImage || boat.images?.[0]?.url || 'https://images.pexels.com/photos/1001682/pexels-photo-1001682.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop';
+      console.log('✅ [DEBUG] Élément DOM créé');
+      
+      // Gestion des images - essayer plusieurs sources
+      let mainImage = 'https://images.pexels.com/photos/1001682/pexels-photo-1001682.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop';
+      
+      if (boat.mainImage) {
+        mainImage = boat.mainImage;
+        console.log('🖼️ [DEBUG] Image principale trouvée:', mainImage);
+      } else if (boat.images && boat.images.length > 0) {
+        // Chercher une image avec URL
+        const imageWithUrl = boat.images.find(img => img.url);
+        if (imageWithUrl) {
+          mainImage = imageWithUrl.url;
+          console.log('🖼️ [DEBUG] Image dans tableau trouvée:', mainImage);
+        }
+      } else if (boat.imageUrls && boat.imageUrls.length > 0) {
+        mainImage = boat.imageUrls[0];
+        console.log('🖼️ [DEBUG] Image URL trouvée:', mainImage);
+      } else {
+        console.log('🖼️ [DEBUG] Aucune image trouvée, utilisation de l\'image par défaut');
+      }
+      
+      // Nettoyer les données pour éviter les erreurs d'affichage
+      const boatName = (boat.name || 'Nom non disponible').replace(/[<>]/g, '');
+      const boatType = this.formatBoatType(boat.type || 'voilier');
+      const city = (boat.location?.city || 'Ville').replace(/[<>]/g, '');
+      const country = (boat.location?.country || 'Pays').replace(/[<>]/g, '');
+      const maxPeople = boat.capacity?.maxPeople || 0;
+      const length = boat.specifications?.length || 0;
+      const dailyRate = boat.pricing?.dailyRate || 0;
+      const rating = boat.rating?.average || 0;
+      const totalReviews = boat.rating?.totalReviews || 0;
+      
+      console.log('✅ [DEBUG] Données nettoyées:', { boatName, boatType, city, country, maxPeople, length, dailyRate, rating, totalReviews });
+      
+      // Test de la fonction renderStars
+      let starsHTML;
+      try {
+        starsHTML = this.renderStars(rating);
+        console.log('⭐ [DEBUG] Étoiles générées:', starsHTML);
+      } catch (starsError) {
+        console.error('❌ [DEBUG] Erreur dans renderStars:', starsError);
+        starsHTML = '☆☆☆☆☆';
+      }
       
       card.innerHTML = `
         <div class="boat-image">
-          <img src="${mainImage}" alt="${boat.name || 'Bateau'}" loading="lazy">
-          <div class="boat-badge">${this.formatBoatType(boat.type || 'voilier')}</div>
+          <img src="${mainImage}" alt="${boatName}" loading="lazy" onerror="this.src='https://images.pexels.com/photos/1001682/pexels-photo-1001682.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop'">
+          <div class="boat-badge">${boatType}</div>
           <div class="boat-rating">
-            <span class="rating-stars">${this.renderStars(boat.rating?.average || 0)}</span>
-            <span class="rating-count">(${boat.rating?.totalReviews || 0})</span>
+            <span class="rating-stars">${starsHTML}</span>
+            <span class="rating-count">(${totalReviews})</span>
           </div>
         </div>
         <div class="boat-content">
-          <h3 class="boat-name">${boat.name || 'Nom non disponible'}</h3>
-          <p class="boat-location">📍 ${boat.location?.city || 'Ville'}, ${boat.location?.country || 'Pays'}</p>
+          <h3 class="boat-name">${boatName}</h3>
+          <p class="boat-location">📍 ${city}, ${country}</p>
           <div class="boat-specs">
-            <span class="spec">👥 ${boat.capacity?.maxPeople || 0} pers.</span>
-            <span class="spec">📏 ${boat.specifications?.length || 0}m</span>
+            <span class="spec">👥 ${maxPeople} pers.</span>
+            <span class="spec">📏 ${length}m</span>
             ${boat.capacity?.cabins ? `<span class="spec">🛏️ ${boat.capacity.cabins} cabines</span>` : ''}
           </div>
           <div class="boat-price">
-            <span class="price">${boat.pricing?.dailyRate || 0}€</span>
+            <span class="price">${dailyRate}€</span>
             <span class="price-unit">/jour</span>
           </div>
           <button class="btn-primary btn-full boat-details-btn">Voir les détails</button>
         </div>
       `;
       
+      console.log('✅ [DEBUG] innerHTML défini');
+      
       // Écouteur pour afficher les détails
       const detailsBtn = card.querySelector('.boat-details-btn');
       if (detailsBtn) {
         detailsBtn.addEventListener('click', () => this.showBoatDetails(boat._id));
+        console.log('✅ [DEBUG] Écouteur d\'événement ajouté');
+      } else {
+        console.warn('⚠️ [DEBUG] Bouton de détails non trouvé');
       }
       
+      console.log('🎉 [DEBUG] Carte créée avec succès pour:', boat.name);
       return card;
     } catch (error) {
-      console.error('Erreur lors de la création de la carte de bateau:', error, boat);
+      console.error('❌ [DEBUG] Erreur lors de la création de la carte de bateau:', error);
+      console.error('❌ [DEBUG] Stack trace:', error.stack);
+      console.error('❌ [DEBUG] Données du bateau:', boat);
       return this.createErrorCard('Erreur lors du chargement');
     }
   }
@@ -1207,6 +1339,7 @@ class SailingLocApp {
       'catamaran': 'Catamaran',
       'yacht': 'Yacht',
       'bateau_moteur': 'Bateau à moteur',
+      'bateau à moteur': 'Bateau à moteur',
       'semi_rigide': 'Semi-rigide',
       'peniche': 'Péniche'
     };
@@ -1862,7 +1995,11 @@ class SailingLocApp {
     // Vérifier si nous sommes sur la page de gestion des bateaux
     if (window.location.pathname.includes('boat-management.html')) {
       this.setupBoatManagementEventListeners();
-      this.loadBoatManagementData();
+      
+      // Attendre un peu pour s'assurer que l'authentification est complètement chargée
+      setTimeout(() => {
+        this.loadBoatManagementData();
+      }, 100);
     }
   }
 
@@ -1935,6 +2072,29 @@ class SailingLocApp {
     try {
       this.showLoadingState();
       
+      console.log('🚤 [BOAT MANAGEMENT] Chargement des données de gestion des bateaux');
+      
+      // Vérifier l'authentification avant de charger les données
+      if (!this.currentUser) {
+        console.log('🔄 [BOAT MANAGEMENT] Utilisateur non trouvé, tentative de rechargement...');
+        // Essayer de recharger l'utilisateur depuis le localStorage
+        const user = this.storageManager.getUser();
+        if (user) {
+          this.currentUser = user;
+          console.log('✅ [BOAT MANAGEMENT] Utilisateur rechargé depuis le localStorage');
+        } else {
+          throw new Error('Vous devez être connecté pour accéder à la gestion des bateaux');
+        }
+      }
+
+      const token = this.storageManager.getToken();
+      if (!token) {
+        throw new Error('Token d\'authentification manquant. Veuillez vous reconnecter.');
+      }
+
+      console.log('🔐 [BOAT MANAGEMENT] Utilisateur connecté:', this.currentUser.email);
+      console.log('🔐 [BOAT MANAGEMENT] Token présent:', token ? 'Oui' : 'Non');
+      
       // Charger les statistiques et les bateaux en parallèle
       const [statsResponse, boatsResponse] = await Promise.all([
         this.boatService.getBoatStats(),
@@ -1951,9 +2111,22 @@ class SailingLocApp {
       }
 
       this.hideLoadingState();
+      console.log('✅ [BOAT MANAGEMENT] Données chargées avec succès');
     } catch (error) {
-      console.error('Erreur lors du chargement des données:', error);
-      this.showErrorState(error.message);
+      console.error('❌ [BOAT MANAGEMENT] Erreur lors du chargement des données:', error);
+      
+      // Gestion spécifique des erreurs d'authentification
+      if (error.message.includes('Vous devez être connecté') || 
+          error.message.includes('Authentification requise') || 
+          error.message.includes('Token')) {
+        this.showErrorState('Vous devez être connecté pour accéder à cette page. Redirection vers la page de connexion...');
+        // Rediriger vers la page de connexion après un délai
+        setTimeout(() => {
+          window.location.href = 'index.html';
+        }, 3000);
+      } else {
+        this.showErrorState(error.message);
+      }
     }
   }
 
@@ -2256,6 +2429,22 @@ class SailingLocApp {
     }
 
     try {
+      // Vérifier l'authentification avant la suppression
+      if (!this.currentUser) {
+        throw new Error('Vous devez être connecté pour supprimer un bateau');
+      }
+
+      const token = this.storageManager.getToken();
+      if (!token) {
+        throw new Error('Token d\'authentification manquant. Veuillez vous reconnecter.');
+      }
+
+      console.log('🗑️ [DELETE BOAT] Tentative de suppression du bateau:', boatId);
+      console.log('🔐 [DELETE BOAT] Token présent:', token ? 'Oui' : 'Non');
+      console.log('👤 [DELETE BOAT] Utilisateur connecté:', this.currentUser ? this.currentUser.email : 'Non');
+      console.log('👤 [DELETE BOAT] User ID:', this.currentUser ? this.currentUser._id : 'Non');
+      console.log('👤 [DELETE BOAT] User Role:', this.currentUser ? this.currentUser.role : 'Non');
+
       const response = await this.boatService.deleteBoat(boatId);
       
       if (response.success) {
@@ -2265,8 +2454,18 @@ class SailingLocApp {
         throw new Error(response.message);
       }
     } catch (error) {
-      console.error('Erreur lors de la suppression:', error);
-      this.uiManager.showNotification(`Erreur: ${error.message}`, 'error');
+      console.error('❌ [DELETE BOAT] Erreur lors de la suppression:', error);
+      
+      // Gestion spécifique des erreurs d'authentification
+      if (error.message.includes('Authentification requise') || error.message.includes('Token')) {
+        this.uiManager.showNotification('Session expirée. Veuillez vous reconnecter.', 'error');
+        // Rediriger vers la page de connexion
+        setTimeout(() => {
+          window.location.href = 'index.html';
+        }, 2000);
+      } else {
+        this.uiManager.showNotification(`Erreur: ${error.message}`, 'error');
+      }
     }
   }
 

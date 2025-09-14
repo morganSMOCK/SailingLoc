@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Réservation - SailingLoc</title>
+  <meta name="description" content="Réservez votre bateau de rêve avec SailingLoc. Processus de réservation simple et sécurisé.">
+  <link rel="stylesheet" href="/src/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav id="navbar" class="navbar">
+    <div class="nav-container">
+      <div class="nav-brand">
+        <h2>⛵ SailingLoc</h2>
+      </div>
+      
+      <div class="nav-menu" id="nav-menu">
+        <a href="index.html" class="nav-link">Accueil</a>
+        <a href="boats.html" class="nav-link">Bateaux</a>
+        <a href="experience.html" class="nav-link">Experience</a>
+        <a href="contact.html" class="nav-link">Contact</a>
+      </div>
+      
+      <div class="nav-auth">
+        <button id="login-btn" class="btn-secondary">Connexion</button>
+        <button id="register-btn" class="btn-primary">Inscription</button>
+        <!-- Menu utilisateur (caché par défaut) -->
+        <div id="user-menu" class="user-menu" style="display: none;">
+          <div class="user-avatar" id="user-avatar">
+            <span id="user-initials">JD</span>
+          </div>
+          <div class="user-dropdown" id="user-dropdown">
+            <div class="user-info">
+              <div class="user-name" id="user-name">John Doe</div>
+              <div class="user-email" id="user-email">john@example.com</div>
+            </div>
+            <div class="dropdown-divider"></div>
+            <a href="#" id="profile-link" class="dropdown-item">
+              <span class="dropdown-icon">👤</span>
+              Mon Profil
+            </a>
+            <a href="#" id="bookings-link" class="dropdown-item">
+              <span class="dropdown-icon">📋</span>
+              Mes Réservations
+            </a>
+            <a href="#" id="boats-link" class="dropdown-item" style="display: none;">
+              <span class="dropdown-icon">🛥️</span>
+              Mes Bateaux
+            </a>
+            <div class="dropdown-divider"></div>
+            <a href="#" id="logout-link" class="dropdown-item logout">
+              <span class="dropdown-icon">🚪</span>
+              Déconnexion
+            </a>
+          </div>
+        </div>
+      </div>
+      
+      <div class="mobile-menu-toggle" id="mobile-menu-toggle">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Breadcrumb -->
+  <div class="breadcrumb">
+    <div class="container">
+      <a href="index.html">Accueil</a> > 
+      <a href="boats.html">Bateaux</a> > 
+      <span id="boat-name">Réservation</span>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="container">
+      <!-- Loading State -->
+      <div id="loading" class="loading">
+        <i class="fas fa-spinner fa-spin"></i>
+        Chargement des informations de réservation...
+      </div>
+
+      <!-- Error State -->
+      <div id="error" class="error" style="display: none;">
+        <i class="fas fa-exclamation-triangle"></i>
+        <span id="error-message">Une erreur est survenue lors du chargement des informations.</span>
+      </div>
+
+      <!-- Booking Content -->
+      <div id="booking-content" style="display: none;">
+        <div class="booking-layout">
+          <!-- Left Column - Booking Form -->
+          <div class="booking-form-section">
+            <div class="booking-header">
+              <h1>Réserver votre bateau</h1>
+              <p>Complétez les informations ci-dessous pour finaliser votre réservation</p>
+            </div>
+
+            <form id="booking-form" class="booking-form">
+              <!-- Step 1: Dates et Participants -->
+              <div class="form-step active" id="step-1">
+                <div class="step-header">
+                  <div class="step-number">1</div>
+                  <div class="step-title">
+                    <h3>Dates et Participants</h3>
+                    <p>Choisissez vos dates et le nombre de passagers</p>
+                  </div>
+                </div>
+
+                <div class="form-content">
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label for="start-date">Date de début *</label>
+                      <input type="date" id="start-date" name="startDate" required>
+                      <small class="form-help">Date de début de votre location</small>
+                    </div>
+                    <div class="form-group">
+                      <label for="end-date">Date de fin *</label>
+                      <input type="date" id="end-date" name="endDate" required>
+                      <small class="form-help">Date de fin de votre location</small>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label for="adults">Nombre d'adultes *</label>
+                      <select id="adults" name="adults" required>
+                        <option value="">Sélectionner</option>
+                        <option value="1">1 adulte</option>
+                        <option value="2">2 adultes</option>
+                        <option value="3">3 adultes</option>
+                        <option value="4">4 adultes</option>
+                        <option value="5">5 adultes</option>
+                        <option value="6">6 adultes</option>
+                        <option value="7">7 adultes</option>
+                        <option value="8">8 adultes</option>
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label for="children">Nombre d'enfants</label>
+                      <select id="children" name="children">
+                        <option value="0">0 enfant</option>
+                        <option value="1">1 enfant</option>
+                        <option value="2">2 enfants</option>
+                        <option value="3">3 enfants</option>
+                        <option value="4">4 enfants</option>
+                        <option value="5">5 enfants</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="checkbox-label">
+                      <input type="checkbox" id="skipper-requested" name="skipperRequested">
+                      <span class="checkmark"></span>
+                      Je souhaite un skipper (150€/jour)
+                    </label>
+                    <small class="form-help">Un skipper expérimenté pour naviguer à votre place</small>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Step 2: Contact d'urgence -->
+              <div class="form-step" id="step-2">
+                <div class="step-header">
+                  <div class="step-number">2</div>
+                  <div class="step-title">
+                    <h3>Contact d'urgence</h3>
+                    <p>Informations de contact en cas d'urgence</p>
+                  </div>
+                </div>
+
+                <div class="form-content">
+                  <div class="form-group">
+                    <label for="emergency-name">Nom complet *</label>
+                    <input type="text" id="emergency-name" name="emergencyName" required>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label for="emergency-phone">Téléphone *</label>
+                      <input type="tel" id="emergency-phone" name="emergencyPhone" required>
+                    </div>
+                    <div class="form-group">
+                      <label for="emergency-relationship">Relation *</label>
+                      <select id="emergency-relationship" name="emergencyRelationship" required>
+                        <option value="">Sélectionner</option>
+                        <option value="conjoint">Conjoint(e)</option>
+                        <option value="parent">Parent</option>
+                        <option value="enfant">Enfant</option>
+                        <option value="ami">Ami(e)</option>
+                        <option value="collegue">Collègue</option>
+                        <option value="autre">Autre</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Step 3: Expérience nautique -->
+              <div class="form-step" id="step-3">
+                <div class="step-header">
+                  <div class="step-number">3</div>
+                  <div class="step-title">
+                    <h3>Expérience nautique</h3>
+                    <p>Parlez-nous de votre expérience de navigation</p>
+                  </div>
+                </div>
+
+                <div class="form-content">
+                  <div class="form-group">
+                    <label class="checkbox-label">
+                      <input type="checkbox" id="has-license" name="hasLicense">
+                      <span class="checkmark"></span>
+                      J'ai un permis nautique
+                    </label>
+                  </div>
+
+                  <div id="license-details" class="license-details" style="display: none;">
+                    <div class="form-group">
+                      <label for="license-type">Type de permis</label>
+                      <select id="license-type" name="licenseType">
+                        <option value="">Sélectionner</option>
+                        <option value="permis_plaisance">Permis plaisance</option>
+                        <option value="permis_cotier">Permis côtier</option>
+                        <option value="permis_hauturier">Permis hauturier</option>
+                        <option value="autre">Autre</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="experience-years">Années d'expérience</label>
+                    <select id="experience-years" name="experienceYears">
+                      <option value="0">Débutant (0-1 an)</option>
+                      <option value="2">Intermédiaire (2-5 ans)</option>
+                      <option value="6">Expérimenté (6-10 ans)</option>
+                      <option value="11">Expert (10+ ans)</option>
+                    </select>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="previous-boats">Types de bateaux navigués (optionnel)</label>
+                    <input type="text" id="previous-boats" name="previousBoats" placeholder="Ex: Voilier, Catamaran, Bateau à moteur">
+                  </div>
+
+                  <div class="form-group">
+                    <label for="additional-info">Informations complémentaires</label>
+                    <textarea id="additional-info" name="additionalInfo" rows="3" placeholder="Décrivez votre expérience ou vos besoins particuliers..."></textarea>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Step 4: Services additionnels -->
+              <div class="form-step" id="step-4">
+                <div class="step-header">
+                  <div class="step-number">4</div>
+                  <div class="step-title">
+                    <h3>Services additionnels</h3>
+                    <p>Personnalisez votre expérience</p>
+                  </div>
+                </div>
+
+                <div class="form-content">
+                  <div class="services-grid">
+                    <div class="service-item">
+                      <label class="service-checkbox">
+                        <input type="checkbox" name="additionalServices" value="nettoyage" data-price="50">
+                        <span class="checkmark"></span>
+                        <div class="service-info">
+                          <h4>Nettoyage final</h4>
+                          <p>Nettoyage complet du bateau à la fin de la location</p>
+                          <span class="service-price">50€</span>
+                        </div>
+                      </label>
+                    </div>
+
+                    <div class="service-item">
+                      <label class="service-checkbox">
+                        <input type="checkbox" name="additionalServices" value="carburant" data-price="100">
+                        <span class="checkmark"></span>
+                        <div class="service-info">
+                          <h4>Carburant inclus</h4>
+                          <p>Réservoir plein au départ et retour</p>
+                          <span class="service-price">100€</span>
+                        </div>
+                      </label>
+                    </div>
+
+                    <div class="service-item">
+                      <label class="service-checkbox">
+                        <input type="checkbox" name="additionalServices" value="equipement" data-price="75">
+                        <span class="checkmark"></span>
+                        <div class="service-info">
+                          <h4>Équipement de sécurité</h4>
+                          <p>Équipement de sécurité supplémentaire</p>
+                          <span class="service-price">75€</span>
+                        </div>
+                      </label>
+                    </div>
+
+                    <div class="service-item">
+                      <label class="service-checkbox">
+                        <input type="checkbox" name="additionalServices" value="assurance" data-price="25">
+                        <span class="checkmark"></span>
+                        <div class="service-info">
+                          <h4>Assurance étendue</h4>
+                          <p>Couverture d'assurance supplémentaire</p>
+                          <span class="service-price">25€</span>
+                        </div>
+                      </label>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="special-requests">Demandes spéciales</label>
+                    <textarea id="special-requests" name="specialRequests" rows="3" placeholder="Avez-vous des demandes particulières pour votre location ?"></textarea>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Navigation buttons -->
+              <div class="form-navigation">
+                <button type="button" id="prev-step" class="btn-secondary" style="display: none;">
+                  <i class="fas fa-arrow-left"></i>
+                  Précédent
+                </button>
+                <button type="button" id="next-step" class="btn-primary">
+                  Suivant
+                  <i class="fas fa-arrow-right"></i>
+                </button>
+                <button type="submit" id="submit-booking" class="btn-primary" style="display: none;">
+                  <i class="fas fa-check"></i>
+                  Confirmer la réservation
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Right Column - Booking Summary -->
+          <div class="booking-summary">
+            <div class="summary-card">
+              <h3>Résumé de votre réservation</h3>
+              
+              <div class="boat-info">
+                <div class="boat-image">
+                  <img id="boat-image" src="" alt="Bateau" style="display: none;">
+                  <div class="boat-placeholder">
+                    <i class="fas fa-ship"></i>
+                  </div>
+                </div>
+                <div class="boat-details">
+                  <h4 id="boat-name">Nom du bateau</h4>
+                  <p id="boat-location">Localisation</p>
+                  <div class="boat-specs">
+                    <span id="boat-capacity">Capacité</span>
+                    <span id="boat-type">Type</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="booking-dates">
+                <div class="date-item">
+                  <i class="fas fa-calendar-alt"></i>
+                  <div>
+                    <strong>Départ</strong>
+                    <span id="summary-start-date">-</span>
+                  </div>
+                </div>
+                <div class="date-item">
+                  <i class="fas fa-calendar-check"></i>
+                  <div>
+                    <strong>Retour</strong>
+                    <span id="summary-end-date">-</span>
+                  </div>
+                </div>
+                <div class="date-item">
+                  <i class="fas fa-clock"></i>
+                  <div>
+                    <strong>Durée</strong>
+                    <span id="summary-duration">-</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="participants-info">
+                <h4>Participants</h4>
+                <div class="participants-details">
+                  <span id="summary-adults">-</span>
+                  <span id="summary-children">-</span>
+                </div>
+              </div>
+
+              <div class="pricing-breakdown">
+                <h4>Détail des prix</h4>
+                <div class="price-item">
+                  <span>Location (€<span id="daily-rate">0</span>/jour × <span id="days-count">0</span> jours)</span>
+                  <span id="subtotal-price">0€</span>
+                </div>
+                <div class="price-item" id="skipper-price-item" style="display: none;">
+                  <span>Skipper (150€/jour × <span id="skipper-days">0</span> jours)</span>
+                  <span id="skipper-total">0€</span>
+                </div>
+                <div class="price-item" id="services-price-item" style="display: none;">
+                  <span>Services additionnels</span>
+                  <span id="services-total">0€</span>
+                </div>
+                <div class="price-item">
+                  <span>Frais de nettoyage</span>
+                  <span id="cleaning-fee">0€</span>
+                </div>
+                <div class="price-item">
+                  <span>Caution</span>
+                  <span id="security-deposit">0€</span>
+                </div>
+                <div class="price-divider"></div>
+                <div class="price-item total">
+                  <span>Total</span>
+                  <span id="total-price">0€</span>
+                </div>
+              </div>
+
+              <div class="booking-notes">
+                <h4>Informations importantes</h4>
+                <ul>
+                  <li>La caution sera bloquée sur votre carte</li>
+                  <li>Annulation gratuite jusqu'à 30 jours avant</li>
+                  <li>Check-in 2h avant le départ</li>
+                  <li>Retour du bateau avant 18h</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>⛵ SailingLoc</h3>
+          <p>Votre partenaire de confiance pour la location de bateaux de luxe</p>
+        </div>
+        
+        <div class="footer-section">
+          <h4>Services</h4>
+          <ul>
+            <li><a href="boats.html">Location de bateaux</a></li>
+            <li><a href="services.html">Services premium</a></li>
+            <li><a href="contact.html">Support client</a></li>
+          </ul>
+        </div>
+        
+        <div class="footer-section">
+          <h4>Légal</h4>
+          <ul>
+            <li><a href="#">Conditions générales</a></li>
+            <li><a href="#">Politique de confidentialité</a></li>
+            <li><a href="#">Mentions légales</a></li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="footer-bottom">
+        <p>&copy; 2024 SailingLoc. Tous droits réservés.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Modales -->
+  
+  <!-- Modale de connexion -->
+  <div id="login-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Connexion</h2>
+        <button class="modal-close">&times;</button>
+      </div>
+      <form id="login-form" class="auth-form">
+        <div class="form-group">
+          <label for="login-email">Email</label>
+          <input type="email" id="login-email" placeholder="votre@email.com" required>
+        </div>
+        <div class="form-group">
+          <label for="login-password">Mot de passe</label>
+          <input type="password" id="login-password" placeholder="Votre mot de passe" required>
+        </div>
+        <button type="submit" class="btn-primary btn-full">Se connecter</button>
+        <div class="auth-demo">
+          <p><strong>Compte de test :</strong></p>
+          <p><strong>Email:</strong> client@sailingloc.com</p>
+          <p><strong>Mot de passe:</strong> password123</p>
+          <button type="button" class="btn-secondary btn-small" onclick="document.getElementById('login-email').value='client@sailingloc.com'; document.getElementById('login-password').value='password123';">
+            Remplir automatiquement
+          </button>
+        </div>
+        <p class="auth-switch">
+          Pas encore de compte ? 
+          <a href="#" id="switch-to-register">Inscrivez-vous</a>
+        </p>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modale d'inscription -->
+  <div id="register-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Inscription</h2>
+        <button class="modal-close">&times;</button>
+      </div>
+      <form id="register-form" class="auth-form">
+        <div class="form-row">
+          <div class="form-group">
+            <input type="text" id="register-firstname" placeholder="Prénom" required>
+          </div>
+          <div class="form-group">
+            <input type="text" id="register-lastname" placeholder="Nom" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <input type="email" id="register-email" placeholder="Email" required>
+        </div>
+        <div class="form-group">
+          <input type="password" id="register-password" placeholder="Mot de passe" required>
+        </div>
+        <div class="form-group">
+          <input type="tel" id="register-phone" placeholder="Téléphone">
+        </div>
+        <div class="form-group">
+          <select id="register-role" required>
+            <option value="">Je suis...</option>
+            <option value="client">Client (je veux louer)</option>
+            <option value="owner">Propriétaire (je veux louer mon bateau)</option>
+          </select>
+        </div>
+        <button type="submit" class="btn-primary btn-full">S'inscrire</button>
+        <p class="auth-switch">
+          Déjà un compte ? 
+          <a href="#" id="switch-to-login">Connectez-vous</a>
+        </p>
+      </form>
+    </div>
+  </div>
+
+  <!-- Notifications -->
+  <div id="notifications-container" class="notifications-container"></div>
+
+  <script type="module" src="/src/main.js"></script>
+  <script type="module" src="/src/booking.js"></script>
+</body>
+</html>
