@@ -374,7 +374,7 @@ class SailingLocApp {
     const addBoatBtn = document.getElementById('add-boat-btn');
     if (addBoatBtn) {
       addBoatBtn.addEventListener('click', () => {
-        this.uiManager.showModal('add-boat-modal');
+        this.showAddBoatModal();
       });
     }
     
@@ -1870,13 +1870,7 @@ class SailingLocApp {
    * Configuration des écouteurs d'événements pour la gestion des bateaux
    */
   setupBoatManagementEventListeners() {
-    // Bouton d'ajout de bateau
-    const addBoatBtn = document.getElementById('add-boat-btn');
-    if (addBoatBtn) {
-      addBoatBtn.addEventListener('click', () => {
-        this.showAddBoatModal();
-      });
-    }
+    // Le bouton d'ajout de bateau est déjà configuré dans setupEventListeners()
 
     // Filtres
     const statusFilter = document.getElementById('status-filter');
