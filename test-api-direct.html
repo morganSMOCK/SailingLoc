@@ -61,6 +61,7 @@
     <div>
       <button onclick="testAPI()">🧪 Tester l'API</button>
       <button onclick="testWithAuth()">🔐 Tester avec Auth</button>
+      <button onclick="checkAuth()">🔍 Vérifier Auth</button>
       <button onclick="clearLogs()">🧹 Effacer les logs</button>
     </div>
     
@@ -91,6 +92,39 @@
     function clearLogs() {
       document.getElementById('logs').innerHTML = 'Logs effacés...\n';
       document.getElementById('results').innerHTML = '';
+    }
+
+    function checkAuth() {
+      log('🔍 Vérification de l\'authentification...', 'info');
+      
+      const token = localStorage.getItem('authToken');
+      if (token) {
+        log('✅ Token d\'authentification trouvé', 'success');
+        log(`🔐 Token: ${token.substring(0, 20)}...`, 'info');
+        
+        // Vérifier si le token est valide
+        try {
+          const payload = JSON.parse(atob(token.split('.')[1]));
+          const exp = payload.exp * 1000;
+          const now = Date.now();
+          
+          if (exp > now) {
+            log('✅ Token valide (non expiré)', 'success');
+            log(`⏰ Expire le: ${new Date(exp).toLocaleString()}`, 'info');
+          } else {
+            log('❌ Token expiré', 'error');
+            log('💡 Reconnectez-vous sur l\'application principale', 'info');
+          }
+        } catch (error) {
+          log('⚠️ Token malformé', 'warning');
+        }
+      } else {
+        log('❌ Aucun token d\'authentification trouvé', 'error');
+        log('💡 Pour obtenir un token:', 'info');
+        log('   1. Allez sur l\'application principale', 'info');
+        log('   2. Connectez-vous avec vos identifiants', 'info');
+        log('   3. Revenez sur cette page de test', 'info');
+      }
     }
 
     async function testAPI() {
@@ -139,7 +173,10 @@
         // Récupérer le token depuis localStorage
         const token = localStorage.getItem('authToken');
         if (!token) {
-          log('❌ Aucun token d\'authentification trouvé', 'error');
+          log('⚠️ Aucun token d\'authentification trouvé - test sans auth', 'warning');
+          log('💡 Connectez-vous d\'abord sur l\'application principale', 'info');
+          // Tester quand même sans auth
+          await testAPI();
           return;
         }
         
@@ -237,6 +274,11 @@
     // Initialisation
     log('🚀 Page de test API chargée', 'success');
     log('💡 Cliquez sur "Tester l\'API" pour commencer', 'info');
+    
+    // Vérification automatique de l'auth
+    setTimeout(() => {
+      checkAuth();
+    }, 1000);
   </script>
 </body>
 </html>
