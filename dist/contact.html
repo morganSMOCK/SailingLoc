@@ -1,242 +1,263 @@
 <!DOCTYPE html>
-<html lang="fr">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Contact - SailingLoc</title>
-  <meta name="description" content="Contactez l'équipe SailingLoc pour toute question sur la location de bateaux. Support client disponible 24/7.">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <script type="module" crossorigin src="/assets/main-BCnV_fgJ.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/style-Deg_6pYg.css">
-</head>
-<body>
-  <!-- Navigation -->
-  <nav id="navbar" class="navbar">
-    <div class="nav-container">
-      <div class="nav-brand">
-        <h2>⛵ SailingLoc</h2>
+  <html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Contact - SailingLoc</title>
+    <meta name="description" content="Contactez l'équipe SailingLoc pour toute question sur la location de bateaux. Support client disponible 24/7.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script type="module" crossorigin src="/assets/main-6B_FRqmo.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/style-t4_5AYKD.css">
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav id="navbar" class="navbar">
+      <div class="nav-container">
+              <div class="nav-brand" style="display: flex; align-items: center; gap: 10px;">
+        <img src="dist/assets/sailingloc_logo_mark_no_text_512.png" alt="Logo SailingLoc" style="height:48px;vertical-align:middle;">
+        <h2 style="
+          font-size:2.2rem;
+          font-weight:900;
+          background: linear-gradient(90deg, #2f7fe0 0%, #35c1a0 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+          letter-spacing: -1px;
+          margin: 0;
+        ">
+          SailingLoc
+        </h2>
       </div>
-      
-      <div class="nav-menu" id="nav-menu">
-        <a href="index.html" class="nav-link">Accueil</a>
-        <a href="boats.html" class="nav-link">Bateaux</a>
-  <a href="experience.html" class="nav-link">Experience</a>
-        <a href="contact.html" class="nav-link active">Contact</a>
-      </div>
-      
-      <div class="nav-auth">
-        <button id="login-btn" class="btn-secondary">Connexion</button>
-        <button id="register-btn" class="btn-primary">Inscription</button>
         
-        <!-- Menu utilisateur (caché par défaut) -->
-        <div id="user-menu" class="user-menu" style="display: none;">
-          <div class="user-avatar" id="user-avatar">
-            <span id="user-initials">JD</span>
-          </div>
-          <div class="user-dropdown" id="user-dropdown">
-            <div class="user-info">
-              <div class="user-name" id="user-name">John Doe</div>
-              <div class="user-email" id="user-email">john@example.com</div>
+        <div class="nav-menu" id="nav-menu">
+          <a href="index.html" class="nav-link">Accueil</a>
+          <a href="boats.html" class="nav-link">Bateaux</a>
+    <a href="experience.html" class="nav-link">Experience</a>
+          <a href="contact.html" class="nav-link active">Contact</a>
+        </div>
+        
+        <div class="nav-auth">
+          <button id="login-btn" class="btn-secondary">Connexion</button>
+          <button id="register-btn" class="btn-primary">Inscription</button>
+          
+          <!-- Menu utilisateur (caché par défaut) -->
+          <div id="user-menu" class="user-menu" style="display: none;">
+            <div class="user-avatar" id="user-avatar">
+              <span id="user-initials">JD</span>
             </div>
-            <div class="dropdown-divider"></div>
-            <a href="#" id="profile-link" class="dropdown-item">
-              <span class="dropdown-icon">👤</span>
-              Mon Profil
-            </a>
-            <a href="#" id="bookings-link" class="dropdown-item">
-              <span class="dropdown-icon">📋</span>
-              Mes Réservations
-            </a>
-            <a href="#" id="boats-link" class="dropdown-item" style="display: none;">
-              <span class="dropdown-icon">🛥️</span>
-              Mes Bateaux
-            </a>
-            <div class="dropdown-divider"></div>
-            <a href="#" id="logout-link" class="dropdown-item logout">
-              <span class="dropdown-icon">🚪</span>
-              Déconnexion
-            </a>
+            <div class="user-dropdown" id="user-dropdown">
+              <div class="user-info">
+                <div class="user-name" id="user-name">John Doe</div>
+                <div class="user-email" id="user-email">john@example.com</div>
+              </div>
+              <div class="dropdown-divider"></div>
+              <a href="#" id="profile-link" class="dropdown-item">
+                <span class="dropdown-icon">👤</span>
+                Mon Profil
+              </a>
+              <a href="#" id="bookings-link" class="dropdown-item">
+                <span class="dropdown-icon">📋</span>
+                Mes Réservations
+              </a>
+              <a href="#" id="boats-link" class="dropdown-item" style="display: none;">
+                <span class="dropdown-icon">🛥️</span>
+                Mes Bateaux
+              </a>
+              <div class="dropdown-divider"></div>
+              <a href="#" id="logout-link" class="dropdown-item logout">
+                <span class="dropdown-icon">🚪</span>
+                Déconnexion
+              </a>
+            </div>
           </div>
         </div>
+        
+        <div class="mobile-menu-toggle" id="mobile-menu-toggle">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
       </div>
-      
-      <div class="mobile-menu-toggle" id="mobile-menu-toggle">
-        <span></span>
-        <span></span>
-        <span></span>
+    </nav>
+
+<!-- CONTACT HERO -->
+<section class="contact-hero">
+  <div class="container">
+    <div class="hero-wrap">
+      <h1>Parlons navigation</h1>
+      <p>Une question, un devis, un conseil d’itinéraire ? Notre équipe répond <strong>sous 1h</strong>, 7j/7.</p>
+      <div class="kpis">
+        <div class="kpi"><span>~12 min</span><small>Temps de réponse</small></div>
+        <div class="kpi"><span>4.9/5</span><small>Satisfaction</small></div>
+        <div class="kpi"><span>7j/7</span><small>Support</small></div>
       </div>
     </div>
-  </nav>
+  </div>
+  <div class="wave" aria-hidden="true"></div>
+</section>
 
-  <!-- Section Contact -->
-  <section id="contact" class="contact-section">
-    <div class="container">
-      <div class="section-header">
-        <h1>Contactez-nous</h1>
-        <p>Une question ? Besoin d'aide ? Notre équipe est là pour vous</p>
-      </div>
-      
-      <div class="contact-content">
-        <div class="contact-info">
-          <div class="contact-item">
-            <div class="contact-icon">📍</div>
-            <div>
-              <h4>Adresse</h4>
-              <p>45 rue de la Loire<br>, 17000 La Rochelle, France</p>
-            </div>
+<!-- CONTACT SECTION -->
+<section id="contact" class="contact-modern">
+  <div class="container">
+    <div class="contact-grid">
+      <!-- Canal de contact / infos -->
+      <aside class="contact-aside">
+        <div class="contact-card">
+          <div class="card-head">
+            <h3>Téléphone</h3>
+            <span class="open-badge" id="open-badge">Calcul…</span>
           </div>
-          
-          <div class="contact-item">
-            <div class="contact-icon">📞</div>
-            <div>
-              <h4>Téléphone</h4>
-              <p>+33 4 93 99 99 99</p>
-            </div>
-          </div>
-          
-          <div class="contact-item">
-            <div class="contact-icon">✉️</div>
-            <div>
-              <h4>Email</h4>
-              <p>sailingloc98@gmail.com</p>
-            </div>
-          </div>
-
-          <div class="contact-item">
-            <div class="contact-icon">🕒</div>
-            <div>
-              <h4>Horaires</h4>
-              <p>Lundi - Vendredi : 9h - 18h<br>Samedi : 9h - 17h<br>Dimanche : 10h - 16h</p>
-            </div>
-          </div>
-
-          <div class="contact-item">
-            <div class="contact-icon">🌐</div>
-            <div>
-              <h4>Réseaux sociaux</h4>
-              <div class="social-links">
-                <a href="#" class="social-link">📷 Instagram</a>
-              </div>
-            </div>
+          <p>Parlez directement avec un conseiller SailingLoc.</p>
+          <div class="actions">
+            <a href="tel:+33493999999" class="btn-primary">📞 Appeler</a>
+            <button type="button" class="btn-secondary" data-copy="+330651807292">Copier</button>
           </div>
         </div>
-        
-        <form id="contact-form" class="contact-form">
+
+        <div class="contact-card">
+          <div class="card-head"><h3>WhatsApp</h3></div>
+          <p>Photos de bateaux, devis rapides et conseils d’itinéraires.</p>
+          <div class="actions">
+            <a class="btn-primary" href="https://wa.me/33651807292" target="_blank" rel="noopener">💬 Ouvrir WhatsApp</a>
+          </div>
+        </div>
+
+        <div class="contact-card">
+          <div class="card-head"><h3>Email</h3></div>
+          <p>Nous répondons sous 1h (hors nuit). Pièces jointes bienvenues.</p>
+          <div class="actions">
+            <a class="btn-primary" href="mailto:sailingloc98@gmail.com">✉️ Envoyer un email</a>
+            <button type="button" class="btn-secondary" data-copy="sailingloc98@gmail.com">Copier</button>
+          </div>
+        </div>
+
+        <div class="map-card">
+          <div class="map-head">
+            <h3>Nous trouver</h3>
+            <button class="btn-secondary btn-xs" type="button" onclick="window.open('https://maps.google.com/?q=45+rue+de+la+Loire,+17000+La+Rochelle', '_blank')">Itinéraire</button>
+          </div>
+          <p>45 rue de la Loire, 17000 La Rochelle, France</p>
+          <div class="map-embed">
+            <iframe
+              title="SailingLoc - Carte"
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+              src="https://www.google.com/maps?q=45%20rue%20de%20la%20Loire%2017000%20La%20Rochelle&output=embed">
+            </iframe>
+          </div>
+          <ul class="hours">
+            <li><strong>Lun–Ven</strong> 09:00–18:00</li>
+            <li><strong>Sam</strong> 09:00–17:00</li>
+            <li><strong>Dim</strong> 10:00–16:00</li>
+          </ul>
+        </div>
+      </aside>
+
+      <!-- Formulaire -->
+      <form id="contact-form" class="contact-form card">
+        <h3>Écrivez-nous</h3>
+        <div class="form-grid">
           <div class="form-group">
             <label for="contact-name">Nom complet *</label>
-            <input type="text" id="contact-name" placeholder="Votre nom" required>
+            <input type="text" id="contact-name" required placeholder="Votre nom et prénom">
           </div>
           <div class="form-group">
             <label for="contact-email">Email *</label>
-            <input type="email" id="contact-email" placeholder="Votre email" required>
+            <input type="email" id="contact-email" required placeholder="votre@email.com">
           </div>
           <div class="form-group">
             <label for="contact-phone">Téléphone</label>
-            <input type="tel" id="contact-phone" placeholder="Votre téléphone">
+            <input type="tel" id="contact-phone" placeholder="+33 …">
           </div>
           <div class="form-group">
             <label for="contact-subject">Sujet *</label>
             <select id="contact-subject" required>
-              <option value="">Choisissez un sujet</option>
+              <option value="" selected disabled>Choisissez un sujet</option>
               <option value="reservation">Question sur une réservation</option>
               <option value="boat">Information sur un bateau</option>
               <option value="service">Demande de service</option>
+              <option value="partnership">Partenariat</option>
               <option value="other">Autre</option>
             </select>
           </div>
-          <div class="form-group">
+          <div class="form-group form-span">
             <label for="contact-message">Message *</label>
-            <textarea id="contact-message" placeholder="Votre message" rows="5" required></textarea>
+            <textarea id="contact-message" rows="6" required placeholder="Expliquez votre besoin (dates, destination, type de bateau…)"></textarea>
           </div>
-          <div class="form-group">
+          <div class="form-group form-span">
             <label class="checkbox-label">
               <input type="checkbox" id="contact-newsletter">
               <span class="checkmark"></span>
-              Je souhaite recevoir la newsletter SailingLoc
+              Recevoir les bons plans & actus (1 email/mois)
             </label>
           </div>
-          <button type="submit" class="btn-primary btn-full">Envoyer le message</button>
-        </form>
-      </div>
+          <!-- honeypot anti-spam -->
+          <input type="text" name="_hp" id="hp" style="position:absolute;left:-5000px;opacity:0" tabindex="-1" autocomplete="off">
+        </div>
+
+        <button type="submit" class="btn-primary btn-full" id="send-btn">Envoyer le message</button>
+        <p class="form-note">En envoyant, vous acceptez nos <a href="#">CGU</a> et notre <a href="#">politique de confidentialité</a>.</p>
+
+        <div class="form-success" id="form-success" hidden>
+          ✅ Merci ! Votre message a été envoyé. Nous revenons vers vous au plus vite.
+        </div>
+      </form>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- Section FAQ -->
-  <section class="faq-section">
-    <div class="container">
-      <div class="section-header">
-        <h2>Questions Fréquentes</h2>
-        <p>Trouvez rapidement les réponses à vos questions</p>
-      </div>
-      
-      <div class="faq-grid">
-        <div class="faq-item">
-          <div class="faq-question">
-            <h3>Comment réserver un bateau ?</h3>
-            <span class="faq-toggle">+</span>
-          </div>
-          <div class="faq-answer">
-            <p>La réservation se fait en ligne en quelques étapes simples : choisissez votre bateau, sélectionnez vos dates, remplissez vos informations et confirmez votre paiement. Vous recevrez une confirmation par email.</p>
-          </div>
-        </div>
-
-        <div class="faq-item">
-          <div class="faq-question">
-            <h3>Quels documents sont nécessaires ?</h3>
-            <span class="faq-toggle">+</span>
-          </div>
-          <div class="faq-answer">
-            <p>Pour louer un bateau, vous aurez besoin de votre permis de conduire maritime, d'une pièce d'identité valide et d'une attestation d'assurance. Pour certains bateaux, un permis côtier peut être suffisant.</p>
-          </div>
-        </div>
-
-        <div class="faq-item">
-          <div class="faq-question">
-            <h3>Puis-je annuler ma réservation ?</h3>
-            <span class="faq-toggle">+</span>
-          </div>
-          <div class="faq-answer">
-            <p>Oui, vous pouvez annuler votre réservation jusqu'à 48h avant le départ. Les conditions de remboursement varient selon le délai d'annulation. Consultez nos conditions générales pour plus de détails.</p>
-          </div>
-        </div>
-
-        <div class="faq-item">
-          <div class="faq-question">
-            <h3>Les capitaines sont-ils inclus ?</h3>
-            <span class="faq-toggle">+</span>
-          </div>
-          <div class="faq-answer">
-            <p>Cela dépend de la formule choisie. Nos formules Premium et Luxe incluent un capitaine expérimenté. Pour la formule Basique, vous pouvez louer un capitaine en supplément.</p>
-          </div>
-        </div>
-
-        <div class="faq-item">
-          <div class="faq-question">
-            <h3>Que se passe-t-il en cas de mauvais temps ?</h3>
-            <span class="faq-toggle">+</span>
-          </div>
-          <div class="faq-answer">
-            <p>En cas de conditions météorologiques défavorables, nous vous proposons de reporter votre sortie ou de vous rembourser intégralement. Votre sécurité est notre priorité.</p>
-          </div>
-        </div>
-
-        <div class="faq-item">
-          <div class="faq-question">
-            <h3>Comment devenir propriétaire partenaire ?</h3>
-            <span class="faq-toggle">+</span>
-          </div>
-          <div class="faq-answer">
-            <p>Pour louer votre bateau sur notre plateforme, contactez-nous via le formulaire ci-dessus en sélectionnant "Partenariat". Notre équipe vous accompagnera dans le processus d'inscription.</p>
-          </div>
-        </div>
-      </div>
+<!-- FAQ (accessibilité native) -->
+<section class="faq-modern">
+  <div class="container">
+    <div class="section-header">
+      <h2>Questions fréquentes</h2>
+      <p>Trouvez rapidement les réponses à vos questions</p>
     </div>
-  </section>
+
+    <div class="faq-list">
+      <details class="faq" open>
+        <summary>Comment réserver un bateau ?</summary>
+        <div class="answer">
+          La réservation se fait en ligne : choisissez votre bateau, vos dates, validez le paiement sécurisé. Confirmation instantanée par email.
+        </div>
+      </details>
+
+      <details class="faq">
+        <summary>Quels documents sont nécessaires ?</summary>
+        <div class="answer">
+          Pièce d’identité, permis maritime adapté (si requis) et assurance. Pour certains bateaux, un permis côtier suffit.
+        </div>
+      </details>
+
+      <details class="faq">
+        <summary>Puis-je annuler ma réservation ?</summary>
+        <div class="answer">
+          Oui, jusqu’à 48h avant le départ selon les conditions. En cas de météo défavorable, report ou remboursement intégral.
+        </div>
+      </details>
+
+      <details class="faq">
+        <summary>Les capitaines sont-ils inclus ?</summary>
+        <div class="answer">
+          Option skipper disponible selon la formule et la zone. Idéal si vous débutez ou souhaitez vous détendre à 100%.
+        </div>
+      </details>
+
+      <details class="faq">
+        <summary>Comment devenir propriétaire partenaire ?</summary>
+        <div class="answer">
+          Écrivez-nous via le formulaire (sujet « Partenariat »). On vous accompagne pour publier votre bateau.
+        </div>
+      </details>
+    </div>
+  </div>
+</section>
 
 
-  <!-- Footer -->
+
+  <!-- Footer (ton snippet) -->
   <footer class="footer">
     <div class="container">
       <div class="footer-content">
@@ -249,7 +270,7 @@
           <h4>Services</h4>
           <ul>
             <li><a href="boats.html">Location de bateaux</a></li>
-            <li><a href="services.html">Services premium</a></li>
+            <li><a href="experience.html">Experience premium</a></li>
             <li><a href="contact.html">Support client</a></li>
           </ul>
         </div>
@@ -257,408 +278,503 @@
         <div class="footer-section">
           <h4>Légal</h4>
           <ul>
-            <li><a href="#">Conditions générales</a></li>
-            <li><a href="#">Politique de confidentialité</a></li>
-            <li><a href="#">Mentions légales</a></li>
+            <li><a href="conditions.html">Conditions générales</a></li>
+            <li><a href="confidentialite.html">Politique de confidentialité</a></li>
+            <li><a href="mentions.html">Mentions légales</a></li>
           </ul>
         </div>
-      </div>
+      </div><!-- fermeture pour .footer-content -->
       
       <div class="footer-bottom">
-        <p>&copy; 2024 SailingLoc. Tous droits réservés.</p>
+        <p>&copy; 2025 SailingLoc. Tous droits réservés.</p>
       </div>
     </div>
   </footer>
 
-  <!-- Modales -->
-  
-  <!-- Modale de connexion -->
-  <div id="login-modal" class="modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2>Connexion</h2>
-        <button class="modal-close">&times;</button>
+    <!-- Modales -->
+    
+    <!-- Modale de connexion -->
+    <div id="login-modal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Connexion</h2>
+          <button class="modal-close">&times;</button>
+        </div>
+        <form id="login-form" class="auth-form">
+          <div class="form-group">
+            <label for="login-email">Email</label>
+            <input type="email" id="login-email" placeholder="votre@email.com" required>
+          </div>
+          <div class="form-group">
+            <label for="login-password">Mot de passe</label>
+            <input type="password" id="login-password" placeholder="Votre mot de passe" required>
+          </div>
+          <button type="submit" class="btn-primary btn-full">Se connecter</button>
+          <div class="auth-demo">
+            <p><strong>Compte de test :</strong></p>
+            <p><strong>Email:</strong> owner@sailingloc.com</p>
+            <p><strong>Mot de passe:</strong> password123</p>
+            <button type="button" class="btn-secondary btn-small" onclick="document.getElementById('login-email').value='owner@sailingloc.com'; document.getElementById('login-password').value='password123';">
+              Remplir automatiquement
+            </button>
+          </div>
+          <p class="auth-switch">
+            Pas encore de compte ? 
+            <a href="#" id="switch-to-register">Inscrivez-vous</a>
+          </p>
+        </form>
       </div>
-      <form id="login-form" class="auth-form">
-        <div class="form-group">
-          <label for="login-email">Email</label>
-          <input type="email" id="login-email" placeholder="votre@email.com" required>
-        </div>
-        <div class="form-group">
-          <label for="login-password">Mot de passe</label>
-          <input type="password" id="login-password" placeholder="Votre mot de passe" required>
-        </div>
-        <button type="submit" class="btn-primary btn-full">Se connecter</button>
-        <div class="auth-demo">
-          <p><strong>Compte de test :</strong></p>
-          <p><strong>Email:</strong> owner@sailingloc.com</p>
-          <p><strong>Mot de passe:</strong> password123</p>
-          <button type="button" class="btn-secondary btn-small" onclick="document.getElementById('login-email').value='owner@sailingloc.com'; document.getElementById('login-password').value='password123';">
-            Remplir automatiquement
-          </button>
-        </div>
-        <p class="auth-switch">
-          Pas encore de compte ? 
-          <a href="#" id="switch-to-register">Inscrivez-vous</a>
-        </p>
-      </form>
     </div>
-  </div>
 
-  <!-- Modale d'inscription -->
-  <div id="register-modal" class="modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2>Inscription</h2>
-        <button class="modal-close">&times;</button>
+    <!-- Modale d'inscription -->
+    <div id="register-modal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Inscription</h2>
+          <button class="modal-close">&times;</button>
+        </div>
+        <form id="register-form" class="auth-form">
+          <div class="form-row">
+            <div class="form-group">
+              <input type="text" id="register-firstname" placeholder="Prénom" required>
+            </div>
+            <div class="form-group">
+              <input type="text" id="register-lastname" placeholder="Nom" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <input type="email" id="register-email" placeholder="Email" required>
+          </div>
+          <div class="form-group">
+            <input type="password" id="register-password" placeholder="Mot de passe" required>
+          </div>
+          <div class="form-group">
+            <input type="tel" id="register-phone" placeholder="Téléphone">
+          </div>
+          <div class="form-group">
+            <select id="register-role" required>
+              <option value="">Je suis...</option>
+              <option value="client">Client (je veux louer)</option>
+              <option value="owner">Propriétaire (je veux louer mon bateau)</option>
+            </select>
+          </div>
+          <button type="submit" class="btn-primary btn-full">S'inscrire</button>
+          <p class="auth-switch">
+            Déjà un compte ? 
+            <a href="#" id="switch-to-login">Connectez-vous</a>
+          </p>
+        </form>
       </div>
-      <form id="register-form" class="auth-form">
-        <div class="form-row">
-          <div class="form-group">
-            <input type="text" id="register-firstname" placeholder="Prénom" required>
+    </div>
+
+    <!-- Modale de profil -->
+    <div id="profile-modal" class="modal modal-large">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Mon Profil</h2>
+          <button class="modal-close">&times;</button>
+        </div>
+        
+        <div class="profile-tabs">
+          <button class="tab-btn active" data-tab="profile-info">Informations</button>
+          <button class="tab-btn" data-tab="profile-security">Sécurité</button>
+          <button class="tab-btn" data-tab="profile-preferences">Préférences</button>
+        </div>
+        
+        <div class="profile-content">
+          <!-- Onglet Informations -->
+          <div id="profile-info" class="tab-content active">
+            <form id="profile-form" class="profile-form">
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Prénom</label>
+                  <input type="text" id="profile-firstname" required>
+                </div>
+                <div class="form-group">
+                  <label>Nom</label>
+                  <input type="text" id="profile-lastname" required>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="profile-email" readonly>
+              </div>
+              <div class="form-group">
+                <label>Téléphone</label>
+                <input type="tel" id="profile-phone">
+              </div>
+              <div class="form-group">
+                <label>Adresse</label>
+                <input type="text" id="profile-street" placeholder="Rue">
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <input type="text" id="profile-city" placeholder="Ville">
+                </div>
+                <div class="form-group">
+                  <input type="text" id="profile-postal" placeholder="Code postal">
+                </div>
+              </div>
+              <button type="submit" class="btn-primary">Mettre à jour</button>
+            </form>
           </div>
-          <div class="form-group">
-            <input type="text" id="register-lastname" placeholder="Nom" required>
+          
+          <!-- Onglet Sécurité -->
+          <div id="profile-security" class="tab-content">
+            <form id="change-password-form-profile" class="profile-form">
+              <div class="form-group">
+                <label>Mot de passe actuel</label>
+                <input type="password" id="current-password-profile" required>
+              </div>
+              <div class="form-group">
+                <label>Nouveau mot de passe</label>
+                <input type="password" id="new-password-profile" required>
+              </div>
+              <div class="form-group">
+                <label>Confirmer le nouveau mot de passe</label>
+                <input type="password" id="confirm-password-profile" required>
+              </div>
+              <button type="submit" class="btn-primary">Changer le mot de passe</button>
+            </form>
+          </div>
+          
+          <!-- Onglet Préférences -->
+          <div id="profile-preferences" class="tab-content">
+            <form id="preferences-form" class="profile-form">
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Langue</label>
+                  <select id="profile-language">
+                    <option value="fr">Français</option>
+                    <option value="en">English</option>
+                    <option value="es">Español</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Devise</label>
+                  <select id="profile-currency">
+                    <option value="EUR">Euro (€)</option>
+                    <option value="USD">Dollar ($)</option>
+                    <option value="GBP">Livre (£)</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="checkbox-label">
+                  <input type="checkbox" id="email-notifications" checked>
+                  <span class="checkmark"></span>
+                  Recevoir les notifications par email
+                </label>
+              </div>
+              <div class="form-group">
+                <label class="checkbox-label">
+                  <input type="checkbox" id="sms-notifications">
+                  <span class="checkmark"></span>
+                  Recevoir les notifications par SMS
+                </label>
+              </div>
+              <button type="submit" class="btn-primary">Sauvegarder les préférences</button>
+            </form>
           </div>
         </div>
-        <div class="form-group">
-          <input type="email" id="register-email" placeholder="Email" required>
+      </div>
+    </div>
+
+    <!-- Modale des réservations -->
+    <div id="bookings-modal" class="modal modal-large">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Mes Réservations</h2>
+          <button class="modal-close">&times;</button>
         </div>
-        <div class="form-group">
-          <input type="password" id="register-password" placeholder="Mot de passe" required>
-        </div>
-        <div class="form-group">
-          <input type="tel" id="register-phone" placeholder="Téléphone">
-        </div>
-        <div class="form-group">
-          <select id="register-role" required>
-            <option value="">Je suis...</option>
-            <option value="client">Client (je veux louer)</option>
-            <option value="owner">Propriétaire (je veux louer mon bateau)</option>
+        
+        <div class="bookings-filters">
+          <select id="bookings-status-filter">
+            <option value="">Tous les statuts</option>
+            <option value="pending">En attente</option>
+            <option value="confirmed">Confirmée</option>
+            <option value="paid">Payée</option>
+            <option value="active">En cours</option>
+            <option value="completed">Terminée</option>
+            <option value="cancelled">Annulée</option>
           </select>
-        </div>
-        <button type="submit" class="btn-primary btn-full">S'inscrire</button>
-        <p class="auth-switch">
-          Déjà un compte ? 
-          <a href="#" id="switch-to-login">Connectez-vous</a>
-        </p>
-      </form>
-    </div>
-  </div>
-
-  <!-- Modale de profil -->
-  <div id="profile-modal" class="modal modal-large">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2>Mon Profil</h2>
-        <button class="modal-close">&times;</button>
-      </div>
-      
-      <div class="profile-tabs">
-        <button class="tab-btn active" data-tab="profile-info">Informations</button>
-        <button class="tab-btn" data-tab="profile-security">Sécurité</button>
-        <button class="tab-btn" data-tab="profile-preferences">Préférences</button>
-      </div>
-      
-      <div class="profile-content">
-        <!-- Onglet Informations -->
-        <div id="profile-info" class="tab-content active">
-          <form id="profile-form" class="profile-form">
-            <div class="form-row">
-              <div class="form-group">
-                <label>Prénom</label>
-                <input type="text" id="profile-firstname" required>
-              </div>
-              <div class="form-group">
-                <label>Nom</label>
-                <input type="text" id="profile-lastname" required>
-              </div>
-            </div>
-            <div class="form-group">
-              <label>Email</label>
-              <input type="email" id="profile-email" readonly>
-            </div>
-            <div class="form-group">
-              <label>Téléphone</label>
-              <input type="tel" id="profile-phone">
-            </div>
-            <div class="form-group">
-              <label>Adresse</label>
-              <input type="text" id="profile-street" placeholder="Rue">
-            </div>
-            <div class="form-row">
-              <div class="form-group">
-                <input type="text" id="profile-city" placeholder="Ville">
-              </div>
-              <div class="form-group">
-                <input type="text" id="profile-postal" placeholder="Code postal">
-              </div>
-            </div>
-            <button type="submit" class="btn-primary">Mettre à jour</button>
-          </form>
+          <button id="refresh-bookings" class="btn-secondary">Actualiser</button>
         </div>
         
-        <!-- Onglet Sécurité -->
-        <div id="profile-security" class="tab-content">
-          <form id="change-password-form-profile" class="profile-form">
-            <div class="form-group">
-              <label>Mot de passe actuel</label>
-              <input type="password" id="current-password-profile" required>
-            </div>
-            <div class="form-group">
-              <label>Nouveau mot de passe</label>
-              <input type="password" id="new-password-profile" required>
-            </div>
-            <div class="form-group">
-              <label>Confirmer le nouveau mot de passe</label>
-              <input type="password" id="confirm-password-profile" required>
-            </div>
-            <button type="submit" class="btn-primary">Changer le mot de passe</button>
-          </form>
-        </div>
-        
-        <!-- Onglet Préférences -->
-        <div id="profile-preferences" class="tab-content">
-          <form id="preferences-form" class="profile-form">
-            <div class="form-row">
-              <div class="form-group">
-                <label>Langue</label>
-                <select id="profile-language">
-                  <option value="fr">Français</option>
-                  <option value="en">English</option>
-                  <option value="es">Español</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label>Devise</label>
-                <select id="profile-currency">
-                  <option value="EUR">Euro (€)</option>
-                  <option value="USD">Dollar ($)</option>
-                  <option value="GBP">Livre (£)</option>
-                </select>
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="checkbox-label">
-                <input type="checkbox" id="email-notifications" checked>
-                <span class="checkmark"></span>
-                Recevoir les notifications par email
-              </label>
-            </div>
-            <div class="form-group">
-              <label class="checkbox-label">
-                <input type="checkbox" id="sms-notifications">
-                <span class="checkmark"></span>
-                Recevoir les notifications par SMS
-              </label>
-            </div>
-            <button type="submit" class="btn-primary">Sauvegarder les préférences</button>
-          </form>
+        <div id="bookings-list" class="bookings-list">
+          <!-- Les réservations seront chargées dynamiquement -->
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- Modale des réservations -->
-  <div id="bookings-modal" class="modal modal-large">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2>Mes Réservations</h2>
-        <button class="modal-close">&times;</button>
-      </div>
-      
-      <div class="bookings-filters">
-        <select id="bookings-status-filter">
-          <option value="">Tous les statuts</option>
-          <option value="pending">En attente</option>
-          <option value="confirmed">Confirmée</option>
-          <option value="paid">Payée</option>
-          <option value="active">En cours</option>
-          <option value="completed">Terminée</option>
-          <option value="cancelled">Annulée</option>
-        </select>
-        <button id="refresh-bookings" class="btn-secondary">Actualiser</button>
-      </div>
-      
-      <div id="bookings-list" class="bookings-list">
-        <!-- Les réservations seront chargées dynamiquement -->
-      </div>
-    </div>
-  </div>
-
-  <!-- Modale des bateaux du propriétaire -->
-  <div id="my-boats-modal" class="modal modal-large">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2>Mes Bateaux</h2>
-        <button class="modal-close">&times;</button>
-      </div>
-      
-      <div class="boats-actions">
-        <button id="add-boat-btn" class="btn-primary">Ajouter un bateau</button>
-        <button id="refresh-boats" class="btn-secondary">Actualiser</button>
-      </div>
-      
-      <div id="my-boats-list" class="my-boats-list">
-        <!-- Les bateaux seront chargés dynamiquement -->
-      </div>
-    </div>
-  </div>
-
-  <!-- Modale des détails de bateau -->
-  <div id="boat-modal" class="modal modal-large">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2 id="boat-modal-title">Détails du bateau</h2>
-        <button class="modal-close">&times;</button>
-      </div>
-      <div id="boat-details" class="boat-details">
-        <!-- Les détails seront chargés dynamiquement -->
-      </div>
-    </div>
-  </div>
-
-  <!-- Notifications -->
-  <div id="notifications-container" class="notifications-container"></div>
-
-  <script>
-    // Fonction pour ouvrir la carte
-    function openMap() {
-      window.open('https://maps.google.com/?q=Port+de+Plaisance+Cannes', '_blank');
-    }
-
-    // Gestion de la FAQ
-    document.addEventListener('DOMContentLoaded', function() {
-      const faqItems = document.querySelectorAll('.faq-item');
-      
-      faqItems.forEach(item => {
-        const question = item.querySelector('.faq-question');
-        const answer = item.querySelector('.faq-answer');
-        const toggle = item.querySelector('.faq-toggle');
+    <!-- Modale des bateaux du propriétaire -->
+    <div id="my-boats-modal" class="modal modal-large">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Mes Bateaux</h2>
+          <button class="modal-close">&times;</button>
+        </div>
         
-        question.addEventListener('click', () => {
-          const isOpen = item.classList.contains('active');
+        <div class="boats-actions">
+          <button id="add-boat-btn" class="btn-primary">Ajouter un bateau</button>
+          <button id="refresh-boats" class="btn-secondary">Actualiser</button>
+        </div>
+        
+        <div id="my-boats-list" class="my-boats-list">
+          <!-- Les bateaux seront chargés dynamiquement -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Modale des détails de bateau -->
+    <div id="boat-modal" class="modal modal-large">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 id="boat-modal-title">Détails du bateau</h2>
+          <button class="modal-close">&times;</button>
+        </div>
+        <div id="boat-details" class="boat-details">
+          <!-- Les détails seront chargés dynamiquement -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Notifications -->
+    <div id="notifications-container" class="notifications-container"></div>
+
+    <script>
+      // Fonction pour ouvrir la carte
+      function openMap() {
+        window.open('https://maps.google.com/?q=Port+de+Plaisance+Cannes', '_blank');
+      }
+
+      // Gestion de la FAQ
+      document.addEventListener('DOMContentLoaded', function() {
+        const faqItems = document.querySelectorAll('.faq-item');
+        
+        faqItems.forEach(item => {
+          const question = item.querySelector('.faq-question');
+          const answer = item.querySelector('.faq-answer');
+          const toggle = item.querySelector('.faq-toggle');
           
-          // Fermer tous les autres items
-          faqItems.forEach(otherItem => {
-            otherItem.classList.remove('active');
-            otherItem.querySelector('.faq-answer').style.maxHeight = '0px';
-            otherItem.querySelector('.faq-toggle').textContent = '+';
+          question.addEventListener('click', () => {
+            const isOpen = item.classList.contains('active');
+            
+            // Fermer tous les autres items
+            faqItems.forEach(otherItem => {
+              otherItem.classList.remove('active');
+              otherItem.querySelector('.faq-answer').style.maxHeight = '0px';
+              otherItem.querySelector('.faq-toggle').textContent = '+';
+            });
+            
+            // Ouvrir/fermer l'item cliqué
+            if (!isOpen) {
+              item.classList.add('active');
+              answer.style.maxHeight = answer.scrollHeight + 'px';
+              toggle.textContent = '−';
+            }
           });
-          
-          // Ouvrir/fermer l'item cliqué
-          if (!isOpen) {
-            item.classList.add('active');
-            answer.style.maxHeight = answer.scrollHeight + 'px';
-            toggle.textContent = '−';
-          }
         });
       });
-    });
-  </script>
+    </script>
 
-  <!-- Modale d'ajout de bateau -->
-  <div id="add-boat-modal" class="modal modal-large">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2>Ajouter un bateau</h2>
-        <button class="modal-close">&times;</button>
+    <!-- Modale d'ajout de bateau -->
+    <div id="add-boat-modal" class="modal modal-large">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Ajouter un bateau</h2>
+          <button class="modal-close">&times;</button>
+        </div>
+        <form id="add-boat-form" class="boat-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="boat-name">Nom du bateau</label>
+              <input type="text" id="boat-name" placeholder="Ex: Étoile des Mers" required>
+            </div>
+            <div class="form-group">
+              <label for="boat-type">Type de bateau</label>
+              <select id="boat-type" required>
+                <option value="">Sélectionner</option>
+                <option value="voilier">Voilier</option>
+                <option value="catamaran">Catamaran</option>
+                <option value="yacht">Yacht</option>
+                <option value="bateau_moteur">Bateau à moteur</option>
+                <option value="semi_rigide">Semi-rigide</option>
+                <option value="peniche">Péniche</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="boat-category">Catégorie</label>
+              <select id="boat-category" required>
+                <option value="">Sélectionner</option>
+                <option value="standard">Standard</option>
+                <option value="luxe">Luxe</option>
+                <option value="economique">Économique</option>
+                <option value="sportif">Sportif</option>
+                <option value="familial">Familial</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="boat-description">Description</label>
+            <textarea id="boat-description" rows="4" placeholder="Décrivez votre bateau, ses équipements, son histoire..."></textarea>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="boat-length">Longueur (m)</label>
+              <input type="number" id="boat-length" step="0.1" min="1" max="100" required>
+            </div>
+            <div class="form-group">
+              <label for="boat-width">Largeur (m)</label>
+              <input type="number" id="boat-width" step="0.1" min="1" max="20" required>
+            </div>
+            <div class="form-group">
+              <label for="boat-capacity">Capacité (personnes)</label>
+              <input type="number" id="boat-capacity" min="1" max="50" required>
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="boat-city">Ville</label>
+              <input type="text" id="boat-city" placeholder="Ex: Cannes" required>
+            </div>
+            <div class="form-group">
+              <label for="boat-marina">Marina</label>
+              <input type="text" id="boat-marina" placeholder="Ex: Port de Cannes" required>
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="boat-daily-rate">Prix par jour (€)</label>
+              <input type="number" id="boat-daily-rate" min="50" step="10" required>
+            </div>
+            <div class="form-group">
+              <label for="boat-security-deposit">Caution (€)</label>
+              <input type="number" id="boat-security-deposit" min="0" step="50" required>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="boat-images">Images du bateau</label>
+            <div class="image-upload-container">
+              <input type="file" id="boat-image-input" accept="image/*" multiple style="display: none;">
+              <button type="button" id="select-images-btn" class="btn-secondary">
+                📷 Sélectionner des images
+              </button>
+              <div id="image-preview-container" class="image-preview-container">
+                <!-- Les aperçus d'images seront ajoutés ici -->
+              </div>
+              <div class="image-help">
+                <small>Formats acceptés : JPG, PNG, WebP. Taille max : 5MB par image</small>
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-actions">
+            <button type="button" class="btn-secondary" onclick="app.uiManager.hideModal('add-boat-modal')">Annuler</button>
+            <button type="submit" class="btn-primary">Ajouter le bateau</button>
+          </div>
+        </form>
       </div>
-      <form id="add-boat-form" class="boat-form">
-        <div class="form-row">
-          <div class="form-group">
-            <label for="boat-name">Nom du bateau</label>
-            <input type="text" id="boat-name" placeholder="Ex: Étoile des Mers" required>
-          </div>
-          <div class="form-group">
-            <label for="boat-type">Type de bateau</label>
-            <select id="boat-type" required>
-              <option value="">Sélectionner</option>
-              <option value="voilier">Voilier</option>
-              <option value="catamaran">Catamaran</option>
-              <option value="yacht">Yacht</option>
-              <option value="bateau_moteur">Bateau à moteur</option>
-              <option value="semi_rigide">Semi-rigide</option>
-              <option value="peniche">Péniche</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="boat-category">Catégorie</label>
-            <select id="boat-category" required>
-              <option value="">Sélectionner</option>
-              <option value="standard">Standard</option>
-              <option value="luxe">Luxe</option>
-              <option value="economique">Économique</option>
-              <option value="sportif">Sportif</option>
-              <option value="familial">Familial</option>
-            </select>
-          </div>
-        </div>
-        
-        <div class="form-group">
-          <label for="boat-description">Description</label>
-          <textarea id="boat-description" rows="4" placeholder="Décrivez votre bateau, ses équipements, son histoire..."></textarea>
-        </div>
-        
-        <div class="form-row">
-          <div class="form-group">
-            <label for="boat-length">Longueur (m)</label>
-            <input type="number" id="boat-length" step="0.1" min="1" max="100" required>
-          </div>
-          <div class="form-group">
-            <label for="boat-width">Largeur (m)</label>
-            <input type="number" id="boat-width" step="0.1" min="1" max="20" required>
-          </div>
-          <div class="form-group">
-            <label for="boat-capacity">Capacité (personnes)</label>
-            <input type="number" id="boat-capacity" min="1" max="50" required>
-          </div>
-        </div>
-        
-        <div class="form-row">
-          <div class="form-group">
-            <label for="boat-city">Ville</label>
-            <input type="text" id="boat-city" placeholder="Ex: Cannes" required>
-          </div>
-          <div class="form-group">
-            <label for="boat-marina">Marina</label>
-            <input type="text" id="boat-marina" placeholder="Ex: Port de Cannes" required>
-          </div>
-        </div>
-        
-        <div class="form-row">
-          <div class="form-group">
-            <label for="boat-daily-rate">Prix par jour (€)</label>
-            <input type="number" id="boat-daily-rate" min="50" step="10" required>
-          </div>
-          <div class="form-group">
-            <label for="boat-security-deposit">Caution (€)</label>
-            <input type="number" id="boat-security-deposit" min="0" step="50" required>
-          </div>
-        </div>
-        
-        <div class="form-group">
-          <label for="boat-images">Images du bateau</label>
-          <div class="image-upload-container">
-            <input type="file" id="boat-image-input" accept="image/*" multiple style="display: none;">
-            <button type="button" id="select-images-btn" class="btn-secondary">
-              📷 Sélectionner des images
-            </button>
-            <div id="image-preview-container" class="image-preview-container">
-              <!-- Les aperçus d'images seront ajoutés ici -->
-            </div>
-            <div class="image-help">
-              <small>Formats acceptés : JPG, PNG, WebP. Taille max : 5MB par image</small>
-            </div>
-          </div>
-        </div>
-        
-        <div class="form-actions">
-          <button type="button" class="btn-secondary" onclick="app.uiManager.hideModal('add-boat-modal')">Annuler</button>
-          <button type="submit" class="btn-primary">Ajouter le bateau</button>
-        </div>
-      </form>
     </div>
-  </div>
-</body>
-</html>
+
+    <script>
+  // Badge "Ouvert maintenant"
+  (function(){
+    const badge = document.getElementById('open-badge');
+    if(!badge) return;
+    const now = new Date();
+    const d = now.getDay();           // 0=Dim … 6=Sam
+    const h = now.getHours() + now.getMinutes()/60;
+
+    // horaires locales (peuvent être modifiées)
+    const schedule = {
+      1:[9,18], 2:[9,18], 3:[9,18], 4:[9,18], 5:[9,18], // lun–ven
+      6:[9,17], // sam
+      0:[10,16] // dim
+    };
+    const range = schedule[d] || [9,18];
+    const isOpen = h >= range[0] && h < range[1];
+
+    badge.textContent = isOpen ? 'Ouvert maintenant' : 'Fermé – réouvre bientôt';
+    badge.classList.toggle('is-closed', !isOpen);
+  })();
+
+  // Copier téléphone / email
+  document.querySelectorAll('[data-copy]').forEach(btn=>{
+    btn.addEventListener('click', async ()=>{
+      try{
+        await navigator.clipboard.writeText(btn.dataset.copy);
+        btn.textContent = 'Copié ✓';
+        setTimeout(()=> btn.textContent = /@/.test(btn.dataset.copy) ? 'Copier' : 'Copier', 1200);
+      }catch(e){ alert('Impossible de copier'); }
+    });
+  });
+
+  // Envoi formulaire (demo front)
+  const form = document.getElementById('contact-form');
+  const sendBtn = document.getElementById('send-btn');
+  const success = document.getElementById('form-success');
+
+  form?.addEventListener('submit', async function(e){
+    e.preventDefault();
+    if (document.getElementById('hp')?.value) return;
+
+    sendBtn.disabled = true;
+    sendBtn.textContent = 'Envoi…';
+
+    // Récupère les données du formulaire
+    const params = {
+      name: document.getElementById('contact-name').value,
+      email: document.getElementById('contact-email').value,
+      phone: document.getElementById('contact-phone').value,
+      subject: document.getElementById('contact-subject').value,
+      message: document.getElementById('contact-message').value,
+      newsletter: document.getElementById('contact-newsletter').checked ? "Oui" : "Non"
+    };
+
+    // Prépare le corps de la requête Brevo
+    const body = {
+      sender: { name: params.name, email: params.email },
+      to: [{ email: "sailingloc98@gmail.com", name: "SailingLoc" }],
+      subject: "Contact SailingLoc : " + params.subject,
+      htmlContent: `
+        <p><strong>Nom :</strong> ${params.name}</p>
+        <p><strong>Email :</strong> ${params.email}</p>
+        <p><strong>Téléphone :</strong> ${params.phone}</p>
+        <p><strong>Sujet :</strong> ${params.subject}</p>
+        <p><strong>Message :</strong><br>${params.message}</p>
+        <p><strong>Newsletter :</strong> ${params.newsletter}</p>
+      `
+    };
+
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(params)
+      });
+
+      if (res.ok) {
+        sendBtn.disabled = false;
+        sendBtn.textContent = 'Envoyer le message';
+        success.hidden = false;
+        form.reset();
+        setTimeout(()=> success.hidden = true, 4000);
+      } else {
+        throw new Error('Erreur API');
+      }
+    } catch (err) {
+      sendBtn.disabled = false;
+      sendBtn.textContent = 'Envoyer le message';
+      alert("Erreur lors de l'envoi. Réessayez ou contactez-nous directement.");
+    }
+  });
+</script>
+
+  </body>
+  </html>
