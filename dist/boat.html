@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Détail du bateau - SailingLoc</title>
+  <meta name="description" content="Détails du bateau à louer : photos, caractéristiques, localisation, prix et avis." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script type="module" crossorigin src="/assets/boat-Dd7af_kW.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
+  <link rel="stylesheet" crossorigin href="/assets/style-DTJA6Xka.css">
+</head>
+<body>
+
+  <!-- Navigation (ton header collé tel quel) -->
+  <nav id="navbar" class="navbar">
+    <div class="nav-container">
+      <div class="nav-brand" style="display: flex; align-items: center; gap: 10px;">
+        <img src="/assets/sailingloc_logo_mark_no_text_512-CzIWSV09.png" alt="Logo SailingLoc" style="height:48px;vertical-align:middle;">
+        <h2 style="
+          font-size:2.2rem;
+          font-weight:900;
+          background: linear-gradient(90deg, #2f7fe0 0%, #35c1a0 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+          letter-spacing: -1px;
+          margin: 0;
+        ">
+          SailingLoc
+        </h2>
+      </div>
+      
+      <div class="nav-menu" id="nav-menu">
+        <a href="index.html" class="nav-link">Accueil</a>
+        <a href="boats.html" class="nav-link">Bateaux</a>
+        <a href="experience.html" class="nav-link">Experience</a>
+        <a href="contact.html" class="nav-link">Contact</a>
+      </div>
+      
+      <div class="nav-auth">
+        <button id="login-btn" class="btn-secondary">Connexion</button>
+        <button id="register-btn" class="btn-primary">Inscription</button>
+        <div id="user-menu" class="user-menu" style="display: none;">
+          <div class="user-avatar" id="user-avatar">
+            <span id="user-initials">JD</span>
+          </div>
+          <div class="user-dropdown" id="user-dropdown">
+            <div class="user-info">
+              <div class="user-name" id="user-name">John Doe</div>
+              <div class="user-email" id="user-email">john@example.com</div>
+            </div>
+            <div class="dropdown-divider"></div>
+            <a href="#" id="profile-link" class="dropdown-item"><span class="dropdown-icon">👤</span> Mon Profil</a>
+            <a href="#" id="bookings-link" class="dropdown-item"><span class="dropdown-icon">📋</span> Mes Réservations</a>
+            <a href="#" id="boats-link" class="dropdown-item" style="display: none;"><span class="dropdown-icon">🛥️</span> Mes Bateaux</a>
+            <div class="dropdown-divider"></div>
+            <a href="#" id="logout-link" class="dropdown-item logout"><span class="dropdown-icon">🚪</span> Déconnexion</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="mobile-menu-toggle" id="mobile-menu-toggle">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero détail -->
+  <header class="boat-hero">
+    <div class="container">
+      <nav class="breadcrumb">
+        <a href="index.html">Accueil</a> › <a href="boats.html">Bateaux</a> › <span id="crumb-boat">Chargement…</span>
+      </nav>
+
+      <div class="boat-hero-head">
+        <div>
+          <h1 id="boat-name" class="boat-hero-title">Chargement…</h1>
+          <div class="boat-hero-meta">
+            <span id="boat-type" class="chip">—</span>
+            <span id="boat-category" class="chip chip-soft">—</span>
+            <span id="boat-status" class="chip chip-success">—</span>
+          </div>
+        </div>
+        <div class="boat-hero-rating" id="rating-wrap" aria-live="polite">
+          <div class="stars" id="rating-stars" aria-hidden="true">★★★★★</div>
+          <div class="rating-text"><strong id="rating-value">4.8</strong> (<span id="rating-count">0</span> avis)</div>
+        </div>
+      </div>
+
+      <div class="boat-hero-location">
+        <span id="boat-location">—</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Détail -->
+  <main class="boat-detail">
+    <div class="container">
+      <div class="boat-detail-grid">
+        <!-- Galerie -->
+        <section id="boat-gallery" class="image-gallery" aria-label="Galerie d'images">
+          <div class="main-image" id="main-image">
+            <div class="image-placeholder">
+              <i>🖼️</i>
+              <p>Aucune image</p>
+            </div>
+          </div>
+          <div class="thumbnail-grid" id="thumbs"></div>
+        </section>
+
+        <!-- Panneau latéral -->
+        <aside class="boat-info">
+          <h2 class="boat-title" id="side-name">—</h2>
+          <div class="boat-meta-badges" id="side-badges"></div>
+
+          <div class="price-section">
+            <div class="price">
+              <span class="price-amount" id="price-amount">—</span>
+              <span class="price-period">€/jour</span>
+            </div>
+            <div class="price-details" id="price-details">Caution : — €</div>
+          </div>
+
+          <div class="quick-specs" id="quick-specs">
+            <!-- Ex: 8 pers • 12 m × 4 m • Diesel -->
+          </div>
+
+          <a href="contact.html" class="btn-primary book-button" id="cta-contact">
+            Demander cette location
+          </a>
+
+          <div class="contact-owner">
+            <small>Une question ? Notre équipe est disponible pour vous aider.</small>
+          </div>
+        </aside>
+      </div>
+
+      <!-- Caractéristiques -->
+      <section class="details-section">
+        <h3 class="section-title">Caractéristiques</h3>
+        <div class="specs-grid" id="specs-grid">
+          <!-- rempli en JS -->
+        </div>
+
+        <h3 class="section-title">Description</h3>
+        <p class="description" id="boat-description">—</p>
+
+        <h3 class="section-title">Équipements</h3>
+        <div class="amenities-grid" id="amenities-grid">
+          <!-- rempli en JS -->
+        </div>
+      </section>
+
+      <!-- Avis -->
+      <section class="reviews-section" id="reviews-section" hidden>
+        <h3 class="section-title">Avis</h3>
+        <div id="reviews-list">
+          <!-- rempli en JS -->
+        </div>
+      </section>
+
+      <!-- État 404 -->
+      <section id="boat-not-found" class="error" style="display:none;">
+        <strong>Bateau introuvable.</strong>
+        <div style="margin-top:8px;">
+          <a href="boats.html" class="btn-secondary">Retour aux bateaux</a>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Footer (ton snippet) -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>⛵ SailingLoc</h3>
+          <p>Votre partenaire de confiance pour la location de bateaux de luxe</p>
+        </div>
+        
+        <div class="footer-section">
+          <h4>Services</h4>
+          <ul>
+            <li><a href="boats.html">Location de bateaux</a></li>
+            <li><a href="experience.html">Experience premium</a></li>
+            <li><a href="contact.html">Support client</a></li>
+          </ul>
+        </div>
+        
+        <div class="footer-section">
+          <h4>Légal</h4>
+          <ul>
+            <li><a href="conditions.html">Conditions générales</a></li>
+            <li><a href="confidentialite.html">Politique de confidentialité</a></li>
+            <li><a href="mentions.html">Mentions légales</a></li>
+          </ul>
+        </div>
+      </div><!-- fermeture pour .footer-content -->
+      
+      <div class="footer-bottom">
+        <p>&copy; 2025 SailingLoc. Tous droits réservés.</p>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
