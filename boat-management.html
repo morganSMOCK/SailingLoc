@@ -9,51 +9,67 @@
 </head>
 <body>
     <!-- Navigation -->
-    <nav class="navbar">
+    <nav id="navbar" class="navbar">
         <div class="nav-container">
-            <div class="nav-logo">
-                <a href="index.html">
-                    <img src="boat-icon.svg" alt="SailingLoc" class="logo">
-                    <span class="logo-text">SailingLoc</span>
+          <div class="nav-brand">
+            <h2>⛵ SailingLoc</h2>
+          </div>
+          
+          <div class="nav-menu" id="nav-menu">
+            <a href="index.html" class="nav-link active" data-i18n="nav.home">Accueil</a>
+            <a href="boats.html" class="nav-link" data-i18n="nav.boats">Bateaux</a>
+      <a href="experience.html" class="nav-link" data-i18n="nav.experience">Experience</a>
+            <a href="contact.html" class="nav-link" data-i18n="nav.contact">Contact</a>
+          </div>
+          
+          <div class="nav-auth">
+            <select id="langSwitcher" aria-label="Language" style="margin-right:12px">
+              <option value="fr">FR </option>
+              <option value="en">EN</option>
+            </select>
+            <button id="login-btn" class="btn-secondary" data-i18n="auth.login">Connexion</button>
+            <button id="register-btn" class="btn-primary" data-i18n="auth.register">Inscription</button>
+            
+            <!-- Menu utilisateur (caché par défaut) -->
+            <div id="user-menu" class="user-menu" style="display: none;">
+              <div class="user-avatar" id="user-avatar">
+                <span id="user-initials">JD</span>
+              </div>
+              <div class="user-dropdown" id="user-dropdown">
+                <div class="user-info">
+                  <div class="user-name" id="user-name">John Doe</div>
+                  
+                  <div class="user-email" id="user-email">john@example.com</div>
+                </div>
+                <div class="dropdown-divider"></div>
+                <a href="#" id="profile-link" class="dropdown-item">
+                  <span class="dropdown-icon">👤</span>
+                  Mon Profil
                 </a>
+                <a href="#" id="bookings-link" class="dropdown-item">
+                  <span class="dropdown-icon">📋</span>
+                  Mes Réservations
+                </a>
+                <a href="#" id="boats-link" class="dropdown-item" style="display: none;">
+                  <span class="dropdown-icon">🛥️</span>
+                  Mes Bateaux
+                </a>
+                <div class="dropdown-divider"></div>
+                <a href="#" id="logout-link" class="dropdown-item logout">
+                  <span class="dropdown-icon">🚪</span>
+                  Déconnexion
+                </a>
+              </div>
             </div>
-            
-            <div class="nav-menu" id="nav-menu">
-                <a href="index.html" class="nav-link">Accueil</a>
-                <a href="boats.html" class="nav-link">Bateaux</a>
-                <a href="services.html" class="nav-link">Services</a>
-                <a href="contact.html" class="nav-link">Contact</a>
-                
-                <!-- Menu utilisateur connecté -->
-                <div class="user-menu" id="user-menu" style="display: none;">
-                    <div class="user-dropdown">
-                        <button class="user-button" id="user-button">
-                            <span id="user-name">Utilisateur</span>
-                            <i class="dropdown-arrow">▼</i>
-                        </button>
-                        <div class="dropdown-content" id="dropdown-content">
-                            <a href="#" id="profile-link">Mon Profil</a>
-                            <a href="boat-management.html" id="boats-link">Mes Bateaux</a>
-                            <a href="#" id="bookings-link">Mes Réservations</a>
-                            <a href="#" id="logout-link">Déconnexion</a>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Boutons de connexion/inscription -->
-                <div class="auth-buttons" id="auth-buttons">
-                    <button class="btn btn-outline" id="login-btn">Connexion</button>
-                    <button class="btn btn-primary" id="register-btn">Inscription</button>
-                </div>
-            </div>
-            
-            <div class="hamburger" id="hamburger">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
+          </div>
+          
+          <div class="mobile-menu-toggle" id="mobile-menu-toggle">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
         </div>
-    </nav>
+      </nav>
 
     <!-- Contenu principal -->
     <main class="main-content">
