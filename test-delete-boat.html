@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Test Suppression Bateau - SailingLoc</title>
+  <title>Test Suppression Bateau - SailingLoc v2</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -76,6 +76,7 @@
     
     <div>
       <button onclick="checkAuth()">🔐 Vérifier Auth</button>
+      <button onclick="recoverToken()">🔄 Récupérer Token</button>
       <button onclick="loadMyBoats()">🚢 Charger Mes Bateaux</button>
       <button onclick="clearLogs()">🧹 Effacer les logs</button>
     </div>
@@ -119,12 +120,136 @@
     async function checkAuth() {
       log('🔐 Vérification de l\'authentification...', 'info');
       
-      const token = localStorage.getItem('authToken');
+      let token = localStorage.getItem('authToken');
+      
+      // Si pas de token local, essayer de le récupérer depuis l'application principale
       if (!token) {
-        log('❌ Aucun token d\'authentification trouvé', 'error');
-        log('💡 Connectez-vous d\'abord sur l\'application principale', 'info');
+        log('🔍 Aucun token local trouvé, tentative de récupération...', 'info');
+        
+        try {
+          // Ouvrir l'application principale dans un popup pour récupérer le token
+          const popup = window.open('https://sailingloc.vercel.app/', 'auth', 'width=800,height=600,scrollbars=yes,resizable=yes');
+          
+          // Attendre que l'utilisateur se connecte
+          const checkToken = setInterval(() => {
+            try {
+              // Essayer d'accéder au localStorage de la fenêtre popup
+              const popupToken = popup.localStorage.getItem('authToken');
+              if (popupToken) {
+                log('✅ Token récupéré depuis l\'application principale !', 'success');
+                localStorage.setItem('authToken', popupToken);
+                token = popupToken;
+                popup.close();
+                clearInterval(checkToken);
+                // Continuer avec la vérification du token
+                verifyToken(token);
+              }
+            } catch (e) {
+              // La fenêtre popup n'est pas encore chargée ou a été fermée
+              if (popup.closed) {
+                clearInterval(checkToken);
+                log('❌ Fenêtre de connexion fermée', 'error');
+                showManualAuthInstructions();
+              }
+            }
+          }, 1000);
+          
+          // Timeout après 30 secondes
+          setTimeout(() => {
+            clearInterval(checkToken);
+            if (!token) {
+              log('⏰ Timeout - récupération du token annulée', 'warning');
+              showManualAuthInstructions();
+            }
+          }, 30000);
+          
+          return;
+        } catch (error) {
+          log(`❌ Erreur lors de la récupération du token: ${error.message}`, 'error');
+          showManualAuthInstructions();
+          return;
+        }
+      }
+      
+      // Vérifier le token existant
+      verifyToken(token);
+    }
+    
+    function showManualAuthInstructions() {
+      log('📋 Instructions de connexion manuelle:', 'info');
+      log('1. Ouvrez https://sailingloc.vercel.app/ dans un nouvel onglet', 'info');
+      log('2. Connectez-vous avec vos identifiants', 'info');
+      log('3. Revenez sur cette page et cliquez sur "Vérifier Auth"', 'info');
+      log('4. Ou cliquez sur "Récupérer Token" pour essayer à nouveau', 'info');
+    }
+    
+    function recoverToken() {
+      log('🔄 Tentative de récupération du token...', 'info');
+      
+      // Vérifier d'abord si on a déjà un token
+      const existingToken = localStorage.getItem('authToken');
+      if (existingToken) {
+        log('✅ Token déjà présent, vérification...', 'success');
+        checkAuth();
         return;
       }
+      
+      // Ouvrir l'application principale dans un popup
+      const popup = window.open('https://sailingloc.vercel.app/', 'auth', 'width=800,height=600,scrollbars=yes,resizable=yes');
+      
+      if (!popup) {
+        log('❌ Impossible d\'ouvrir la fenêtre popup (bloqueur de popup activé ?)', 'error');
+        log('💡 Désactivez le bloqueur de popup ou utilisez la méthode manuelle', 'info');
+        showManualAuthInstructions();
+        return;
+      }
+      
+      log('🔍 Fenêtre de connexion ouverte, attendez...', 'info');
+      log('💡 Connectez-vous dans la fenêtre qui s\'est ouverte', 'info');
+      
+      // Vérifier périodiquement si l'utilisateur s'est connecté
+      const checkInterval = setInterval(() => {
+        try {
+          if (popup.closed) {
+            clearInterval(checkInterval);
+            log('❌ Fenêtre fermée sans connexion', 'error');
+            showManualAuthInstructions();
+            return;
+          }
+          
+          // Essayer d'accéder au localStorage de la fenêtre popup
+          const popupToken = popup.localStorage.getItem('authToken');
+          if (popupToken) {
+            log('✅ Token récupéré avec succès !', 'success');
+            localStorage.setItem('authToken', popupToken);
+            popup.close();
+            clearInterval(checkInterval);
+            
+            // Vérifier le token récupéré
+            setTimeout(() => {
+              checkAuth();
+            }, 500);
+          }
+        } catch (e) {
+          // La fenêtre popup n'est pas encore chargée ou erreur d'accès
+          // Continuer à vérifier
+        }
+      }, 1000);
+      
+      // Timeout après 60 secondes
+      setTimeout(() => {
+        clearInterval(checkInterval);
+        if (!localStorage.getItem('authToken')) {
+          log('⏰ Timeout - récupération du token annulée', 'warning');
+          if (!popup.closed) {
+            popup.close();
+          }
+          showManualAuthInstructions();
+        }
+      }, 60000);
+    }
+    
+    async function verifyToken(token) {
 
       try {
         const payload = JSON.parse(atob(token.split('.')[1]));
