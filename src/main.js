@@ -73,29 +73,40 @@ class SailingLocApp {
    */
   async checkAuthStatus() {
     const token = this.storageManager.getToken();
+    const user = this.storageManager.getUser();
     console.log('🔐 [AUTH] Token trouvé:', token ? 'Oui' : 'Non');
+    console.log('🔐 [AUTH] User trouvé:', user ? 'Oui' : 'Non');
     
-    if (token) {
+    if (token && user) {
+      // Utiliser les données du localStorage en premier
+      this.currentUser = user;
+      console.log('🔐 [AUTH] Utilisateur chargé depuis localStorage:', this.currentUser.email, 'Rôle:', this.currentUser.role);
+      this.updateUIForAuthenticatedUser();
+      
       try {
-        // Vérification de la validité du token
+        // Vérification de la validité du token en arrière-plan
         const response = await this.authService.verifyToken();
         console.log('🔐 [AUTH] Vérification token:', response.success ? 'Valide' : 'Invalide');
         
-        if (response.success) {
+        if (response.success && response.data.user) {
+          // Mettre à jour avec les données fraîches du serveur
           this.currentUser = response.data.user;
-          console.log('🔐 [AUTH] Utilisateur connecté:', this.currentUser.email, 'Rôle:', this.currentUser.role);
-          this.updateUIForAuthenticatedUser();
+          this.storageManager.setUser(this.currentUser);
+          console.log('🔐 [AUTH] Utilisateur mis à jour depuis le serveur');
         } else {
           // Token invalide, nettoyage
           console.log('🔐 [AUTH] Token invalide, nettoyage...');
           this.storageManager.clearAuth();
+          this.currentUser = null;
         }
       } catch (error) {
         console.error('Erreur lors de la vérification du token:', error);
-        this.storageManager.clearAuth();
+        // En cas d'erreur réseau, garder l'utilisateur du localStorage
+        console.log('🔐 [AUTH] Erreur réseau, conservation de l\'utilisateur localStorage');
       }
     } else {
-      console.log('🔐 [AUTH] Aucun token trouvé, utilisateur non connecté');
+      console.log('🔐 [AUTH] Aucun token ou utilisateur trouvé, utilisateur non connecté');
+      this.currentUser = null;
     }
   }
 
@@ -1862,7 +1873,11 @@ class SailingLocApp {
     // Vérifier si nous sommes sur la page de gestion des bateaux
     if (window.location.pathname.includes('boat-management.html')) {
       this.setupBoatManagementEventListeners();
-      this.loadBoatManagementData();
+      
+      // Attendre un peu pour s'assurer que l'authentification est complètement chargée
+      setTimeout(() => {
+        this.loadBoatManagementData();
+      }, 100);
     }
   }
 
@@ -1939,7 +1954,15 @@ class SailingLocApp {
       
       // Vérifier l'authentification avant de charger les données
       if (!this.currentUser) {
-        throw new Error('Vous devez être connecté pour accéder à la gestion des bateaux');
+        console.log('🔄 [BOAT MANAGEMENT] Utilisateur non trouvé, tentative de rechargement...');
+        // Essayer de recharger l'utilisateur depuis le localStorage
+        const user = this.storageManager.getUser();
+        if (user) {
+          this.currentUser = user;
+          console.log('✅ [BOAT MANAGEMENT] Utilisateur rechargé depuis le localStorage');
+        } else {
+          throw new Error('Vous devez être connecté pour accéder à la gestion des bateaux');
+        }
       }
 
       const token = this.storageManager.getToken();
@@ -1971,8 +1994,10 @@ class SailingLocApp {
       console.error('❌ [BOAT MANAGEMENT] Erreur lors du chargement des données:', error);
       
       // Gestion spécifique des erreurs d'authentification
-      if (error.message.includes('Authentification requise') || error.message.includes('Token')) {
-        this.showErrorState('Session expirée. Veuillez vous reconnecter.');
+      if (error.message.includes('Vous devez être connecté') || 
+          error.message.includes('Authentification requise') || 
+          error.message.includes('Token')) {
+        this.showErrorState('Vous devez être connecté pour accéder à cette page. Redirection vers la page de connexion...');
         // Rediriger vers la page de connexion après un délai
         setTimeout(() => {
           window.location.href = 'index.html';
