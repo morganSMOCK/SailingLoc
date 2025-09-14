@@ -27,6 +27,7 @@ class SailingLocApp {
     this.currentPage = 1;
     this.boatsPerPage = 12;
     this.currentFilters = {};
+    this.selectedImages = [];
     
     // Initialisation de l'application
     this.init();
@@ -56,6 +57,9 @@ class SailingLocApp {
       // Configuration de la navigation
       this.setupNavigation();
       
+      // Initialisation de la gestion des bateaux si nécessaire
+      this.initBoatManagement();
+      
       console.log('✅ SailingLoc initialisé avec succès');
       
     } catch (error) {
@@ -69,23 +73,29 @@ class SailingLocApp {
    */
   async checkAuthStatus() {
     const token = this.storageManager.getToken();
+    console.log('🔐 [AUTH] Token trouvé:', token ? 'Oui' : 'Non');
     
     if (token) {
       try {
         // Vérification de la validité du token
         const response = await this.authService.verifyToken();
+        console.log('🔐 [AUTH] Vérification token:', response.success ? 'Valide' : 'Invalide');
         
         if (response.success) {
           this.currentUser = response.data.user;
+          console.log('🔐 [AUTH] Utilisateur connecté:', this.currentUser.email, 'Rôle:', this.currentUser.role);
           this.updateUIForAuthenticatedUser();
         } else {
           // Token invalide, nettoyage
+          console.log('🔐 [AUTH] Token invalide, nettoyage...');
           this.storageManager.clearAuth();
         }
       } catch (error) {
         console.error('Erreur lors de la vérification du token:', error);
         this.storageManager.clearAuth();
       }
+    } else {
+      console.log('🔐 [AUTH] Aucun token trouvé, utilisateur non connecté');
     }
   }
 
@@ -343,6 +353,15 @@ class SailingLocApp {
       addBoatForm.addEventListener('submit', (e) => this.handleAddBoat(e));
     }
     
+    // Formulaire d'édition de bateau
+    const editBoatForm = document.getElementById('edit-boat-form');
+    if (editBoatForm) {
+      editBoatForm.addEventListener('submit', (e) => this.handleEditBoat(e));
+    }
+    
+    // Gestion de l'upload d'images
+    this.setupImageUpload();
+    
     // Bouton de changement de mot de passe
     const changePasswordBtn = document.getElementById('change-password-btn');
     if (changePasswordBtn) {
@@ -355,7 +374,7 @@ class SailingLocApp {
     const addBoatBtn = document.getElementById('add-boat-btn');
     if (addBoatBtn) {
       addBoatBtn.addEventListener('click', () => {
-        this.uiManager.showModal('add-boat-modal');
+        this.showAddBoatModal();
       });
     }
     
@@ -814,11 +833,11 @@ class SailingLocApp {
    */
   async showMyBoats() {
     try {
-      this.uiManager.showModal('my-boats-modal');
-      await this.loadOwnerBoats();
+      // Rediriger vers la page de gestion des bateaux
+      window.location.href = 'boat-management.html';
     } catch (error) {
-      console.error('Erreur lors de l\'affichage des bateaux:', error);
-      this.uiManager.showNotification('Erreur lors du chargement des bateaux', 'error');
+      console.error('Erreur lors de la redirection:', error);
+      this.uiManager.showNotification('Erreur lors de la redirection', 'error');
     }
   }
 
@@ -973,9 +992,6 @@ class SailingLocApp {
     }
   }
 
-  async editBoat(boatId) {
-    this.uiManager.showNotification('Fonctionnalité en cours de développement', 'info');
-  }
 
   async toggleBoatStatus(boatId) {
     this.uiManager.showNotification('Fonctionnalité en cours de développement', 'info');
@@ -1099,8 +1115,16 @@ class SailingLocApp {
     }
     
     boats.forEach(boat => {
-      const boatCard = this.createBoatCard(boat);
-      boatsGrid.appendChild(boatCard);
+      try {
+        const boatCard = this.createBoatCard(boat);
+        if (boatCard && boatCard.nodeType) {
+          boatsGrid.appendChild(boatCard);
+        } else {
+          console.error('Erreur: createBoatCard n\'a pas retourné un élément DOM valide pour le bateau:', boat);
+        }
+      } catch (error) {
+        console.error('Erreur lors de la création de la carte du bateau:', error, boat);
+      }
     });
   }
 
@@ -1108,41 +1132,69 @@ class SailingLocApp {
    * Création d'une carte de bateau
    */
   createBoatCard(boat) {
+    try {
+      // Validation des données du bateau
+      if (!boat || !boat._id) {
+        console.error('Données de bateau invalides:', boat);
+        return this.createErrorCard('Données de bateau invalides');
+      }
+
+      const card = document.createElement('div');
+      card.className = 'boat-card';
+      card.setAttribute('data-boat-id', boat._id);
+      
+      const mainImage = boat.mainImage || boat.images?.[0]?.url || 'https://images.pexels.com/photos/1001682/pexels-photo-1001682.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop';
+      
+      card.innerHTML = `
+        <div class="boat-image">
+          <img src="${mainImage}" alt="${boat.name || 'Bateau'}" loading="lazy">
+          <div class="boat-badge">${this.formatBoatType(boat.type || 'voilier')}</div>
+          <div class="boat-rating">
+            <span class="rating-stars">${this.renderStars(boat.rating?.average || 0)}</span>
+            <span class="rating-count">(${boat.rating?.totalReviews || 0})</span>
+          </div>
+        </div>
+        <div class="boat-content">
+          <h3 class="boat-name">${boat.name || 'Nom non disponible'}</h3>
+          <p class="boat-location">📍 ${boat.location?.city || 'Ville'}, ${boat.location?.country || 'Pays'}</p>
+          <div class="boat-specs">
+            <span class="spec">👥 ${boat.capacity?.maxPeople || 0} pers.</span>
+            <span class="spec">📏 ${boat.specifications?.length || 0}m</span>
+            ${boat.capacity?.cabins ? `<span class="spec">🛏️ ${boat.capacity.cabins} cabines</span>` : ''}
+          </div>
+          <div class="boat-price">
+            <span class="price">${boat.pricing?.dailyRate || 0}€</span>
+            <span class="price-unit">/jour</span>
+          </div>
+          <button class="btn-primary btn-full boat-details-btn">Voir les détails</button>
+        </div>
+      `;
+      
+      // Écouteur pour afficher les détails
+      const detailsBtn = card.querySelector('.boat-details-btn');
+      if (detailsBtn) {
+        detailsBtn.addEventListener('click', () => this.showBoatDetails(boat._id));
+      }
+      
+      return card;
+    } catch (error) {
+      console.error('Erreur lors de la création de la carte de bateau:', error, boat);
+      return this.createErrorCard('Erreur lors du chargement');
+    }
+  }
+
+  /**
+   * Création d'une carte d'erreur
+   */
+  createErrorCard(message) {
     const card = document.createElement('div');
-    card.className = 'boat-card';
-    card.setAttribute('data-boat-id', boat._id);
-    
-    const mainImage = boat.mainImage || boat.images?.[0]?.url || 'https://images.pexels.com/photos/1001682/pexels-photo-1001682.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop';
-    
+    card.className = 'boat-card error-card';
     card.innerHTML = `
-      <div class="boat-image">
-        <img src="${mainImage}" alt="${boat.name}" loading="lazy">
-        <div class="boat-badge">${this.formatBoatType(boat.type)}</div>
-        <div class="boat-rating">
-          <span class="rating-stars">${this.renderStars(boat.rating?.average || 0)}</span>
-          <span class="rating-count">(${boat.rating?.totalReviews || 0})</span>
-        </div>
-      </div>
       <div class="boat-content">
-        <h3 class="boat-name">${boat.name}</h3>
-        <p class="boat-location">📍 ${boat.location.city}, ${boat.location.country}</p>
-        <div class="boat-specs">
-          <span class="spec">👥 ${boat.capacity.maxPeople} pers.</span>
-          <span class="spec">📏 ${boat.specifications.length}m</span>
-          ${boat.capacity.cabins ? `<span class="spec">🛏️ ${boat.capacity.cabins} cabines</span>` : ''}
-        </div>
-        <div class="boat-price">
-          <span class="price">${boat.pricing.dailyRate}€</span>
-          <span class="price-unit">/jour</span>
-        </div>
-        <button class="btn-primary btn-full boat-details-btn">Voir les détails</button>
+        <h3>Erreur</h3>
+        <p>${message}</p>
       </div>
     `;
-    
-    // Écouteur pour afficher les détails
-    const detailsBtn = card.querySelector('.boat-details-btn');
-    detailsBtn.addEventListener('click', () => this.showBoatDetails(boat._id));
-    
     return card;
   }
 
@@ -1490,6 +1542,304 @@ class SailingLocApp {
   }
 
   /**
+   * Configuration de l'upload d'images
+   */
+  setupImageUpload() {
+    // Upload d'images pour le formulaire d'ajout
+    const fileInput = document.getElementById('boat-image-input');
+    const previewContainer = document.getElementById('image-preview-container');
+    
+    if (fileInput && previewContainer) {
+      fileInput.addEventListener('change', (e) => {
+        this.handleImageSelection(e.target.files, 'add');
+      });
+    }
+    
+    // Upload d'images pour le formulaire d'édition
+    const editFileInput = document.getElementById('edit-boat-images');
+    const editPreviewContainer = document.getElementById('edit-image-preview-container');
+    
+    if (editFileInput && editPreviewContainer) {
+      editFileInput.addEventListener('change', (e) => {
+        this.handleImageSelection(e.target.files, 'edit');
+      });
+    }
+    
+    // Gestion du clic sur la zone d'upload d'édition
+    const editUploadArea = document.getElementById('edit-image-upload-area');
+    if (editUploadArea) {
+      editUploadArea.addEventListener('click', () => {
+        editFileInput.click();
+      });
+    }
+  }
+  
+  /**
+   * Gestion de la sélection d'images
+   */
+  handleImageSelection(files, type = 'add') {
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+    
+    Array.from(files).forEach(file => {
+      // Vérification de la taille
+      if (file.size > maxSize) {
+        this.uiManager.showNotification(`L'image ${file.name} est trop volumineuse (max 5MB)`, 'error');
+        return;
+      }
+      
+      // Vérification du type
+      if (!allowedTypes.includes(file.type)) {
+        this.uiManager.showNotification(`Format non supporté pour ${file.name}`, 'error');
+        return;
+      }
+      
+      // Ajout de l'image
+      if (type === 'add') {
+        this.selectedImages.push(file);
+        this.addImagePreview(file);
+      } else if (type === 'edit') {
+        this.addEditImagePreview(file);
+      }
+    });
+  }
+  
+  /**
+   * Ajout d'un aperçu d'image
+   */
+  addImagePreview(file) {
+    const previewContainer = document.getElementById('image-preview-container');
+    const reader = new FileReader();
+    
+    reader.onload = (e) => {
+      const preview = document.createElement('div');
+      preview.className = 'image-preview';
+      preview.innerHTML = `
+        <img src="${e.target.result}" alt="Aperçu">
+        <button type="button" class="remove-image" onclick="app.removeImage('${file.name}')">×</button>
+      `;
+      previewContainer.appendChild(preview);
+    };
+    
+    reader.readAsDataURL(file);
+  }
+
+  /**
+   * Ajout d'un aperçu d'image pour l'édition
+   */
+  addEditImagePreview(file) {
+    const previewContainer = document.getElementById('edit-image-preview-container');
+    const reader = new FileReader();
+    
+    reader.onload = (e) => {
+      const preview = document.createElement('div');
+      preview.className = 'image-preview-item new';
+      preview.innerHTML = `
+        <img src="${e.target.result}" alt="Aperçu">
+        <button type="button" class="remove-image-btn" onclick="app.removeEditImage('${file.name}')">×</button>
+      `;
+      previewContainer.appendChild(preview);
+    };
+    
+    reader.readAsDataURL(file);
+  }
+  
+  /**
+   * Suppression d'une image
+   */
+  removeImage(fileName) {
+    this.selectedImages = this.selectedImages.filter(file => file.name !== fileName);
+    this.updateImagePreviews();
+  }
+
+  /**
+   * Suppression d'une image d'édition
+   */
+  removeEditImage(fileName) {
+    const previewContainer = document.getElementById('edit-image-preview-container');
+    const previews = previewContainer.querySelectorAll('.image-preview-item.new');
+    previews.forEach(preview => {
+      const img = preview.querySelector('img');
+      if (img && img.src.includes(fileName)) {
+        preview.remove();
+      }
+    });
+  }
+
+  /**
+   * Suppression d'une image existante
+   */
+  removeExistingImage(index) {
+    // Cette méthode sera appelée pour supprimer une image existante
+    // Pour l'instant, on peut juste retirer l'élément du DOM
+    const previewContainer = document.getElementById('edit-image-preview-container');
+    const existingImages = previewContainer.querySelectorAll('.image-preview-item.existing');
+    if (existingImages[index]) {
+      existingImages[index].remove();
+    }
+  }
+  
+  /**
+   * Mise à jour des aperçus d'images
+   */
+  updateImagePreviews() {
+    const previewContainer = document.getElementById('image-preview-container');
+    previewContainer.innerHTML = '';
+    
+    this.selectedImages.forEach(file => {
+      this.addImagePreview(file);
+    });
+  }
+  
+  /**
+   * Gestion de l'ajout de bateau
+   */
+  async handleAddBoat(e) {
+    e.preventDefault();
+  
+    if (!this.currentUser) {
+      this.uiManager.showNotification('Vous devez être connecté pour ajouter un bateau', 'error');
+      return;
+    }
+  
+    const formData = new FormData();
+  
+    // Données du formulaire
+    formData.append('name', document.getElementById('boat-name').value.trim());
+    formData.append('type', document.getElementById('boat-type').value);
+    formData.append('description', document.getElementById('boat-description').value.trim());
+    formData.append('category', document.getElementById('boat-category').value);
+  
+    // Spécifications (conversion en float)
+    const length = parseFloat(document.getElementById('boat-length').value);
+    const width = parseFloat(document.getElementById('boat-width').value);
+    formData.append('specifications[length]', isNaN(length) ? '' : length);
+    formData.append('specifications[width]', isNaN(width) ? '' : width);
+  
+    // Capacité (conversion en int)
+    const maxPeople = parseInt(document.getElementById('boat-capacity').value, 10);
+    formData.append('capacity[maxPeople]', isNaN(maxPeople) ? '' : maxPeople);
+  
+    // Localisation
+    formData.append('location[city]', document.getElementById('boat-city').value.trim());
+    formData.append('location[marina]', document.getElementById('boat-marina').value.trim());
+    formData.append('location[country]', 'France');
+  
+    // Tarification (conversion en float)
+    const dailyRate = parseFloat(document.getElementById('boat-daily-rate').value);
+    const securityDeposit = parseFloat(document.getElementById('boat-security-deposit').value);
+    formData.append('pricing[dailyRate]', isNaN(dailyRate) ? '' : dailyRate);
+    formData.append('pricing[securityDeposit]', isNaN(securityDeposit) ? '' : securityDeposit);
+  
+    // Images
+    if (this.selectedImages && this.selectedImages.length > 0) {
+      this.selectedImages.forEach(file => formData.append('images', file));
+    }
+  
+    try {
+      this.uiManager.showLoading('add-boat-form');
+  
+      const response = await fetch(`${this.boatService.boatsEndpoint}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${this.boatService.getAuthToken()}`
+          // Ne pas définir Content-Type pour FormData
+        },
+        body: formData
+      });
+  
+      const data = await response.json();
+  
+      if (response.ok && data.success) {
+        this.uiManager.showNotification('Bateau ajouté avec succès !', 'success');
+        this.uiManager.hideModal('add-boat-modal');
+  
+        // Reset du formulaire
+        document.getElementById('add-boat-form').reset();
+        this.selectedImages = [];
+        this.updateImagePreviews();
+  
+        // Recharger la liste des bateaux si le modal est ouvert
+        if (document.getElementById('my-boats-modal').classList.contains('active')) {
+          await this.loadOwnerBoats();
+        }
+      } else {
+        throw new Error(data.message || 'Erreur lors de l\'ajout du bateau');
+      }
+    } catch (error) {
+      console.error('Erreur lors de l\'ajout du bateau:', error);
+      this.uiManager.showNotification(`Erreur: ${error.message}`, 'error');
+    } finally {
+      this.uiManager.hideLoading('add-boat-form');
+    }
+  }
+
+  /**
+   * Gestion de l'édition de bateau
+   */
+  async handleEditBoat(e) {
+    e.preventDefault();
+
+    if (!this.currentUser) {
+      this.uiManager.showNotification('Vous devez être connecté pour modifier un bateau', 'error');
+      return;
+    }
+
+    const form = e.target;
+    const boatId = form.dataset.boatId;
+    
+    if (!boatId) {
+      this.uiManager.showNotification('ID du bateau manquant', 'error');
+      return;
+    }
+
+    const formData = new FormData(form);
+    
+    // Validation des champs requis
+    const requiredFields = ['name', 'type', 'category', 'length', 'width', 'capacity', 'city', 'pricePerDay', 'deposit'];
+    for (const field of requiredFields) {
+      if (!formData.get(field)) {
+        this.uiManager.showNotification(`Le champ ${field} est requis`, 'error');
+        return;
+      }
+    }
+
+    try {
+      this.uiManager.showLoading('edit-boat-form');
+
+      const response = await fetch(`${this.boatService.boatsEndpoint}/${boatId}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${this.currentUser.token}`
+        },
+        body: formData
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        this.uiManager.showNotification('Bateau modifié avec succès !', 'success');
+        this.uiManager.hideModal('edit-boat-modal');
+
+        // Reset du formulaire
+        form.reset();
+        this.selectedImages = [];
+        this.updateImagePreviews();
+
+        // Recharger la liste des bateaux
+        await this.loadBoatManagementData();
+      } else {
+        throw new Error(data.message || 'Erreur lors de la modification du bateau');
+      }
+    } catch (error) {
+      console.error('Erreur lors de la modification du bateau:', error);
+      this.uiManager.showNotification(`Erreur: ${error.message}`, 'error');
+    } finally {
+      this.uiManager.hideLoading('edit-boat-form');
+    }
+  }
+
+  /**
    * Initiation d'une réservation
    */
   async initiateBooking(boatId) {
@@ -1501,6 +1851,519 @@ class SailingLocApp {
     // Ici, on pourrait ouvrir une modale de réservation
     // Pour l'instant, on affiche juste une notification
     this.uiManager.showNotification('Fonctionnalité de réservation en cours de développement', 'info');
+  }
+
+  /**
+   * Initialisation de la gestion des bateaux
+   */
+  initBoatManagement() {
+    console.log('🚤 Initialisation de la gestion des bateaux...');
+    
+    // Vérifier si nous sommes sur la page de gestion des bateaux
+    if (window.location.pathname.includes('boat-management.html')) {
+      this.setupBoatManagementEventListeners();
+      this.loadBoatManagementData();
+    }
+  }
+
+  /**
+   * Configuration des écouteurs d'événements pour la gestion des bateaux
+   */
+  setupBoatManagementEventListeners() {
+    // Le bouton d'ajout de bateau est déjà configuré dans setupEventListeners()
+
+    // Filtres
+    const statusFilter = document.getElementById('status-filter');
+    const typeFilter = document.getElementById('type-filter');
+    const searchInput = document.getElementById('search-input');
+    const searchBtn = document.getElementById('search-btn');
+
+    if (statusFilter) {
+      statusFilter.addEventListener('change', () => this.filterBoats());
+    }
+    if (typeFilter) {
+      typeFilter.addEventListener('change', () => this.filterBoats());
+    }
+    if (searchInput) {
+      searchInput.addEventListener('input', () => this.debounceSearch());
+    }
+    if (searchBtn) {
+      searchBtn.addEventListener('click', () => this.filterBoats());
+    }
+
+    // Contrôles de vue
+    const gridViewBtn = document.getElementById('grid-view-btn');
+    const listViewBtn = document.getElementById('list-view-btn');
+
+    if (gridViewBtn) {
+      gridViewBtn.addEventListener('click', () => this.setViewMode('grid'));
+    }
+    if (listViewBtn) {
+      listViewBtn.addEventListener('click', () => this.setViewMode('list'));
+    }
+
+    // Pagination
+    const prevPageBtn = document.getElementById('prev-page-btn');
+    const nextPageBtn = document.getElementById('next-page-btn');
+
+    if (prevPageBtn) {
+      prevPageBtn.addEventListener('click', () => this.changePage(-1));
+    }
+    if (nextPageBtn) {
+      nextPageBtn.addEventListener('click', () => this.changePage(1));
+    }
+
+    // Bouton de retry
+    const retryBtn = document.getElementById('retry-btn');
+    if (retryBtn) {
+      retryBtn.addEventListener('click', () => this.loadBoatManagementData());
+    }
+
+    // Bouton d'ajout du premier bateau
+    const addFirstBoatBtn = document.getElementById('add-first-boat-btn');
+    if (addFirstBoatBtn) {
+      addFirstBoatBtn.addEventListener('click', () => {
+        this.uiManager.showModal('add-boat-modal');
+      });
+    }
+  }
+
+  /**
+   * Chargement des données de gestion des bateaux
+   */
+  async loadBoatManagementData() {
+    try {
+      this.showLoadingState();
+      
+      // Charger les statistiques et les bateaux en parallèle
+      const [statsResponse, boatsResponse] = await Promise.all([
+        this.boatService.getBoatStats(),
+        this.boatService.getOwnerBoats()
+      ]);
+
+      if (statsResponse.success) {
+        this.updateStats(statsResponse.data.overview);
+      }
+
+      if (boatsResponse.success) {
+        this.displayBoats(boatsResponse.data.boats);
+        this.updatePagination(boatsResponse.data.pagination);
+      }
+
+      this.hideLoadingState();
+    } catch (error) {
+      console.error('Erreur lors du chargement des données:', error);
+      this.showErrorState(error.message);
+    }
+  }
+
+  /**
+   * Affichage de l'état de chargement
+   */
+  showLoadingState() {
+    const loadingMessage = document.getElementById('loading-message');
+    const errorMessage = document.getElementById('error-message');
+    const emptyMessage = document.getElementById('empty-message');
+    const boatsGrid = document.getElementById('boats-grid');
+
+    if (loadingMessage) loadingMessage.style.display = 'block';
+    if (errorMessage) errorMessage.style.display = 'none';
+    if (emptyMessage) emptyMessage.style.display = 'none';
+    if (boatsGrid) boatsGrid.style.display = 'none';
+  }
+
+  /**
+   * Masquage de l'état de chargement
+   */
+  hideLoadingState() {
+    const loadingMessage = document.getElementById('loading-message');
+    if (loadingMessage) loadingMessage.style.display = 'none';
+  }
+
+  /**
+   * Affichage de l'état d'erreur
+   */
+  showErrorState(message) {
+    const loadingMessage = document.getElementById('loading-message');
+    const errorMessage = document.getElementById('error-message');
+    const errorText = document.getElementById('error-text');
+    const emptyMessage = document.getElementById('empty-message');
+    const boatsGrid = document.getElementById('boats-grid');
+
+    if (loadingMessage) loadingMessage.style.display = 'none';
+    if (errorMessage) errorMessage.style.display = 'block';
+    if (errorText) errorText.textContent = message;
+    if (emptyMessage) emptyMessage.style.display = 'none';
+    if (boatsGrid) boatsGrid.style.display = 'none';
+  }
+
+  /**
+   * Mise à jour des statistiques
+   */
+  updateStats(stats) {
+    const totalBoats = document.getElementById('total-boats');
+    const availableBoats = document.getElementById('available-boats');
+    const totalBookings = document.getElementById('total-bookings');
+    const totalRevenue = document.getElementById('total-revenue');
+
+    if (totalBoats) totalBoats.textContent = stats.totalBoats || 0;
+    if (availableBoats) availableBoats.textContent = stats.availableBoats || 0;
+    if (totalBookings) totalBookings.textContent = stats.totalBookings || 0;
+    if (totalRevenue) totalRevenue.textContent = `${stats.totalRevenue || 0}€`;
+  }
+
+  /**
+   * Affichage des bateaux
+   */
+  displayBoats(boats) {
+    const boatsGrid = document.getElementById('boats-grid');
+    const emptyMessage = document.getElementById('empty-message');
+    const errorMessage = document.getElementById('error-message');
+
+    if (!boatsGrid) return;
+
+    if (boats.length === 0) {
+      boatsGrid.style.display = 'none';
+      if (emptyMessage) emptyMessage.style.display = 'block';
+      if (errorMessage) errorMessage.style.display = 'none';
+      return;
+    }
+
+    boatsGrid.style.display = 'grid';
+    if (emptyMessage) emptyMessage.style.display = 'none';
+    if (errorMessage) errorMessage.style.display = 'none';
+
+    boatsGrid.innerHTML = boats.map(boat => this.createBoatCard(boat)).join('');
+  }
+
+  /**
+   * Création d'une carte de bateau
+   */
+  createBoatCard(boat) {
+    const statusClass = boat.status || 'available';
+    const statusText = this.getStatusText(boat.status);
+    const typeText = this.getTypeText(boat.type);
+    const mainImage = boat.images?.find(img => img.isMain)?.url || boat.images?.[0]?.url || 'boat-icon.svg';
+
+    return `
+      <div class="boat-management-card ${!boat.isActive ? 'inactive' : ''}" data-boat-id="${boat._id}">
+        <img src="${mainImage}" alt="${boat.name}" class="boat-card-image" onerror="this.src='boat-icon.svg'">
+        <div class="boat-card-content">
+          <div class="boat-card-header">
+            <div>
+              <h3 class="boat-card-title">${boat.name}</h3>
+              <span class="boat-card-type">${typeText}</span>
+            </div>
+            <span class="boat-card-status ${statusClass}">${statusText}</span>
+          </div>
+          
+          <div class="boat-card-info">
+            <div class="boat-info-item">
+              <span class="boat-info-icon">👥</span>
+              <span>${boat.capacity?.maxPeople || 0} personnes</span>
+            </div>
+            <div class="boat-info-item">
+              <span class="boat-info-icon">📏</span>
+              <span>${boat.specifications?.length || 0}m</span>
+            </div>
+            <div class="boat-info-item">
+              <span class="boat-info-icon">💰</span>
+              <span>${boat.pricing?.dailyRate || 0}€/jour</span>
+            </div>
+            <div class="boat-info-item">
+              <span class="boat-info-icon">📍</span>
+              <span>${boat.location?.city || 'N/A'}</span>
+            </div>
+          </div>
+          
+          <div class="boat-card-actions">
+            <button class="boat-action-btn" onclick="window.app.editBoat('${boat._id}')">
+              <span>✏️</span>
+              Modifier
+            </button>
+            <button class="boat-action-btn" onclick="window.app.manageImages('${boat._id}')">
+              <span>🖼️</span>
+              Images
+            </button>
+            ${boat.isActive ? 
+              `<button class="boat-action-btn danger" onclick="window.app.deleteBoat('${boat._id}')">
+                <span>🗑️</span>
+                Supprimer
+              </button>` :
+              `<button class="boat-action-btn primary" onclick="window.app.restoreBoat('${boat._id}')">
+                <span>🔄</span>
+                Restaurer
+              </button>`
+            }
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  /**
+   * Obtention du texte du statut
+   */
+  getStatusText(status) {
+    const statusMap = {
+      'available': 'Disponible',
+      'booked': 'Réservé',
+      'maintenance': 'Maintenance',
+      'inactive': 'Inactif'
+    };
+    return statusMap[status] || 'Inconnu';
+  }
+
+  /**
+   * Obtention du texte du type
+   */
+  getTypeText(type) {
+    const typeMap = {
+      'sailboat': 'Voilier',
+      'motorboat': 'Bateau à moteur',
+      'catamaran': 'Catamaran',
+      'yacht': 'Yacht',
+      'other': 'Autre'
+    };
+    return typeMap[type] || type;
+  }
+
+  /**
+   * Filtrage des bateaux
+   */
+  async filterBoats() {
+    const status = document.getElementById('status-filter')?.value;
+    const type = document.getElementById('type-filter')?.value;
+    const search = document.getElementById('search-input')?.value;
+
+    try {
+      this.showLoadingState();
+      
+      const params = {};
+      if (status) params.status = status;
+      if (type) params.type = type;
+      if (search) params.search = search;
+
+      const response = await this.boatService.getOwnerBoats(params);
+      
+      if (response.success) {
+        this.displayBoats(response.data.boats);
+        this.updatePagination(response.data.pagination);
+      }
+    } catch (error) {
+      console.error('Erreur lors du filtrage:', error);
+      this.showErrorState('Erreur lors du filtrage des bateaux');
+    }
+  }
+
+  /**
+   * Recherche avec debounce
+   */
+  debounceSearch() {
+    clearTimeout(this.searchTimeout);
+    this.searchTimeout = setTimeout(() => {
+      this.filterBoats();
+    }, 500);
+  }
+
+  /**
+   * Définition du mode d'affichage
+   */
+  setViewMode(mode) {
+    const boatsGrid = document.getElementById('boats-grid');
+    const gridViewBtn = document.getElementById('grid-view-btn');
+    const listViewBtn = document.getElementById('list-view-btn');
+
+    if (boatsGrid) {
+      boatsGrid.className = mode === 'grid' ? 'boats-grid' : 'boats-grid list-view';
+    }
+
+    if (gridViewBtn) {
+      gridViewBtn.classList.toggle('active', mode === 'grid');
+    }
+    if (listViewBtn) {
+      listViewBtn.classList.toggle('active', mode === 'list');
+    }
+  }
+
+  /**
+   * Changement de page
+   */
+  async changePage(direction) {
+    // Implémentation de la pagination
+    console.log('Changement de page:', direction);
+  }
+
+  /**
+   * Mise à jour de la pagination
+   */
+  updatePagination(pagination) {
+    const paginationEl = document.getElementById('pagination');
+    const pageInfo = document.getElementById('page-info');
+    const prevBtn = document.getElementById('prev-page-btn');
+    const nextBtn = document.getElementById('next-page-btn');
+
+    if (!paginationEl || !pagination) return;
+
+    paginationEl.style.display = pagination.pages > 1 ? 'flex' : 'none';
+
+    if (pageInfo) {
+      pageInfo.textContent = `Page ${pagination.page} sur ${pagination.pages}`;
+    }
+
+    if (prevBtn) {
+      prevBtn.disabled = pagination.page <= 1;
+    }
+    if (nextBtn) {
+      nextBtn.disabled = pagination.page >= pagination.pages;
+    }
+  }
+
+  /**
+   * Édition d'un bateau
+   */
+  async editBoat(boatId) {
+    try {
+      // Récupérer les données du bateau
+      const response = await this.boatService.getBoatById(boatId);
+      
+      if (response.success) {
+        const boat = response.data.boat;
+        this.showEditBoatModal(boat);
+      } else {
+        throw new Error(response.message);
+      }
+    } catch (error) {
+      console.error('Erreur lors de la récupération du bateau:', error);
+      this.uiManager.showNotification(`Erreur: ${error.message}`, 'error');
+    }
+  }
+
+  /**
+   * Gestion des images d'un bateau
+   */
+  manageImages(boatId) {
+    this.uiManager.showNotification('Fonctionnalité de gestion d\'images en cours de développement', 'info');
+    // TODO: Implémenter la gestion des images
+  }
+
+  /**
+   * Suppression d'un bateau
+   */
+  async deleteBoat(boatId) {
+    if (!confirm('Êtes-vous sûr de vouloir supprimer ce bateau ?')) {
+      return;
+    }
+
+    try {
+      const response = await this.boatService.deleteBoat(boatId);
+      
+      if (response.success) {
+        this.uiManager.showNotification('Bateau supprimé avec succès', 'success');
+        await this.loadBoatManagementData();
+      } else {
+        throw new Error(response.message);
+      }
+    } catch (error) {
+      console.error('Erreur lors de la suppression:', error);
+      this.uiManager.showNotification(`Erreur: ${error.message}`, 'error');
+    }
+  }
+
+  /**
+   * Restauration d'un bateau
+   */
+  async restoreBoat(boatId) {
+    try {
+      const response = await this.boatService.restoreBoat(boatId);
+      
+      if (response.success) {
+        this.uiManager.showNotification('Bateau restauré avec succès', 'success');
+        await this.loadBoatManagementData();
+      } else {
+        throw new Error(response.message);
+      }
+    } catch (error) {
+      console.error('Erreur lors de la restauration:', error);
+      this.uiManager.showNotification(`Erreur: ${error.message}`, 'error');
+    }
+  }
+
+  /**
+   * Affichage de la modal d'ajout de bateau
+   */
+  showAddBoatModal() {
+    // Ouvrir directement le modal d'ajout de bateau
+    this.uiManager.showModal('add-boat-modal');
+  }
+
+  /**
+   * Affichage de la modal d'édition de bateau
+   */
+  showEditBoatModal(boat) {
+    // Remplir le formulaire avec les données du bateau
+    this.populateEditForm(boat);
+    // Ouvrir le modal d'édition
+    this.uiManager.showModal('edit-boat-modal');
+  }
+
+  /**
+   * Remplissage du formulaire d'édition avec les données du bateau
+   */
+  populateEditForm(boat) {
+    // Vérifier que les éléments existent avant de les modifier
+    const nameField = document.getElementById('edit-boat-name');
+    const typeField = document.getElementById('edit-boat-type');
+    const categoryField = document.getElementById('edit-boat-category');
+    const descriptionField = document.getElementById('edit-boat-description');
+    const lengthField = document.getElementById('edit-boat-length');
+    const widthField = document.getElementById('edit-boat-width');
+    const capacityField = document.getElementById('edit-boat-capacity');
+    const cityField = document.getElementById('edit-boat-city');
+    const marinaField = document.getElementById('edit-boat-marina');
+    const priceField = document.getElementById('edit-boat-price');
+    const depositField = document.getElementById('edit-boat-deposit');
+    const form = document.getElementById('edit-boat-form');
+    
+    if (nameField) nameField.value = boat.name || '';
+    if (typeField) typeField.value = boat.type || '';
+    if (categoryField) categoryField.value = boat.category || '';
+    if (descriptionField) descriptionField.value = boat.description || '';
+    if (lengthField) lengthField.value = boat.length || '';
+    if (widthField) widthField.value = boat.width || '';
+    if (capacityField) capacityField.value = boat.capacity || '';
+    if (cityField) cityField.value = boat.city || '';
+    if (marinaField) marinaField.value = boat.marina || '';
+    if (priceField) priceField.value = boat.pricePerDay || '';
+    if (depositField) depositField.value = boat.deposit || '';
+    
+    // Stocker l'ID du bateau pour la mise à jour
+    if (form) form.dataset.boatId = boat._id;
+    
+    // Afficher les images existantes
+    this.displayExistingImages(boat.images || []);
+  }
+
+  /**
+   * Affichage des images existantes du bateau
+   */
+  displayExistingImages(images) {
+    const container = document.getElementById('edit-image-preview-container');
+    if (!container) return;
+    
+    container.innerHTML = '';
+    
+    if (images && images.length > 0) {
+      images.forEach((image, index) => {
+        const imageDiv = document.createElement('div');
+        imageDiv.className = 'image-preview-item existing';
+        imageDiv.innerHTML = `
+          <img src="${image}" alt="Image du bateau">
+          <button type="button" class="remove-image-btn" onclick="app.removeExistingImage(${index})">×</button>
+        `;
+        container.appendChild(imageDiv);
+      });
+    }
   }
 }
 

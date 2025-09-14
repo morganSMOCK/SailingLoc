@@ -235,6 +235,101 @@
 
   <!-- Modales -->
   
+  <!-- Modale d'ajout de bateau -->
+  <div id="add-boat-modal" class="modal modal-large">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Ajouter un bateau</h2>
+        <button class="modal-close">&times;</button>
+      </div>
+      <form id="add-boat-form" class="boat-form">
+        <!-- Nom, type, catégorie -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="boat-name">Nom du bateau</label>
+            <input type="text" id="boat-name" placeholder="Ex: Étoile des Mers" required>
+          </div>
+          <div class="form-group">
+            <label for="boat-type">Type de bateau</label>
+            <select id="boat-type" required>
+              <option value="">Sélectionner</option>
+              <option value="voilier">Voilier</option>
+              <option value="catamaran">Catamaran</option>
+              <option value="yacht">Yacht</option>
+              <option value="bateau_moteur">Bateau à moteur</option>
+              <option value="semi_rigide">Semi-rigide</option>
+              <option value="peniche">Péniche</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="boat-category">Catégorie</label>
+            <select id="boat-category" required>
+              <option value="">Sélectionner</option>
+              <option value="standard">Standard</option>
+              <option value="luxury">Luxe</option>
+              <option value="budget">Économique</option>
+            </select>
+          </div>
+        </div>
+  
+        <!-- Description -->
+        <div class="form-group">
+          <label for="boat-description">Description</label>
+          <textarea id="boat-description" placeholder="Décrivez le bateau..." required></textarea>
+        </div>
+  
+        <!-- Spécifications -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="boat-length">Longueur (m)</label>
+            <input type="number" id="boat-length" step="0.1" required>
+          </div>
+          <div class="form-group">
+            <label for="boat-width">Largeur (m)</label>
+            <input type="number" id="boat-width" step="0.1" required>
+          </div>
+          <div class="form-group">
+            <label for="boat-capacity">Capacité max (personnes)</label>
+            <input type="number" id="boat-capacity" required>
+          </div>
+        </div>
+  
+        <!-- Localisation -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="boat-city">Ville</label>
+            <input type="text" id="boat-city" required>
+          </div>
+          <div class="form-group">
+            <label for="boat-marina">Port / Marina</label>
+            <input type="text" id="boat-marina" required>
+          </div>
+        </div>
+  
+        <!-- Tarification -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="boat-daily-rate">Prix journalier (€)</label>
+            <input type="number" id="boat-daily-rate" required>
+          </div>
+          <div class="form-group">
+            <label for="boat-security-deposit">Caution (€)</label>
+            <input type="number" id="boat-security-deposit" required>
+          </div>
+        </div>
+  
+        <!-- Images -->
+        <div class="form-group">
+          <label for="boat-image-input">Images</label>
+          <input type="file" id="boat-image-input" multiple accept="image/*">
+          <div id="image-preview-container" class="image-preview-container"></div>
+        </div>
+  
+        <button type="submit">Ajouter le bateau</button>
+      </form>
+    </div>
+  </div>
+
   <!-- Modale de connexion -->
   <div id="login-modal" class="modal">
     <div class="modal-content">
