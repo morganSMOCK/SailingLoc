@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nettoyage du Cache - SailingLoc</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .success {
+      color: #28a745;
+      font-weight: bold;
+    }
+    .info {
+      color: #17a2b8;
+      margin: 10px 0;
+    }
+    .warning {
+      color: #ffc107;
+      margin: 10px 0;
+    }
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin: 5px;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    .step {
+      margin: 15px 0;
+      padding: 10px;
+      border-left: 4px solid #007bff;
+      background: #f8f9fa;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🧹 Nettoyage du Cache - SailingLoc</h1>
+    
+    <div class="success">
+      ✅ Build terminé avec succès !<br>
+      📦 Nouveau fichier JS : main-CFwg-rYn.js
+    </div>
+    
+    <div class="info">
+      <strong>Problème résolu :</strong> Les corrections de la fonction createBoatCard ont été compilées dans la nouvelle version.
+    </div>
+    
+    <div class="warning">
+      <strong>Important :</strong> Votre navigateur utilise peut-être encore l'ancienne version en cache.
+    </div>
+    
+    <h3>📋 Étapes pour appliquer les corrections :</h3>
+    
+    <div class="step">
+      <strong>1. Vider le cache du navigateur :</strong><br>
+      • <strong>Chrome/Edge :</strong> Ctrl+Shift+R ou F12 → Network → "Disable cache"<br>
+      • <strong>Firefox :</strong> Ctrl+Shift+R ou F12 → Network → "Disable cache"<br>
+      • <strong>Safari :</strong> Cmd+Shift+R ou Develop → "Empty Caches"
+    </div>
+    
+    <div class="step">
+      <strong>2. Recharger la page :</strong><br>
+      • Allez sur <a href="boats.html" target="_blank">boats.html</a><br>
+      • Ou utilisez le bouton ci-dessous
+    </div>
+    
+    <div class="step">
+      <strong>3. Vérifier dans la console :</strong><br>
+      • Ouvrez F12 → Console<br>
+      • Vous devriez voir des messages de succès ✅ au lieu d'erreurs ❌
+    </div>
+    
+    <div style="text-align: center; margin-top: 30px;">
+      <button onclick="window.open('boats.html', '_blank')">🚢 Aller aux Bateaux</button>
+      <button onclick="window.open('test-boat-card.html', '_blank')">🧪 Tester les Cartes</button>
+      <button onclick="location.reload()">🔄 Recharger cette page</button>
+    </div>
+    
+    <div style="margin-top: 20px; padding: 15px; background: #e9ecef; border-radius: 5px;">
+      <strong>🔧 Fonctions de débogage disponibles :</strong><br>
+      <code>window.debugSailingLoc.testBoatCard(boatData)</code><br>
+      <code>window.debugSailingLoc.loadBoats()</code><br>
+      <code>window.debugSailingLoc.getCurrentBoats()</code>
+    </div>
+  </div>
+
+  <script>
+    // Vérifier si nous sommes sur la bonne version
+    console.log('🧹 Page de nettoyage du cache chargée');
+    console.log('📦 Vérifiez que le fichier JS est main-CFwg-rYn.js dans la console Network');
+    
+    // Auto-redirection après 10 secondes
+    setTimeout(() => {
+      if (confirm('Voulez-vous aller directement à la page des bateaux ?')) {
+        window.open('boats.html', '_blank');
+      }
+    }, 10000);
+  </script>
+</body>
+</html>
