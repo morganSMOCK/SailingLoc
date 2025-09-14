@@ -1138,9 +1138,9 @@ class SailingLocApp {
   }
 
   /**
-   * Rendu des bateaux
+   * Rendu des bateaux - Version sécurisée
    */
-  renderBoats(boats) {
+  renderBoats(boats = []) {
     const boatsGrid = document.getElementById('boats-grid');
     if (!boatsGrid) {
       console.warn('⚠️ Grille de bateaux non trouvée');
@@ -1151,12 +1151,6 @@ class SailingLocApp {
     
     // Vider la grille complètement
     boatsGrid.innerHTML = '';
-    
-    // Vérifier que la grille est bien vide
-    if (boatsGrid.children.length > 0) {
-      console.warn('⚠️ La grille n\'était pas vide, vidage forcé');
-      boatsGrid.innerHTML = '';
-    }
     
     if (boats.length === 0) {
       boatsGrid.innerHTML = `
@@ -1178,12 +1172,12 @@ class SailingLocApp {
       try {
         console.log(`🔧 Création de la carte pour le bateau ${index + 1}:`, boat.name, boat._id);
         const boatCard = this.createBoatCard(boat);
-        if (boatCard && boatCard.nodeType) {
+        if (boatCard instanceof Element) {
           fragment.appendChild(boatCard);
           successCount++;
           console.log(`✅ Carte créée avec succès pour: ${boat.name}`);
         } else {
-          console.error('❌ Erreur: createBoatCard n\'a pas retourné un élément DOM valide pour le bateau:', boat);
+          console.warn('createBoatCard a renvoyé un type inattendu', boatCard, boat);
           // Créer une carte d'erreur à la place
           const errorCard = this.createErrorCard(`Erreur: ${boat.name || 'Bateau inconnu'}`);
           fragment.appendChild(errorCard);
@@ -1206,107 +1200,99 @@ class SailingLocApp {
   }
 
   /**
-   * Création d'une carte de bateau
+   * Création d'une carte de bateau - Version robuste
    */
   createBoatCard(boat) {
+    // Utils
+    const safe = (v) => (v ?? '').toString();
+    const toTitle = (s) => safe(s).slice(0,1).toUpperCase() + safe(s).slice(1);
+    const moneySymbol = (c) => ({ EUR:'€', USD:'$', GBP:'£' }[c] || (c ? ` ${c}` : ''));
+
     try {
       console.log('🔍 [DEBUG] Début de createBoatCard pour:', boat.name, boat._id);
       
-      // Validation des données du bateau
-      if (!boat || !boat._id) {
-        console.error('❌ [DEBUG] Données de bateau invalides:', boat);
-        return this.createErrorCard('Données de bateau invalides');
-      }
+      // Normalisation + fallbacks
+      const id   = boat._id || boat.id || '';
+      const name = safe(boat.name) || 'Bateau';
+      const type = toTitle(boat.type || '');
+      const category = toTitle(boat.category || '');
+      const status = toTitle(boat.status || 'Disponible');
 
-      console.log('✅ [DEBUG] Validation des données OK');
-      
-      const card = document.createElement('div');
+      const city    = safe(boat.location?.city) || '—';
+      const marina  = safe(boat.location?.marina) || '';
+      const country = safe(boat.location?.country) || '';
+
+      const length = boat.specifications?.length ?? boat.length ?? '—';
+      const width  = boat.specifications?.width  ?? boat.width  ?? '—';
+      const fuel   = boat.specifications?.fuelType ? toTitle(boat.specifications.fuelType) : '—';
+
+      const capacity =
+        boat.capacity?.maxPeople ??
+        boat.capacity?.people ??
+        boat.capacity ??
+        '—';
+
+      const dailyRate = boat.pricing?.dailyRate ?? boat.pricePerDay ?? null;
+      const deposit   = boat.pricing?.securityDeposit ?? boat.deposit ?? null;
+      const currency  = boat.pricing?.currency || 'EUR';
+
+      // Image de secours si aucune n'est fournie
+      const imgSrc =
+        (Array.isArray(boat.imageUrls) && boat.imageUrls[0]) ||
+        (Array.isArray(boat.images) && boat.images[0]?.url) ||
+        'https://images.unsplash.com/photo-1508599589920-14cfa1c1fe4d?q=80&w=1200&auto=format&fit=crop';
+
+      const priceHtml = dailyRate != null
+        ? `<div class="boat-price">
+             <span class="price">${safe(dailyRate)}</span>
+             <span class="price-unit">${moneySymbol(currency)}/jour</span>
+           </div>`
+        : '';
+
+      const depositHtml = deposit != null
+        ? `<div class="price-details">Caution : ${safe(deposit)}${moneySymbol(currency)}</div>`
+        : '';
+
+      const locationLine = [city, marina].filter(Boolean).join(' • ') + (country ? ` (${country})` : '');
+
+      // On crée un vrai nœud DOM et on renvoie un HTMLElement
+      const card = document.createElement('article');
       card.className = 'boat-card';
-      card.setAttribute('data-boat-id', boat._id);
-      
-      console.log('✅ [DEBUG] Élément DOM créé');
-      
-      // Gestion des images - essayer plusieurs sources
-      let mainImage = 'https://images.pexels.com/photos/1001682/pexels-photo-1001682.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop';
-      
-      if (boat.mainImage) {
-        mainImage = boat.mainImage;
-        console.log('🖼️ [DEBUG] Image principale trouvée:', mainImage);
-      } else if (boat.images && boat.images.length > 0) {
-        // Chercher une image avec URL
-        const imageWithUrl = boat.images.find(img => img.url);
-        if (imageWithUrl) {
-          mainImage = imageWithUrl.url;
-          console.log('🖼️ [DEBUG] Image dans tableau trouvée:', mainImage);
-        }
-      } else if (boat.imageUrls && boat.imageUrls.length > 0) {
-        mainImage = boat.imageUrls[0];
-        console.log('🖼️ [DEBUG] Image URL trouvée:', mainImage);
-      } else {
-        console.log('🖼️ [DEBUG] Aucune image trouvée, utilisation de l\'image par défaut');
-      }
-      
-      // Nettoyer les données pour éviter les erreurs d'affichage
-      const boatName = (boat.name || 'Nom non disponible').replace(/[<>]/g, '');
-      const boatType = this.formatBoatType(boat.type || 'voilier');
-      const city = (boat.location?.city || 'Ville').replace(/[<>]/g, '');
-      const country = (boat.location?.country || 'Pays').replace(/[<>]/g, '');
-      const maxPeople = boat.capacity?.maxPeople || 0;
-      const length = boat.specifications?.length || 0;
-      const dailyRate = boat.pricing?.dailyRate || 0;
-      const rating = boat.rating?.average || 0;
-      const totalReviews = boat.rating?.totalReviews || 0;
-      
-      console.log('✅ [DEBUG] Données nettoyées:', { boatName, boatType, city, country, maxPeople, length, dailyRate, rating, totalReviews });
-      
-      // Test de la fonction renderStars
-      let starsHTML;
-      try {
-        starsHTML = this.renderStars(rating);
-        console.log('⭐ [DEBUG] Étoiles générées:', starsHTML);
-      } catch (starsError) {
-        console.error('❌ [DEBUG] Erreur dans renderStars:', starsError);
-        starsHTML = '☆☆☆☆☆';
-      }
-      
+      card.dataset.id = id;
       card.innerHTML = `
         <div class="boat-image">
-          <img src="${mainImage}" alt="${boatName}" loading="lazy" onerror="this.src='https://images.pexels.com/photos/1001682/pexels-photo-1001682.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop'">
-          <div class="boat-badge">${boatType}</div>
-          <div class="boat-rating">
-            <span class="rating-stars">${starsHTML}</span>
-            <span class="rating-count">(${totalReviews})</span>
-          </div>
+          <img src="${imgSrc}" alt="${name}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1508599589920-14cfa1c1fe4d?q=80&w=1200&auto=format&fit=crop'">
+          ${category ? `<span class="boat-badge">${category}</span>` : ''}
+          <div class="boat-rating">⭐ 4.8</div>
         </div>
+
         <div class="boat-content">
-          <h3 class="boat-name">${boatName}</h3>
-          <p class="boat-location">📍 ${city}, ${country}</p>
+          <div class="boat-name">${name}</div>
+          <div class="boat-location">${locationLine}</div>
+
           <div class="boat-specs">
-            <span class="spec">👥 ${maxPeople} pers.</span>
-            <span class="spec">📏 ${length}m</span>
-            ${boat.capacity?.cabins ? `<span class="spec">🛏️ ${boat.capacity.cabins} cabines</span>` : ''}
+            ${type ? `<span class="spec">${type}</span>` : ''}
+            ${capacity !== '—' ? `<span class="spec">${capacity} pers.</span>` : ''}
+            ${length !== '—' ? `<span class="spec">${length} m</span>` : ''}
+            ${width  !== '—' ? `<span class="spec">${width} m larg.</span>` : ''}
+            ${fuel   !== '—' ? `<span class="spec">${fuel}</span>` : ''}
           </div>
-          <div class="boat-price">
-            <span class="price">${dailyRate}€</span>
-            <span class="price-unit">/jour</span>
-          </div>
-          <button class="btn-primary btn-full boat-details-btn">Voir les détails</button>
+
+          ${priceHtml}
+          ${depositHtml}
+
+          <button class="boat-details-btn" data-boat-id="${id}">Voir les détails</button>
         </div>
       `;
-      
-      console.log('✅ [DEBUG] innerHTML défini');
-      
+
       // Écouteur pour afficher les détails
       const detailsBtn = card.querySelector('.boat-details-btn');
       if (detailsBtn) {
-        detailsBtn.addEventListener('click', () => this.showBoatDetails(boat._id));
-        console.log('✅ [DEBUG] Écouteur d\'événement ajouté');
-      } else {
-        console.warn('⚠️ [DEBUG] Bouton de détails non trouvé');
+        detailsBtn.addEventListener('click', () => this.showBoatDetails(id));
       }
-      
-      console.log('🎉 [DEBUG] Carte créée avec succès pour:', boat.name);
-      return card;
+
+      console.log('🎉 [DEBUG] Carte créée avec succès pour:', name);
+      return card; // Toujours un HTMLElement
     } catch (error) {
       console.error('❌ [DEBUG] Erreur lors de la création de la carte de bateau:', error);
       console.error('❌ [DEBUG] Stack trace:', error.stack);
@@ -2206,13 +2192,13 @@ class SailingLocApp {
     if (emptyMessage) emptyMessage.style.display = 'none';
     if (errorMessage) errorMessage.style.display = 'none';
 
-    boatsGrid.innerHTML = boats.map(boat => this.createBoatCard(boat)).join('');
+    boatsGrid.innerHTML = boats.map(boat => this.createBoatManagementCard(boat)).join('');
   }
 
   /**
-   * Création d'une carte de bateau
+   * Création d'une carte de bateau pour la gestion (retourne une chaîne HTML)
    */
-  createBoatCard(boat) {
+  createBoatManagementCard(boat) {
     const statusClass = boat.status || 'available';
     const statusText = this.getStatusText(boat.status);
     const typeText = this.getTypeText(boat.type);

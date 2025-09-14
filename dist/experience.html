@@ -3,74 +3,78 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>SailingLoc – Découvrir l'expérience</title>
-  <script type="module" crossorigin src="/assets/main-BCnV_fgJ.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/style-Deg_6pYg.css">
+  <title>SailingLoc – Découvrir l'expérience</title>
+  <script type="module" crossorigin src="/assets/main-6B_FRqmo.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/style-t4_5AYKD.css">
   <link rel="stylesheet" crossorigin href="/assets/experience-WbyektV_.css">
 </head>
 
  <!-- Navigation -->
- <nav id="navbar" class="navbar">
-  <div class="nav-container">
-    <div class="nav-brand">
-      <h2>⛵ SailingLoc</h2>
-    </div>
-    
-    <div class="nav-menu" id="nav-menu">
-      <a href="index.html" class="nav-link active" data-i18n="nav.home">Accueil</a>
-      <a href="boats.html" class="nav-link" data-i18n="nav.boats">Bateaux</a>
-      <a href="experience.html" class="nav-link" data-i18n="nav.experience">Experience</a>
-      <a href="contact.html" class="nav-link" data-i18n="nav.contact">Contact</a>
-    </div>
-    
-    <div class="nav-auth">
-      <select id="langSwitcher" aria-label="Language" style="margin-right:12px">
-        <option value="fr">FR </option>
-        <option value="en">EN</option>
-      </select>
-      <button id="login-btn" class="btn-secondary" data-i18n="auth.login">Connexion</button>
-      <button id="register-btn" class="btn-primary" data-i18n="auth.register">Inscription</button>
-      
-      <!-- Menu utilisateur (caché par défaut) -->
-      <div id="user-menu" class="user-menu" style="display: none;">
-        <div class="user-avatar" id="user-avatar">
-          <span id="user-initials">JD</span>
-        </div>
-        <div class="user-dropdown" id="user-dropdown">
-          <div class="user-info">
-            <div class="user-name" id="user-name">John Doe</div>
-            
-            <div class="user-email" id="user-email">john@example.com</div>
+  <nav id="navbar" class="navbar">
+    <div class="nav-container">
+            <div class="nav-brand" style="display: flex; align-items: center; gap: 10px;">
+        <img src="dist/assets/sailingloc_logo_mark_no_text_512.png" alt="Logo SailingLoc" style="height:48px;vertical-align:middle;">
+        <h2 style="
+          font-size:2.2rem;
+          font-weight:900;
+          background: linear-gradient(90deg, #2f7fe0 0%, #35c1a0 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+          letter-spacing: -1px;
+          margin: 0;
+        ">
+          SailingLoc
+        </h2>
+      </div>
+      <div class="nav-menu" id="nav-menu">
+        <a href="index.html" class="nav-link" data-i18n="nav.home">Accueil</a>
+        <a href="boats.html" class="nav-link" data-i18n="nav.boats">Bateaux</a>
+    <a href="experience.html" class="nav-link active" data-i18n="nav.experience">Experience</a>
+        <a href="contact.html" class="nav-link" data-i18n="nav.contact">Contact</a>
+      </div>
+      <div class="nav-auth">
+        <button id="login-btn" class="btn-secondary">Connexion</button>
+        <button id="register-btn" class="btn-primary">Inscription</button>
+        <!-- Menu utilisateur (caché par défaut) -->
+        <div id="user-menu" class="user-menu" style="display: none;">
+          <div class="user-avatar" id="user-avatar">
+            <span id="user-initials">JD</span>
           </div>
-          <div class="dropdown-divider"></div>
-          <a href="#" id="profile-link" class="dropdown-item">
-            <span class="dropdown-icon">👤</span>
-            Mon Profil
-          </a>
-          <a href="#" id="bookings-link" class="dropdown-item">
-            <span class="dropdown-icon">📋</span>
-            Mes Réservations
-          </a>
-          <a href="#" id="boats-link" class="dropdown-item" style="display: none;">
-            <span class="dropdown-icon">🛥️</span>
-            Mes Bateaux
-          </a>
-          <div class="dropdown-divider"></div>
-          <a href="#" id="logout-link" class="dropdown-item logout">
-            <span class="dropdown-icon">🚪</span>
-            Déconnexion
-          </a>
+          <div class="user-dropdown" id="user-dropdown">
+            <div class="user-info">
+              <div class="user-name" id="user-name">John Doe</div>
+              <div class="user-email" id="user-email">john@example.com</div>
+            </div>
+            <div class="dropdown-divider"></div>
+            <a href="#" id="profile-link" class="dropdown-item">
+              <span class="dropdown-icon">👤</span>
+              Mon Profil
+            </a>
+            <a href="#" id="bookings-link" class="dropdown-item">
+              <span class="dropdown-icon">📋</span>
+              Mes Réservations
+            </a>
+            <a href="#" id="boats-link" class="dropdown-item" style="display: none;">
+              <span class="dropdown-icon">🛥️</span>
+              Mes Bateaux
+            </a>
+            <div class="dropdown-divider"></div>
+            <a href="#" id="logout-link" class="dropdown-item logout">
+              <span class="dropdown-icon">🚪</span>
+              Déconnexion
+            </a>
+          </div>
         </div>
       </div>
+      
+      <div class="mobile-menu-toggle" id="mobile-menu-toggle">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
     </div>
-    
-    <div class="mobile-menu-toggle" id="mobile-menu-toggle">
-      <span></span>
-      <span></span>
-      <span></span>
-    </div>
-  </div>
-</nav>
+  </nav>
 
 <body>
 
@@ -429,7 +433,7 @@
   </div>
 </section>
 
-
+<br>
 
 <!-- TÉMOIGNAGES (plein écran) -->
 <section class="sl-testimonials" id="temoignages" aria-labelledby="ts-title">
@@ -487,7 +491,7 @@
 
   
   
-  <!-- Footer -->
+  <!-- Footer (ton snippet) -->
   <footer class="footer">
     <div class="container">
       <div class="footer-content">
@@ -495,6 +499,7 @@
           <h3>⛵ SailingLoc</h3>
           <p>Votre partenaire de confiance pour la location de bateaux de luxe</p>
         </div>
+        
         <div class="footer-section">
           <h4>Services</h4>
           <ul>
@@ -503,20 +508,24 @@
             <li><a href="contact.html">Support client</a></li>
           </ul>
         </div>
+        
         <div class="footer-section">
           <h4>Légal</h4>
           <ul>
-            <li><a href="#">Conditions générales</a></li>
-            <li><a href="#">Politique de confidentialité</a></li>
-            <li><a href="#">Mentions légales</a></li>
+            <li><a href="conditions.html">Conditions générales</a></li>
+            <li><a href="confidentialite.html">Politique de confidentialité</a></li>
+            <li><a href="mentions.html">Mentions légales</a></li>
           </ul>
         </div>
-      </div>
+      </div><!-- fermeture pour .footer-content -->
+      
       <div class="footer-bottom">
-        <p>&copy; 2024 SailingLoc. Tous droits réservés.</p>
+        <p>&copy; 2025 SailingLoc. Tous droits réservés.</p>
       </div>
     </div>
-  </footer>
+  </footer>
+
+
   <script>
     // Pagination JS (similaire à boats)
     const members = Array.from({length: 23}, (_, i) => ({name: `Membre ${i+1}`, experience: `Expérience ${i+1}`}));
