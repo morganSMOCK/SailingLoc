@@ -1,7 +1,8 @@
 {
   "nav.home": "Home",
   "nav.boats": "Boats",
-  "nav.services": "Services",
+  "nav.experience": "Experience",
+  "nav.sailingclub": "Sailing Club",
   "nav.contact": "Contact",
   "auth.login": "Log in",
   "auth.register": "Sign up",
