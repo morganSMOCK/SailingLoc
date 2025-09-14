@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Suppression Bateau - SailingLoc</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .container {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+    .log-container {
+      background: #1e1e1e;
+      color: #00ff00;
+      padding: 15px;
+      border-radius: 5px;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      max-height: 400px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+    }
+    .error { color: #ff6b6b; }
+    .success { color: #51cf66; }
+    .warning { color: #ffd43b; }
+    .info { color: #74c0fc; }
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin: 5px;
+    }
+    button:hover { background: #0056b3; }
+    .danger { background: #dc3545; }
+    .danger:hover { background: #c82333; }
+    .data-display {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 5px;
+      margin: 10px 0;
+      border-left: 4px solid #007bff;
+    }
+    .boat-item {
+      background: #e9ecef;
+      padding: 10px;
+      margin: 5px 0;
+      border-radius: 5px;
+      border-left: 4px solid #28a745;
+    }
+    input {
+      padding: 8px;
+      margin: 5px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      width: 200px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🗑️ Test Suppression Bateau - SailingLoc</h1>
+    <p>Cette page teste la suppression de bateaux avec diagnostics détaillés.</p>
+    
+    <div>
+      <button onclick="checkAuth()">🔐 Vérifier Auth</button>
+      <button onclick="loadMyBoats()">🚢 Charger Mes Bateaux</button>
+      <button onclick="clearLogs()">🧹 Effacer les logs</button>
+    </div>
+    
+    <div>
+      <h3>🧪 Test de suppression manuel</h3>
+      <input type="text" id="boatId" placeholder="ID du bateau à supprimer">
+      <button onclick="testDeleteBoat()" class="danger">🗑️ Tester Suppression</button>
+      <button onclick="testDeleteBoatForce()" class="danger">💥 Suppression Forcée</button>
+    </div>
+    
+    <div class="data-display">
+      <h3>📊 Résultats</h3>
+      <div id="results"></div>
+    </div>
+    
+    <div>
+      <h3>📝 Logs</h3>
+      <div id="logs" class="log-container">Logs de test...\n</div>
+    </div>
+  </div>
+
+  <!-- Script principal de l'application -->
+  <script type="module" src="/src/main.js"></script>
+  
+  <script>
+    function log(message, type = 'info') {
+      const logsContainer = document.getElementById('logs');
+      const timestamp = new Date().toLocaleTimeString();
+      const className = type === 'error' ? 'error' : type === 'success' ? 'success' : type === 'warning' ? 'warning' : 'info';
+      logsContainer.innerHTML += `<span class="${className}">[${timestamp}] ${message}</span>\n`;
+      logsContainer.scrollTop = logsContainer.scrollHeight;
+      console.log(`[DELETE-TEST] ${message}`);
+    }
+
+    function clearLogs() {
+      document.getElementById('logs').innerHTML = 'Logs effacés...\n';
+      document.getElementById('results').innerHTML = '';
+    }
+
+    async function checkAuth() {
+      log('🔐 Vérification de l\'authentification...', 'info');
+      
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        log('❌ Aucun token d\'authentification trouvé', 'error');
+        log('💡 Connectez-vous d\'abord sur l\'application principale', 'info');
+        return;
+      }
+
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        log('✅ Token décodé avec succès', 'success');
+        log(`📊 User ID: ${payload.userId}`, 'info');
+        log(`📊 Email: ${payload.email}`, 'info');
+        log(`📊 Role: ${payload.role}`, 'info');
+        
+        // Vérifier l'expiration
+        const exp = payload.exp * 1000;
+        const now = Date.now();
+        if (exp > now) {
+          log('✅ Token valide (non expiré)', 'success');
+        } else {
+          log('❌ Token expiré', 'error');
+          return;
+        }
+      } catch (error) {
+        log(`❌ Erreur de décodage du token: ${error.message}`, 'error');
+        return;
+      }
+
+      // Tester l'API avec le token
+      try {
+        const response = await fetch('https://sailingloc.onrender.com/api/auth/me', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (response.ok) {
+          const userData = await response.json();
+          log('✅ Informations utilisateur récupérées', 'success');
+          log(`📊 Utilisateur: ${JSON.stringify(userData, null, 2)}`, 'info');
+        } else {
+          log(`❌ Erreur API: ${response.status} ${response.statusText}`, 'error');
+        }
+      } catch (error) {
+        log(`❌ Erreur: ${error.message}`, 'error');
+      }
+    }
+
+    async function loadMyBoats() {
+      log('🚢 Chargement de mes bateaux...', 'info');
+      
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        log('❌ Aucun token d\'authentification trouvé', 'error');
+        return;
+      }
+
+      try {
+        const response = await fetch('https://sailingloc.onrender.com/api/boats/owner/my-boats', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          log('✅ Bateaux récupérés avec succès', 'success');
+          
+          if (data.success && data.data.boats.length > 0) {
+            log(`📊 ${data.data.boats.length} bateau(x) trouvé(s)`, 'info');
+            displayMyBoats(data.data.boats);
+          } else {
+            log('📭 Aucun bateau trouvé', 'warning');
+            document.getElementById('results').innerHTML = '<p>📭 Vous n\'avez aucun bateau enregistré</p>';
+          }
+        } else {
+          const errorData = await response.json();
+          log(`❌ Erreur API: ${errorData.message}`, 'error');
+          log(`📊 Status: ${response.status}`, 'error');
+        }
+      } catch (error) {
+        log(`❌ Erreur: ${error.message}`, 'error');
+      }
+    }
+
+    function displayMyBoats(boats) {
+      const resultsDiv = document.getElementById('results');
+      
+      resultsDiv.innerHTML = `
+        <div class="boat-item">
+          <h4>🚢 Mes Bateaux (${boats.length})</h4>
+          ${boats.map(boat => `
+            <div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+              <p><strong>Nom:</strong> ${boat.name}</p>
+              <p><strong>ID:</strong> ${boat._id}</p>
+              <p><strong>Propriétaire:</strong> ${boat.owner?.firstName} ${boat.owner?.lastName}</p>
+              <p><strong>Propriétaire ID:</strong> ${boat.owner?._id}</p>
+              <p><strong>Statut:</strong> ${boat.isActive ? 'Actif' : 'Inactif'}</p>
+              <button onclick="testDeleteBoatById('${boat._id}', '${boat.name}')" class="danger" style="margin-top: 5px;">
+                🗑️ Tester Suppression
+              </button>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    async function testDeleteBoatById(boatId, boatName) {
+      log(`🗑️ Test de suppression du bateau: ${boatName} (${boatId})`, 'info');
+      await performDeleteBoat(boatId, false);
+    }
+
+    async function testDeleteBoat() {
+      const boatId = document.getElementById('boatId').value.trim();
+      if (!boatId) {
+        log('❌ Veuillez entrer un ID de bateau', 'error');
+        return;
+      }
+      
+      log(`🗑️ Test de suppression du bateau: ${boatId}`, 'info');
+      await performDeleteBoat(boatId, false);
+    }
+
+    async function testDeleteBoatForce() {
+      const boatId = document.getElementById('boatId').value.trim();
+      if (!boatId) {
+        log('❌ Veuillez entrer un ID de bateau', 'error');
+        return;
+      }
+      
+      log(`💥 Test de suppression forcée du bateau: ${boatId}`, 'warning');
+      await performDeleteBoat(boatId, true);
+    }
+
+    async function performDeleteBoat(boatId, force = false) {
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        log('❌ Aucun token d\'authentification trouvé', 'error');
+        return;
+      }
+
+      try {
+        const url = `https://sailingloc.onrender.com/api/boats/${boatId}${force ? '?force=true' : ''}`;
+        log(`📡 URL: ${url}`, 'info');
+        
+        const response = await fetch(url, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        const data = await response.json();
+        
+        log(`📊 Status: ${response.status} ${response.statusText}`, response.ok ? 'success' : 'error');
+        log(`📊 Réponse: ${JSON.stringify(data, null, 2)}`, 'info');
+        
+        if (response.ok) {
+          log('✅ Bateau supprimé avec succès', 'success');
+        } else {
+          log(`❌ Erreur de suppression: ${data.message}`, 'error');
+          
+          if (response.status === 403) {
+            log('💡 Erreur 403: Problème de permissions', 'warning');
+            log('💡 Vérifiez que vous êtes le propriétaire du bateau', 'info');
+            log('💡 Vérifiez que votre token est valide', 'info');
+          } else if (response.status === 404) {
+            log('💡 Erreur 404: Bateau non trouvé', 'warning');
+          } else if (response.status === 400) {
+            log('💡 Erreur 400: Réservations actives - utilisez force=true', 'warning');
+          }
+        }
+
+      } catch (error) {
+        log(`❌ Erreur: ${error.message}`, 'error');
+      }
+    }
+
+    // Initialisation
+    log('🚀 Page de test de suppression chargée', 'success');
+    log('💡 Cliquez sur "Vérifier Auth" pour commencer', 'info');
+    
+    // Vérification automatique
+    setTimeout(() => {
+      checkAuth();
+    }, 1000);
+  </script>
+</body>
+</html>
