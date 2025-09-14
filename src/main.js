@@ -2317,20 +2317,34 @@ class SailingLocApp {
    * Remplissage du formulaire d'édition avec les données du bateau
    */
   populateEditForm(boat) {
-    document.getElementById('edit-boat-name').value = boat.name || '';
-    document.getElementById('edit-boat-type').value = boat.type || '';
-    document.getElementById('edit-boat-category').value = boat.category || '';
-    document.getElementById('edit-boat-description').value = boat.description || '';
-    document.getElementById('edit-boat-length').value = boat.length || '';
-    document.getElementById('edit-boat-width').value = boat.width || '';
-    document.getElementById('edit-boat-capacity').value = boat.capacity || '';
-    document.getElementById('edit-boat-city').value = boat.city || '';
-    document.getElementById('edit-boat-marina').value = boat.marina || '';
-    document.getElementById('edit-boat-price').value = boat.pricePerDay || '';
-    document.getElementById('edit-boat-deposit').value = boat.deposit || '';
+    // Vérifier que les éléments existent avant de les modifier
+    const nameField = document.getElementById('edit-boat-name');
+    const typeField = document.getElementById('edit-boat-type');
+    const categoryField = document.getElementById('edit-boat-category');
+    const descriptionField = document.getElementById('edit-boat-description');
+    const lengthField = document.getElementById('edit-boat-length');
+    const widthField = document.getElementById('edit-boat-width');
+    const capacityField = document.getElementById('edit-boat-capacity');
+    const cityField = document.getElementById('edit-boat-city');
+    const marinaField = document.getElementById('edit-boat-marina');
+    const priceField = document.getElementById('edit-boat-price');
+    const depositField = document.getElementById('edit-boat-deposit');
+    const form = document.getElementById('edit-boat-form');
+    
+    if (nameField) nameField.value = boat.name || '';
+    if (typeField) typeField.value = boat.type || '';
+    if (categoryField) categoryField.value = boat.category || '';
+    if (descriptionField) descriptionField.value = boat.description || '';
+    if (lengthField) lengthField.value = boat.length || '';
+    if (widthField) widthField.value = boat.width || '';
+    if (capacityField) capacityField.value = boat.capacity || '';
+    if (cityField) cityField.value = boat.city || '';
+    if (marinaField) marinaField.value = boat.marina || '';
+    if (priceField) priceField.value = boat.pricePerDay || '';
+    if (depositField) depositField.value = boat.deposit || '';
     
     // Stocker l'ID du bateau pour la mise à jour
-    document.getElementById('edit-boat-form').dataset.boatId = boat._id;
+    if (form) form.dataset.boatId = boat._id;
     
     // Afficher les images existantes
     this.displayExistingImages(boat.images || []);
@@ -2341,6 +2355,8 @@ class SailingLocApp {
    */
   displayExistingImages(images) {
     const container = document.getElementById('edit-image-preview-container');
+    if (!container) return;
+    
     container.innerHTML = '';
     
     if (images && images.length > 0) {
