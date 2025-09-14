@@ -262,6 +262,110 @@
         </div>
     </div>
 
+    <!-- Modale d'ajout de bateau -->
+    <div id="add-boat-modal" class="modal modal-large">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Ajouter un bateau</h2>
+          <button class="modal-close">&times;</button>
+        </div>
+        <form id="add-boat-form" class="boat-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="boat-name">Nom du bateau</label>
+              <input type="text" id="boat-name" placeholder="Ex: Étoile des Mers" required>
+            </div>
+            <div class="form-group">
+              <label for="boat-type">Type de bateau</label>
+              <select id="boat-type" required>
+                <option value="">Sélectionner</option>
+                <option value="voilier">Voilier</option>
+                <option value="catamaran">Catamaran</option>
+                <option value="yacht">Yacht</option>
+                <option value="bateau_moteur">Bateau à moteur</option>
+                <option value="semi_rigide">Semi-rigide</option>
+                <option value="peniche">Péniche</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="boat-category">Catégorie</label>
+              <select id="boat-category" required>
+                <option value="">Sélectionner</option>
+                <option value="standard">Standard</option>
+                <option value="luxe">Luxe</option>
+                <option value="economique">Économique</option>
+                <option value="sportif">Sportif</option>
+                <option value="familial">Familial</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="boat-description">Description</label>
+            <textarea id="boat-description" rows="4" placeholder="Décrivez votre bateau, ses équipements, son histoire..."></textarea>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="boat-length">Longueur (m)</label>
+              <input type="number" id="boat-length" step="0.1" min="1" max="100" required>
+            </div>
+            <div class="form-group">
+              <label for="boat-width">Largeur (m)</label>
+              <input type="number" id="boat-width" step="0.1" min="1" max="20" required>
+            </div>
+            <div class="form-group">
+              <label for="boat-capacity">Capacité (personnes)</label>
+              <input type="number" id="boat-capacity" min="1" max="50" required>
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="boat-city">Ville</label>
+              <input type="text" id="boat-city" placeholder="Ex: Cannes" required>
+            </div>
+            <div class="form-group">
+              <label for="boat-marina">Marina</label>
+              <input type="text" id="boat-marina" placeholder="Ex: Port de Cannes" required>
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="boat-daily-rate">Prix par jour (€)</label>
+              <input type="number" id="boat-daily-rate" min="50" step="10" required>
+            </div>
+            <div class="form-group">
+              <label for="boat-security-deposit">Caution (€)</label>
+              <input type="number" id="boat-security-deposit" min="0" step="50" required>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="boat-images">Images du bateau</label>
+            <div class="image-upload-container">
+              <input type="file" id="boat-image-input" accept="image/*" multiple style="display: none;">
+              <button type="button" id="select-images-btn" class="btn-secondary">
+                📷 Sélectionner des images
+              </button>
+              <div id="image-preview-container" class="image-preview-container">
+                <!-- Les aperçus d'images seront ajoutés ici -->
+              </div>
+              <div class="image-help">
+                <small>Formats acceptés : JPG, PNG, WebP. Taille max : 5MB par image</small>
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-actions">
+            <button type="button" class="btn-secondary" onclick="app.uiManager.hideModal('add-boat-modal')">Annuler</button>
+            <button type="submit" class="btn-primary">Ajouter le bateau</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
     <!-- Notifications -->
     <div class="notifications" id="notifications"></div>
 
