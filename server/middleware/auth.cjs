@@ -44,6 +44,12 @@ const authenticateToken = async (req, res, next) => {
       lastName: user.lastName
     };
 
+    console.log('🔐 [AUTH] Utilisateur authentifié:', {
+      userId: user._id,
+      email: user.email,
+      role: user.role
+    });
+
     next();
 
   } catch (error) {
