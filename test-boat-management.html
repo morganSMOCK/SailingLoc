@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Test Gestion Bateaux - SailingLoc</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; background: #f0f8ff; }
+    .container { max-width: 1000px; margin: 0 auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+    .test-btn { display: inline-block; margin: 10px; padding: 15px 25px; background: linear-gradient(135deg, #007bff, #0056b3); color: white; text-decoration: none; border-radius: 8px; font-weight: bold; cursor: pointer; border: none; }
+    .test-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,123,255,0.3); }
+    .status { margin: 20px 0; padding: 20px; border-radius: 10px; text-align: center; }
+    .success { background: #d4edda; color: #155724; border: 2px solid #c3e6cb; }
+    .error { background: #f8d7da; color: #721c24; border: 2px solid #f5c6cb; }
+    .info { background: #d1ecf1; color: #0c5460; border: 2px solid #bee5eb; }
+    .loading { background: #fff3cd; color: #856404; border: 2px solid #ffeaa7; }
+    h1 { color: #333; text-align: center; margin-bottom: 30px; }
+    .emoji { font-size: 24px; margin-right: 10px; }
+    .feature-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin: 20px 0; }
+    .feature-card { background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; }
+    .feature-title { font-weight: bold; color: #333; margin-bottom: 10px; font-size: 18px; }
+    .feature-desc { color: #666; margin: 10px 0; }
+    .feature-status { padding: 5px 10px; border-radius: 15px; font-size: 12px; font-weight: bold; }
+    .status-working { background: #d4edda; color: #155724; }
+    .status-fixed { background: #d1ecf1; color: #0c5460; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1><span class="emoji">🛥️</span>Test Gestion des Bateaux</h1>
+    
+    <div class="status info">
+      <strong>ℹ️ Fonctionnalités de gestion des bateaux implémentées</strong><br>
+      Toutes les fonctionnalités de modification, suppression et gestion d'images sont maintenant disponibles.
+    </div>
+    
+    <div style="text-align: center; margin: 30px 0;">
+      <a href="boat-management.html" class="test-btn">
+        <span class="emoji">🛠️</span>Page de gestion des bateaux
+      </a>
+      
+      <a href="boats.html" class="test-btn">
+        <span class="emoji">📋</span>Page des bateaux
+      </a>
+    </div>
+    
+    <div class="feature-list">
+      <div class="feature-card">
+        <div class="feature-title">✏️ Modification des bateaux</div>
+        <div class="feature-desc">Modifier le nom, type, catégorie, description, dimensions, localisation, prix et caution d'un bateau.</div>
+        <div class="feature-status status-fixed">✅ Implémenté</div>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-title">🗑️ Suppression des bateaux</div>
+        <div class="feature-desc">Supprimer un bateau avec confirmation et option de suppression forcée.</div>
+        <div class="feature-status status-fixed">✅ Implémenté</div>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-title">🖼️ Gestion des images</div>
+        <div class="feature-desc">Ajouter, supprimer et gérer les images d'un bateau.</div>
+        <div class="feature-status status-fixed">✅ Implémenté</div>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-title">🔄 Restauration des bateaux</div>
+        <div class="feature-desc">Restaurer un bateau inactif pour le remettre en service.</div>
+        <div class="feature-status status-fixed">✅ Implémenté</div>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-title">📊 Affichage des données</div>
+        <div class="feature-desc">Affichage des vraies données de l'API Render dans les cartes de bateaux.</div>
+        <div class="feature-status status-fixed">✅ Implémenté</div>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-title">🔔 Notifications</div>
+        <div class="feature-desc">Système de notifications pour les succès et erreurs des opérations.</div>
+        <div class="feature-status status-fixed">✅ Implémenté</div>
+      </div>
+    </div>
+    
+    <h2>🧪 Comment tester :</h2>
+    <ol>
+      <li><strong>Accédez à la page de gestion :</strong> <code>boat-management.html</code></li>
+      <li><strong>Connectez-vous :</strong> Utilisez le bouton "Connexion" (les données de test fonctionnent)</li>
+      <li><strong>Testez la modification :</strong> Cliquez sur "Modifier" sur une carte de bateau</li>
+      <li><strong>Testez la suppression :</strong> Cliquez sur "Supprimer" (avec confirmation)</li>
+      <li><strong>Testez les images :</strong> Cliquez sur "Images" pour gérer les photos</li>
+      <li><strong>Testez l'ajout :</strong> Utilisez le bouton "Ajouter un Bateau"</li>
+    </ol>
+    
+    <h2>🔧 Fonctionnalités techniques :</h2>
+    <ul>
+      <li><strong>API Integration :</strong> Connexion à l'API Render pour toutes les opérations</li>
+      <li><strong>Formulaires dynamiques :</strong> Génération automatique des formulaires d'édition</li>
+      <li><strong>Upload d'images :</strong> Support multi-fichiers avec aperçu</li>
+      <li><strong>Validation :</strong> Validation côté client et serveur</li>
+      <li><strong>Gestion d'erreurs :</strong> Messages d'erreur explicites</li>
+      <li><strong>Interface responsive :</strong> Compatible mobile et desktop</li>
+    </ul>
+  </div>
+
+  <script>
+    // Test automatique des fonctionnalités
+    function testFeatures() {
+      console.log('🧪 Test des fonctionnalités de gestion des bateaux...');
+      
+      // Vérifier que les méthodes existent
+      const methods = ['editBoat', 'deleteBoat', 'manageImages', 'restoreBoat'];
+      const app = window.app;
+      
+      if (app) {
+        methods.forEach(method => {
+          if (typeof app[method] === 'function') {
+            console.log(`✅ ${method} est disponible`);
+          } else {
+            console.log(`❌ ${method} manquante`);
+          }
+        });
+      } else {
+        console.log('⚠️ Application non initialisée');
+      }
+    }
+    
+    // Lancer le test au chargement
+    window.addEventListener('load', () => {
+      setTimeout(testFeatures, 1000);
+    });
+  </script>
+</body>
+</html>

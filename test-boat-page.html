@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Test Boat Page - SailingLoc</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    .test-link { display: block; margin: 10px 0; padding: 10px; background: #f0f0f0; text-decoration: none; border-radius: 5px; }
+    .test-link:hover { background: #e0e0e0; }
+    .status { margin: 10px 0; padding: 10px; border-radius: 5px; }
+    .success { background: #d4edda; color: #155724; }
+    .error { background: #f8d7da; color: #721c24; }
+  </style>
+</head>
+<body>
+  <h1>🧪 Test de la page détail bateau</h1>
+  
+  <h2>📋 Tests à effectuer :</h2>
+  
+  <h3>1. Test avec ID valide :</h3>
+  <a href="boat.html?id=68c717e123456789abcdef01" class="test-link">
+    🛥️ Voir le bateau "Ocean Dream" (ID valide)
+  </a>
+  
+  <h3>2. Test avec ID invalide :</h3>
+  <a href="boat.html?id=invalid-id" class="test-link">
+    ❌ Test avec ID invalide (doit afficher 404)
+  </a>
+  
+  <h3>3. Test sans ID :</h3>
+  <a href="boat.html" class="test-link">
+    ❓ Test sans ID (doit afficher 404)
+  </a>
+  
+  <h2>🔧 Instructions :</h2>
+  <ol>
+    <li><strong>Démarrez le serveur API :</strong> <code>node mock-api-server.cjs</code></li>
+    <li><strong>Démarrez Vite :</strong> <code>npm run dev</code></li>
+    <li><strong>Testez les liens ci-dessus</strong></li>
+  </ol>
+  
+  <h2>✅ Résultats attendus :</h2>
+  <ul>
+    <li><strong>ID valide :</strong> Page complète avec toutes les infos du bateau</li>
+    <li><strong>ID invalide :</strong> Message "Bateau introuvable" (pas de page vide)</li>
+    <li><strong>Sans ID :</strong> Message "Bateau introuvable" (pas de page vide)</li>
+  </ul>
+  
+  <h2>🐛 Debug :</h2>
+  <p>Ouvrez la console du navigateur (F12) pour voir les logs de l'API et les erreurs éventuelles.</p>
+  
+  <div id="api-test" class="status" style="display: none;">
+    <h3>Test API en cours...</h3>
+  </div>
+  
+  <script>
+    // Test automatique de l'API
+    async function testAPI() {
+      const testDiv = document.getElementById('api-test');
+      testDiv.style.display = 'block';
+      
+      try {
+        const response = await fetch('/api/test');
+        const data = await response.json();
+        
+        if (response.ok) {
+          testDiv.className = 'status success';
+          testDiv.innerHTML = `<h3>✅ API fonctionne !</h3><p>${data.message}</p>`;
+        } else {
+          throw new Error('API non accessible');
+        }
+      } catch (error) {
+        testDiv.className = 'status error';
+        testDiv.innerHTML = `<h3>❌ Erreur API</h3><p>${error.message}</p><p>Assurez-vous que le serveur API est démarré sur le port 3000.</p>`;
+      }
+    }
+    
+    // Test automatique au chargement de la page
+    window.addEventListener('load', testAPI);
+  </script>
+</body>
+</html>
