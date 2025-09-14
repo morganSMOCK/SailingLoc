@@ -6,7 +6,7 @@ export class BoatService {
   constructor() {
     // URL de base de l'API (auto-détection env)
     const envBase = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_BASE) ? import.meta.env.VITE_API_BASE : '';
-    this.baseURL = envBase || 'https://sailingloc.onrender.com/api';
+    this.baseURL = envBase || '/api'; // Utilise le proxy Vite vers Render
     this.boatsEndpoint = `${this.baseURL}/boats`;
   }
 
@@ -28,24 +28,188 @@ export class BoatService {
 
       const url = `${this.boatsEndpoint}?${queryParams.toString()}`;
       
+      console.log('🚤 Tentative de connexion à:', url);
+      
       const response = await fetch(url, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'
-        }
+        },
+        mode: 'cors' // Important pour les requêtes cross-origin
       });
 
-      const data = await response.json();
-      
+      console.log('📡 Réponse reçue:', response.status, response.statusText);
+
       if (!response.ok) {
-        throw new Error(data.message || 'Erreur lors de la récupération des bateaux');
+        const errorText = await response.text();
+        console.error('❌ Erreur API:', response.status, errorText);
+        throw new Error(`Erreur ${response.status}: ${errorText}`);
       }
 
+      const data = await response.json();
+      console.log('✅ Données reçues:', data);
       return data;
     } catch (error) {
-      console.error('Erreur lors de la récupération des bateaux:', error);
+      console.error('❌ Erreur lors de la récupération des bateaux:', error);
       throw error;
     }
+  }
+
+  /**
+   * Données de test pour les bateaux
+   */
+  getMockBoats(params = {}) {
+    const mockBoats = [
+      {
+        _id: '68c717e123456789abcdef01',
+        name: 'Ocean Dream',
+        type: 'Yacht',
+        category: 'Luxe',
+        status: 'available',
+        location: {
+          city: 'Cannes',
+          country: 'France',
+          marina: 'Port de Cannes'
+        },
+        pricing: {
+          dailyRate: 850,
+          securityDeposit: 2000
+        },
+        capacity: {
+          maxPeople: 8
+        },
+        specifications: {
+          length: 15,
+          width: 4.5,
+          fuelType: 'Diesel'
+        },
+        images: [
+          {
+            url: 'https://images.pexels.com/photos/1001682/pexels-photo-1001682.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop',
+            isMain: true
+          }
+        ],
+        rating: {
+          average: 4.8,
+          totalReviews: 24
+        }
+      },
+      {
+        _id: '68c717e123456789abcdef02',
+        name: 'Blue Horizon',
+        type: 'Catamaran',
+        category: 'Standard',
+        status: 'available',
+        location: {
+          city: 'Nice',
+          country: 'France',
+          marina: 'Port de Nice'
+        },
+        pricing: {
+          dailyRate: 650,
+          securityDeposit: 1500
+        },
+        capacity: {
+          maxPeople: 10
+        },
+        specifications: {
+          length: 12,
+          width: 6,
+          fuelType: 'Diesel'
+        },
+        images: [
+          {
+            url: 'https://images.pexels.com/photos/1001682/pexels-photo-1001682.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop',
+            isMain: true
+          }
+        ],
+        rating: {
+          average: 4.6,
+          totalReviews: 18
+        }
+      },
+      {
+        _id: '68c717e123456789abcdef03',
+        name: 'Sea Breeze',
+        type: 'Voilier',
+        category: 'Budget',
+        status: 'available',
+        location: {
+          city: 'Saint-Tropez',
+          country: 'France',
+          marina: 'Port de Saint-Tropez'
+        },
+        pricing: {
+          dailyRate: 450,
+          securityDeposit: 1000
+        },
+        capacity: {
+          maxPeople: 6
+        },
+        specifications: {
+          length: 10,
+          width: 3.5,
+          fuelType: 'Voile'
+        },
+        images: [
+          {
+            url: 'https://images.pexels.com/photos/1001682/pexels-photo-1001682.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop',
+            isMain: true
+          }
+        ],
+        rating: {
+          average: 4.2,
+          totalReviews: 12
+        }
+      }
+    ];
+
+    // Appliquer les filtres de base
+    let filteredBoats = mockBoats;
+    
+    if (params.type) {
+      filteredBoats = filteredBoats.filter(boat => 
+        boat.type.toLowerCase().includes(params.type.toLowerCase())
+      );
+    }
+    
+    if (params.category) {
+      filteredBoats = filteredBoats.filter(boat => 
+        boat.category.toLowerCase() === params.category.toLowerCase()
+      );
+    }
+    
+    if (params.minPrice) {
+      filteredBoats = filteredBoats.filter(boat => 
+        boat.pricing.dailyRate >= parseInt(params.minPrice)
+      );
+    }
+    
+    if (params.maxPrice) {
+      filteredBoats = filteredBoats.filter(boat => 
+        boat.pricing.dailyRate <= parseInt(params.maxPrice)
+      );
+    }
+
+    // Pagination
+    const page = parseInt(params.page) || 1;
+    const limit = parseInt(params.limit) || 12;
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + limit;
+    const paginatedBoats = filteredBoats.slice(startIndex, endIndex);
+
+    return {
+      success: true,
+      data: {
+        boats: paginatedBoats,
+        pagination: {
+          page,
+          limit,
+          total: filteredBoats.length,
+          pages: Math.ceil(filteredBoats.length / limit)
+        }
+      }
+    };
   }
 
   /**

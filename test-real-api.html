@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Test API Réelle - SailingLoc</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; background: #f0f8ff; }
+    .container { max-width: 1000px; margin: 0 auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+    .test-btn { display: inline-block; margin: 10px; padding: 15px 25px; background: linear-gradient(135deg, #007bff, #0056b3); color: white; text-decoration: none; border-radius: 8px; font-weight: bold; cursor: pointer; border: none; }
+    .test-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,123,255,0.3); }
+    .status { margin: 20px 0; padding: 20px; border-radius: 10px; text-align: center; }
+    .success { background: #d4edda; color: #155724; border: 2px solid #c3e6cb; }
+    .error { background: #f8d7da; color: #721c24; border: 2px solid #f5c6cb; }
+    .info { background: #d1ecf1; color: #0c5460; border: 2px solid #bee5eb; }
+    .loading { background: #fff3cd; color: #856404; border: 2px solid #ffeaa7; }
+    h1 { color: #333; text-align: center; margin-bottom: 30px; }
+    .emoji { font-size: 24px; margin-right: 10px; }
+    .log { background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 5px; padding: 15px; margin: 10px 0; font-family: monospace; white-space: pre-wrap; max-height: 300px; overflow-y: auto; }
+    .url { background: #e9ecef; padding: 5px 10px; border-radius: 3px; font-family: monospace; }
+    .boat-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin: 20px 0; }
+    .boat-card { background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 15px; }
+    .boat-name { font-weight: bold; color: #333; margin-bottom: 10px; }
+    .boat-info { font-size: 14px; color: #666; margin: 5px 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1><span class="emoji">🚤</span>Test API Réelle - Bateaux Render</h1>
+    
+    <div class="status info">
+      <strong>ℹ️ Test avec les vraies données de votre API Render</strong><br>
+      Les bateaux sont maintenant chargés depuis votre API au lieu des données de test.
+    </div>
+    
+    <div style="text-align: center; margin: 30px 0;">
+      <button class="test-btn" onclick="loadBoats()">
+        <span class="emoji">🔄</span>Charger les bateaux
+      </button>
+      
+      <button class="test-btn" onclick="testBoatsPage()">
+        <span class="emoji">🛥️</span>Page des bateaux
+      </button>
+    </div>
+    
+    <div id="status" class="status" style="display: none;"></div>
+    <div id="log" class="log" style="display: none;"></div>
+    <div id="boats" class="boat-list"></div>
+  </div>
+
+  <script>
+    function log(message) {
+      const logDiv = document.getElementById('log');
+      logDiv.style.display = 'block';
+      logDiv.textContent += new Date().toLocaleTimeString() + ': ' + message + '\n';
+      logDiv.scrollTop = logDiv.scrollHeight;
+    }
+    
+    function showStatus(message, type) {
+      const statusDiv = document.getElementById('status');
+      statusDiv.style.display = 'block';
+      statusDiv.className = `status ${type}`;
+      statusDiv.innerHTML = message;
+    }
+    
+    async function loadBoats() {
+      log('🔄 Chargement des bateaux depuis l\'API...');
+      showStatus('⏳ Chargement en cours...', 'loading');
+      
+      try {
+        const response = await fetch('/api/boats', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        log(`📥 Réponse: ${response.status} ${response.statusText}`);
+        
+        if (!response.ok) {
+          throw new Error(`Erreur ${response.status}: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        log(`✅ Données reçues: ${JSON.stringify(data, null, 2)}`);
+        
+        if (data.success && data.data && data.data.boats) {
+          displayBoats(data.data.boats);
+          showStatus(`✅ ${data.data.boats.length} bateau(x) chargé(s) avec succès !`, 'success');
+        } else {
+          showStatus('⚠️ Format de données inattendu', 'error');
+        }
+        
+      } catch (error) {
+        log(`❌ Erreur: ${error.message}`);
+        showStatus(`❌ Erreur: ${error.message}`, 'error');
+      }
+    }
+    
+    function displayBoats(boats) {
+      const boatsDiv = document.getElementById('boats');
+      boatsDiv.innerHTML = boats.map(boat => `
+        <div class="boat-card">
+          <div class="boat-name">${boat.name}</div>
+          <div class="boat-info"><strong>Type:</strong> ${boat.type}</div>
+          <div class="boat-info"><strong>Catégorie:</strong> ${boat.category}</div>
+          <div class="boat-info"><strong>Localisation:</strong> ${boat.location.city}, ${boat.location.country}</div>
+          <div class="boat-info"><strong>Capacité:</strong> ${boat.capacity.maxPeople} personnes</div>
+          <div class="boat-info"><strong>Dimensions:</strong> ${boat.specifications.length}m × ${boat.specifications.width}m</div>
+          <div class="boat-info"><strong>Carburant:</strong> ${boat.specifications.fuelType}</div>
+          <div class="boat-info"><strong>Prix:</strong> ${boat.pricing.dailyRate}€/jour</div>
+          <div class="boat-info"><strong>Caution:</strong> ${boat.pricing.securityDeposit}€</div>
+          <div class="boat-info"><strong>Description:</strong> ${boat.description || 'Aucune description'}</div>
+          <div style="margin-top: 10px;">
+            <a href="boat.html?id=${boat._id}" class="test-btn" style="padding: 8px 16px; font-size: 14px;">
+              Voir les détails
+            </a>
+          </div>
+        </div>
+      `).join('');
+    }
+    
+    function testBoatsPage() {
+      window.location.href = 'boats.html';
+    }
+    
+    // Test automatique au chargement
+    window.addEventListener('load', () => {
+      log('🔄 Page chargée, test automatique dans 2 secondes...');
+      setTimeout(loadBoats, 2000);
+    });
+  </script>
+</body>
+</html>
