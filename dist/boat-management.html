@@ -5,9 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestion des Bateaux - SailingLoc</title>
     <link rel="icon" href="boat-icon.svg" type="image/svg+xml">
-  <script type="module" crossorigin src="/assets/boat-management-CqGMMWD9.js"></script>
-  <link rel="modulepreload" crossorigin href="/assets/main-6B_FRqmo.js">
-  <link rel="stylesheet" crossorigin href="/assets/style-t4_5AYKD.css">
+  <script type="module" crossorigin src="/assets/boat-management-CwaPva85.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
+  <link rel="modulepreload" crossorigin href="/assets/main-C2sVG-ok.js">
+  <link rel="stylesheet" crossorigin href="/assets/style-DTJA6Xka.css">
 </head>
 <body>
     <!-- Navigation -->
@@ -581,6 +582,162 @@
             <button type="submit" class="btn-primary">Ajouter le bateau</button>
           </div>
         </form>
+      </div>
+    </div>
+
+    <!-- Modale de suppression -->
+    <div id="delete-boat-modal" class="modal" style="display: none;">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Supprimer le bateau</h3>
+          <span class="modal-close">&times;</span>
+        </div>
+        <div class="modal-body">
+          <p>Êtes-vous sûr de vouloir supprimer ce bateau ?</p>
+          <div id="delete-boat-info"></div>
+          <p><strong>Cette action est irréversible !</strong></p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="window.app.closeModal('delete-boat-modal')">Annuler</button>
+          <button type="button" class="btn btn-danger" id="confirm-delete-btn">Supprimer définitivement</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modale d'édition -->
+    <div id="edit-boat-modal" class="modal" style="display: none;">
+      <div class="modal-content large">
+        <div class="modal-header">
+          <h3>Modifier le bateau</h3>
+          <span class="modal-close">&times;</span>
+        </div>
+        <div class="modal-body">
+          <form id="edit-boat-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="edit-name">Nom du bateau *</label>
+                <input type="text" id="edit-name" name="name" required>
+              </div>
+              <div class="form-group">
+                <label for="edit-type">Type *</label>
+                <select id="edit-type" name="type" required>
+                  <option value="yacht">Yacht</option>
+                  <option value="sailboat">Voilier</option>
+                  <option value="motorboat">Bateau à moteur</option>
+                  <option value="catamaran">Catamaran</option>
+                </select>
+              </div>
+            </div>
+            
+            <div class="form-row">
+              <div class="form-group">
+                <label for="edit-category">Catégorie *</label>
+                <select id="edit-category" name="category" required>
+                  <option value="luxury">Luxe</option>
+                  <option value="standard">Standard</option>
+                  <option value="economy">Économique</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="edit-status">Statut *</label>
+                <select id="edit-status" name="status" required>
+                  <option value="available">Disponible</option>
+                  <option value="booked">Réservé</option>
+                  <option value="maintenance">Maintenance</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="edit-capacity">Capacité (personnes) *</label>
+                <input type="number" id="edit-capacity" name="capacity" min="1" max="50" required>
+              </div>
+              <div class="form-group">
+                <label for="edit-length">Longueur (mètres)</label>
+                <input type="number" id="edit-length" name="length" step="0.1" min="0">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="edit-width">Largeur (mètres)</label>
+                <input type="number" id="edit-width" name="width" step="0.1" min="0">
+              </div>
+              <div class="form-group">
+                <label for="edit-fuel">Type de carburant</label>
+                <select id="edit-fuel" name="fuelType">
+                  <option value="diesel">Diesel</option>
+                  <option value="gasoline">Essence</option>
+                  <option value="electric">Électrique</option>
+                  <option value="hybrid">Hybride</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="edit-daily-rate">Tarif journalier (€) *</label>
+                <input type="number" id="edit-daily-rate" name="dailyRate" min="0" step="0.01" required>
+              </div>
+              <div class="form-group">
+                <label for="edit-security-deposit">Caution (€)</label>
+                <input type="number" id="edit-security-deposit" name="securityDeposit" min="0" step="0.01">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="edit-description">Description</label>
+              <textarea id="edit-description" name="description" rows="4" placeholder="Décrivez votre bateau..."></textarea>
+            </div>
+
+            <div class="form-group">
+              <label>Localisation</label>
+              <div class="form-row">
+                <div class="form-group">
+                  <input type="text" id="edit-marina" name="marina" placeholder="Port/Marina">
+                </div>
+                <div class="form-group">
+                  <input type="text" id="edit-city" name="city" placeholder="Ville">
+                </div>
+                <div class="form-group">
+                  <input type="text" id="edit-country" name="country" placeholder="Pays">
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="window.app.closeModal('edit-boat-modal')">Annuler</button>
+          <button type="button" class="btn btn-primary" id="save-edit-btn">Sauvegarder</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modale de gestion des images -->
+    <div id="images-modal" class="modal" style="display: none;">
+      <div class="modal-content large">
+        <div class="modal-header">
+          <h3>Gestion des images</h3>
+          <span class="modal-close">&times;</span>
+        </div>
+        <div class="modal-body">
+          <div id="images-grid" class="images-grid">
+            <!-- Les images existantes seront affichées ici -->
+          </div>
+          
+          <div class="add-images-section">
+            <h4>Ajouter de nouvelles images</h4>
+            <input type="file" id="image-upload" multiple accept="image/*" style="display: none;">
+            <button type="button" class="add-images-btn" onclick="document.getElementById('image-upload').click()">
+              <span>📷</span> Choisir des images
+            </button>
+            <p class="help-text">Sélectionnez une ou plusieurs images (JPG, PNG, WebP)</p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="window.app.closeModal('images-modal')">Fermer</button>
+        </div>
       </div>
     </div>
 
