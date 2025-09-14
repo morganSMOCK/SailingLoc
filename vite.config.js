@@ -20,7 +20,8 @@ export default defineConfig({
         'test-boat-card': resolve(__dirname, 'test-boat-card.html'),
         'clear-cache': resolve(__dirname, 'clear-cache.html'),
         'test-index': resolve(__dirname, 'test-index.html'),
-        'test-delete-boat': resolve(__dirname, 'test-delete-boat.html')
+        'boat': resolve(__dirname, 'boat.html')
+
       }
     }
   },
@@ -28,18 +29,18 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api': {
-        target: 'http://localhost:3000',
+        target: 'https://sailingloc.onrender.com',
         changeOrigin: true,
-        secure: false,
+        secure: true,
         configure: (proxy, options) => {
           proxy.on('error', (err, req, res) => {
-            console.log('Proxy error:', err);
+            console.log('❌ Proxy error:', err);
           });
           proxy.on('proxyReq', (proxyReq, req, res) => {
-            console.log('Sending Request to the Target:', req.method, req.url);
+            console.log('📤 Sending Request to Render:', req.method, req.url);
           });
           proxy.on('proxyRes', (proxyRes, req, res) => {
-            console.log('Received Response from the Target:', proxyRes.statusCode, req.url);
+            console.log('📥 Received Response from Render:', proxyRes.statusCode, req.url);
           });
         }
       }

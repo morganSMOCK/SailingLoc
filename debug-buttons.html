@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Debug Boutons - SailingLoc</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; background: #f0f8ff; }
+    .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+    .debug-section { margin: 20px 0; padding: 20px; background: #f8f9fa; border-radius: 8px; }
+    .boat-card { border: 2px solid #ddd; border-radius: 10px; padding: 20px; margin: 10px 0; background: white; }
+    .boat-action-btn { margin: 5px; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+    .edit-btn { background: #007bff; color: white; }
+    .images-btn { background: #28a745; color: white; }
+    .delete-btn { background: #dc3545; color: white; }
+    .restore-btn { background: #ffc107; color: black; }
+    .status { margin: 20px 0; padding: 20px; border-radius: 10px; text-align: center; }
+    .success { background: #d4edda; color: #155724; border: 2px solid #c3e6cb; }
+    .error { background: #f8d7da; color: #721c24; border: 2px solid #f5c6cb; }
+    .info { background: #d1ecf1; color: #0c5460; border: 2px solid #bee5eb; }
+    h1 { color: #333; text-align: center; margin-bottom: 30px; }
+    .emoji { font-size: 24px; margin-right: 10px; }
+    .log { background: #000; color: #0f0; padding: 10px; border-radius: 5px; font-family: monospace; max-height: 300px; overflow-y: auto; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1><span class="emoji">🐛</span>Debug des Boutons</h1>
+    
+    <div class="debug-section">
+      <h3>État de l'application :</h3>
+      <div id="app-status" class="status info">Vérification en cours...</div>
+    </div>
+    
+    <div class="debug-section">
+      <h3>Test des boutons :</h3>
+      <div class="boat-card">
+        <h4>Bateau Test</h4>
+        <p>ID: test-boat-123</p>
+        <div>
+          <button class="boat-action-btn edit-btn" data-boat-id="test-boat-123">
+            <span>✏️</span> Modifier
+          </button>
+          <button class="boat-action-btn images-btn" data-boat-id="test-boat-123">
+            <span>🖼️</span> Images
+          </button>
+          <button class="boat-action-btn delete-btn" data-boat-id="test-boat-123">
+            <span>🗑️</span> Supprimer
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="debug-section">
+      <h3>Logs de debug :</h3>
+      <div id="debug-log" class="log"></div>
+    </div>
+  </div>
+
+  <script type="module" src="src/main.js"></script>
+  <script>
+    function log(message) {
+      const logDiv = document.getElementById('debug-log');
+      const timestamp = new Date().toLocaleTimeString();
+      logDiv.innerHTML += `[${timestamp}] ${message}\n`;
+      logDiv.scrollTop = logDiv.scrollHeight;
+      console.log(message);
+    }
+    
+    function updateAppStatus(message, type) {
+      const statusDiv = document.getElementById('app-status');
+      statusDiv.textContent = message;
+      statusDiv.className = `status ${type}`;
+    }
+    
+    // Debug complet
+    window.addEventListener('load', () => {
+      log('🚀 Page chargée');
+      
+      setTimeout(() => {
+        // Vérifier l'application
+        if (window.app) {
+          log('✅ window.app trouvé');
+          updateAppStatus('Application chargée', 'success');
+          
+          // Vérifier les méthodes
+          const methods = ['editBoat', 'deleteBoat', 'manageImages', 'restoreBoat'];
+          methods.forEach(method => {
+            if (typeof window.app[method] === 'function') {
+              log(`✅ Méthode ${method} disponible`);
+            } else {
+              log(`❌ Méthode ${method} manquante`);
+            }
+          });
+          
+          // Vérifier les services
+          if (window.app.boatService) {
+            log('✅ BoatService disponible');
+          } else {
+            log('❌ BoatService manquant');
+          }
+          
+          if (window.app.uiManager) {
+            log('✅ UIManager disponible');
+          } else {
+            log('❌ UIManager manquant');
+          }
+          
+        } else {
+          log('❌ window.app non trouvé');
+          updateAppStatus('Application non chargée', 'error');
+        }
+        
+        // Vérifier les event listeners
+        const buttons = document.querySelectorAll('.boat-action-btn');
+        log(`🔍 ${buttons.length} boutons trouvés`);
+        
+        buttons.forEach((btn, index) => {
+          log(`Bouton ${index + 1}: ${btn.className} - data-boat-id: ${btn.getAttribute('data-boat-id')}`);
+        });
+        
+      }, 1000);
+    });
+    
+    // Test des clics
+    document.addEventListener('click', (e) => {
+      log(`🖱️ Clic détecté sur: ${e.target.tagName} - ${e.target.className}`);
+      
+      const target = e.target.closest('.boat-action-btn');
+      if (target) {
+        const boatId = target.getAttribute('data-boat-id');
+        const action = target.className.split(' ')[1];
+        log(`🎯 Bouton d'action cliqué: ${action} pour bateau ${boatId}`);
+        
+        if (window.app) {
+          log('🔄 Tentative d\'appel de la méthode...');
+          try {
+            switch(action) {
+              case 'edit-btn':
+                window.app.editBoat(boatId);
+                break;
+              case 'images-btn':
+                window.app.manageImages(boatId);
+                break;
+              case 'delete-btn':
+                window.app.deleteBoat(boatId);
+                break;
+              case 'restore-btn':
+                window.app.restoreBoat(boatId);
+                break;
+            }
+            log('✅ Méthode appelée avec succès');
+          } catch (error) {
+            log(`❌ Erreur lors de l'appel: ${error.message}`);
+          }
+        } else {
+          log('❌ window.app non disponible pour l\'appel');
+        }
+      }
+    });
+    
+    // Test direct des méthodes
+    window.testMethods = () => {
+      log('🧪 Test direct des méthodes...');
+      if (window.app) {
+        try {
+          window.app.editBoat('test-123');
+          log('✅ editBoat appelé');
+        } catch (e) {
+          log(`❌ Erreur editBoat: ${e.message}`);
+        }
+      }
+    };
+  </script>
+</body>
+</html>

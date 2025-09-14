@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Test Simple Gestion - SailingLoc</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; background: #f0f8ff; }
+    .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+    .test-btn { display: inline-block; margin: 10px; padding: 15px 25px; background: linear-gradient(135deg, #007bff, #0056b3); color: white; text-decoration: none; border-radius: 8px; font-weight: bold; cursor: pointer; border: none; }
+    .test-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,123,255,0.3); }
+    .status { margin: 20px 0; padding: 20px; border-radius: 10px; text-align: center; }
+    .success { background: #d4edda; color: #155724; border: 2px solid #c3e6cb; }
+    .error { background: #f8d7da; color: #721c24; border: 2px solid #f5c6cb; }
+    .info { background: #d1ecf1; color: #0c5460; border: 2px solid #bee5eb; }
+    h1 { color: #333; text-align: center; margin-bottom: 30px; }
+    .emoji { font-size: 24px; margin-right: 10px; }
+    .test-section { margin: 20px 0; padding: 20px; background: #f8f9fa; border-radius: 8px; }
+    .test-result { margin: 10px 0; padding: 10px; border-radius: 5px; }
+    .success-test { background: #d4edda; color: #155724; }
+    .error-test { background: #f8d7da; color: #721c24; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1><span class="emoji">🧪</span>Test Simple - Gestion des Bateaux</h1>
+    
+    <div class="status info">
+      <strong>ℹ️ Test des fonctionnalités de base</strong><br>
+      Vérification que les méthodes de gestion des bateaux sont disponibles et fonctionnelles.
+    </div>
+    
+    <div style="text-align: center; margin: 30px 0;">
+      <button class="test-btn" onclick="runTests()">
+        <span class="emoji">🚀</span>Lancer les tests
+      </button>
+      
+      <a href="boat-management.html" class="test-btn">
+        <span class="emoji">🛠️</span>Page de gestion
+      </a>
+    </div>
+    
+    <div id="test-results" class="test-section" style="display: none;">
+      <h3>Résultats des tests :</h3>
+      <div id="test-output"></div>
+    </div>
+  </div>
+
+  <script>
+    function addTestResult(message, isSuccess = true) {
+      const output = document.getElementById('test-output');
+      const resultDiv = document.createElement('div');
+      resultDiv.className = `test-result ${isSuccess ? 'success-test' : 'error-test'}`;
+      resultDiv.textContent = message;
+      output.appendChild(resultDiv);
+    }
+
+    async function runTests() {
+      const resultsDiv = document.getElementById('test-results');
+      const outputDiv = document.getElementById('test-output');
+      
+      resultsDiv.style.display = 'block';
+      outputDiv.innerHTML = '';
+      
+      addTestResult('🧪 Début des tests...', true);
+      
+      // Test 1: Vérifier que l'application est chargée
+      if (window.app) {
+        addTestResult('✅ Application chargée', true);
+      } else {
+        addTestResult('❌ Application non chargée', false);
+        return;
+      }
+      
+      // Test 2: Vérifier que les méthodes existent
+      const methods = ['editBoat', 'deleteBoat', 'manageImages', 'restoreBoat'];
+      methods.forEach(method => {
+        if (typeof window.app[method] === 'function') {
+          addTestResult(`✅ Méthode ${method} disponible`, true);
+        } else {
+          addTestResult(`❌ Méthode ${method} manquante`, false);
+        }
+      });
+      
+      // Test 3: Vérifier que les services existent
+      if (window.app.boatService) {
+        addTestResult('✅ BoatService disponible', true);
+      } else {
+        addTestResult('❌ BoatService manquant', false);
+      }
+      
+      if (window.app.uiManager) {
+        addTestResult('✅ UIManager disponible', true);
+      } else {
+        addTestResult('❌ UIManager manquant', false);
+      }
+      
+      // Test 4: Tester la récupération des bateaux
+      try {
+        addTestResult('🔄 Test de récupération des bateaux...', true);
+        const boats = await window.app.boatService.getBoats();
+        if (boats && boats.data && boats.data.boats) {
+          addTestResult(`✅ ${boats.data.boats.length} bateau(x) récupéré(s)`, true);
+        } else {
+          addTestResult('⚠️ Aucun bateau récupéré', false);
+        }
+      } catch (error) {
+        addTestResult(`❌ Erreur lors de la récupération: ${error.message}`, false);
+      }
+      
+      // Test 5: Vérifier les modales
+      const modals = ['edit-boat-modal', 'delete-boat-modal', 'images-modal'];
+      modals.forEach(modalId => {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+          addTestResult(`✅ Modale ${modalId} trouvée`, true);
+        } else {
+          addTestResult(`❌ Modale ${modalId} manquante`, false);
+        }
+      });
+      
+      addTestResult('🏁 Tests terminés !', true);
+    }
+    
+    // Test automatique au chargement
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        if (window.app) {
+          addTestResult('🔄 Application initialisée automatiquement', true);
+        } else {
+          addTestResult('⚠️ Application non initialisée automatiquement', false);
+        }
+      }, 1000);
+    });
+  </script>
+</body>
+</html>
