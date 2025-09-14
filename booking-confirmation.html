@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confirmation de Réservation - SailingLoc</title>
+  <meta name="description" content="Confirmation de votre réservation SailingLoc. Votre aventure nautique vous attend !">
+  <link rel="stylesheet" href="/src/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav id="navbar" class="navbar">
+    <div class="nav-container">
+      <div class="nav-brand">
+        <h2>⛵ SailingLoc</h2>
+      </div>
+      
+      <div class="nav-menu" id="nav-menu">
+        <a href="index.html" class="nav-link">Accueil</a>
+        <a href="boats.html" class="nav-link">Bateaux</a>
+        <a href="experience.html" class="nav-link">Experience</a>
+        <a href="contact.html" class="nav-link">Contact</a>
+      </div>
+      
+      <div class="nav-auth">
+        <button id="login-btn" class="btn-secondary">Connexion</button>
+        <button id="register-btn" class="btn-primary">Inscription</button>
+        <!-- Menu utilisateur (caché par défaut) -->
+        <div id="user-menu" class="user-menu" style="display: none;">
+          <div class="user-avatar" id="user-avatar">
+            <span id="user-initials">JD</span>
+          </div>
+          <div class="user-dropdown" id="user-dropdown">
+            <div class="user-info">
+              <div class="user-name" id="user-name">John Doe</div>
+              <div class="user-email" id="user-email">john@example.com</div>
+            </div>
+            <div class="dropdown-divider"></div>
+            <a href="#" id="profile-link" class="dropdown-item">
+              <span class="dropdown-icon">👤</span>
+              Mon Profil
+            </a>
+            <a href="#" id="bookings-link" class="dropdown-item">
+              <span class="dropdown-icon">📋</span>
+              Mes Réservations
+            </a>
+            <a href="#" id="boats-link" class="dropdown-item" style="display: none;">
+              <span class="dropdown-icon">🛥️</span>
+              Mes Bateaux
+            </a>
+            <div class="dropdown-divider"></div>
+            <a href="#" id="logout-link" class="dropdown-item logout">
+              <span class="dropdown-icon">🚪</span>
+              Déconnexion
+            </a>
+          </div>
+        </div>
+      </div>
+      
+      <div class="mobile-menu-toggle" id="mobile-menu-toggle">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="container">
+      <!-- Loading State -->
+      <div id="loading" class="loading">
+        <i class="fas fa-spinner fa-spin"></i>
+        Chargement de votre réservation...
+      </div>
+
+      <!-- Error State -->
+      <div id="error" class="error" style="display: none;">
+        <i class="fas fa-exclamation-triangle"></i>
+        <span id="error-message">Une erreur est survenue lors du chargement de votre réservation.</span>
+      </div>
+
+      <!-- Confirmation Content -->
+      <div id="confirmation-content" style="display: none;">
+        <!-- Success Header -->
+        <div class="confirmation-header">
+          <div class="success-icon">
+            <i class="fas fa-check-circle"></i>
+          </div>
+          <h1>Réservation confirmée !</h1>
+          <p>Votre réservation a été créée avec succès. Vous allez recevoir un email de confirmation.</p>
+        </div>
+
+        <!-- Booking Details -->
+        <div class="confirmation-details">
+          <div class="booking-info-card">
+            <div class="card-header">
+              <h2>Détails de votre réservation</h2>
+              <div class="booking-number">
+                <span>N° de réservation</span>
+                <strong id="booking-number">-</strong>
+              </div>
+            </div>
+
+            <div class="booking-grid">
+              <!-- Boat Information -->
+              <div class="booking-section">
+                <h3>
+                  <i class="fas fa-ship"></i>
+                  Bateau réservé
+                </h3>
+                <div class="boat-info">
+                  <div class="boat-image">
+                    <img id="boat-image" src="" alt="Bateau" style="display: none;">
+                    <div class="boat-placeholder">
+                      <i class="fas fa-ship"></i>
+                    </div>
+                  </div>
+                  <div class="boat-details">
+                    <h4 id="boat-name">Nom du bateau</h4>
+                    <p id="boat-location">Localisation</p>
+                    <div class="boat-specs">
+                      <span id="boat-capacity">Capacité</span>
+                      <span id="boat-type">Type</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Dates and Duration -->
+              <div class="booking-section">
+                <h3>
+                  <i class="fas fa-calendar-alt"></i>
+                  Dates de location
+                </h3>
+                <div class="date-info">
+                  <div class="date-item">
+                    <div class="date-label">Départ</div>
+                    <div class="date-value" id="start-date">-</div>
+                  </div>
+                  <div class="date-item">
+                    <div class="date-label">Retour</div>
+                    <div class="date-value" id="end-date">-</div>
+                  </div>
+                  <div class="date-item">
+                    <div class="date-label">Durée</div>
+                    <div class="date-value" id="duration">-</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Participants -->
+              <div class="booking-section">
+                <h3>
+                  <i class="fas fa-users"></i>
+                  Participants
+                </h3>
+                <div class="participants-info">
+                  <div class="participant-item">
+                    <i class="fas fa-user"></i>
+                    <span id="adults-count">-</span>
+                  </div>
+                  <div class="participant-item">
+                    <i class="fas fa-child"></i>
+                    <span id="children-count">-</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Pricing -->
+              <div class="booking-section">
+                <h3>
+                  <i class="fas fa-euro-sign"></i>
+                  Détail des prix
+                </h3>
+                <div class="pricing-breakdown">
+                  <div class="price-item">
+                    <span>Location</span>
+                    <span id="subtotal-price">0€</span>
+                  </div>
+                  <div class="price-item" id="skipper-price-item" style="display: none;">
+                    <span>Skipper</span>
+                    <span id="skipper-price">0€</span>
+                  </div>
+                  <div class="price-item" id="services-price-item" style="display: none;">
+                    <span>Services additionnels</span>
+                    <span id="services-price">0€</span>
+                  </div>
+                  <div class="price-item">
+                    <span>Frais de nettoyage</span>
+                    <span id="cleaning-fee">0€</span>
+                  </div>
+                  <div class="price-divider"></div>
+                  <div class="price-item total">
+                    <span>Total</span>
+                    <span id="total-price">0€</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Status and Next Steps -->
+          <div class="status-card">
+            <div class="status-header">
+              <div class="status-badge" id="status-badge">
+                <i class="fas fa-clock"></i>
+                <span id="status-text">En attente</span>
+              </div>
+              <p id="status-description">Votre réservation est en attente de confirmation par le propriétaire.</p>
+            </div>
+
+            <div class="next-steps">
+              <h3>Prochaines étapes</h3>
+              <div class="steps-list">
+                <div class="step-item">
+                  <div class="step-icon">
+                    <i class="fas fa-envelope"></i>
+                  </div>
+                  <div class="step-content">
+                    <h4>Email de confirmation</h4>
+                    <p>Vous allez recevoir un email avec tous les détails de votre réservation</p>
+                  </div>
+                </div>
+                <div class="step-item">
+                  <div class="step-icon">
+                    <i class="fas fa-user-check"></i>
+                  </div>
+                  <div class="step-content">
+                    <h4>Confirmation du propriétaire</h4>
+                    <p>Le propriétaire du bateau va confirmer votre réservation sous 24h</p>
+                  </div>
+                </div>
+                <div class="step-item">
+                  <div class="step-icon">
+                    <i class="fas fa-credit-card"></i>
+                  </div>
+                  <div class="step-content">
+                    <h4>Paiement</h4>
+                    <p>Une fois confirmée, vous pourrez effectuer le paiement en ligne</p>
+                  </div>
+                </div>
+                <div class="step-item">
+                  <div class="step-icon">
+                    <i class="fas fa-anchor"></i>
+                  </div>
+                  <div class="step-content">
+                    <h4>Check-in</h4>
+                    <p>Rendez-vous au port 2h avant le départ pour le check-in</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Contact Information -->
+          <div class="contact-card">
+            <h3>
+              <i class="fas fa-phone"></i>
+              Besoin d'aide ?
+            </h3>
+            <div class="contact-info">
+              <div class="contact-item">
+                <i class="fas fa-envelope"></i>
+                <div>
+                  <strong>Email</strong>
+                  <p>support@sailingloc.com</p>
+                </div>
+              </div>
+              <div class="contact-item">
+                <i class="fas fa-phone"></i>
+                <div>
+                  <strong>Téléphone</strong>
+                  <p>+33 1 23 45 67 89</p>
+                </div>
+              </div>
+              <div class="contact-item">
+                <i class="fas fa-clock"></i>
+                <div>
+                  <strong>Horaires</strong>
+                  <p>Lun-Ven: 9h-18h<br>Sam: 9h-17h</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="confirmation-actions">
+          <button id="view-booking" class="btn-primary">
+            <i class="fas fa-eye"></i>
+            Voir ma réservation
+          </button>
+          <button id="download-invoice" class="btn-secondary">
+            <i class="fas fa-download"></i>
+            Télécharger le reçu
+          </button>
+          <button id="book-another" class="btn-outline">
+            <i class="fas fa-plus"></i>
+            Réserver un autre bateau
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>⛵ SailingLoc</h3>
+          <p>Votre partenaire de confiance pour la location de bateaux de luxe</p>
+        </div>
+        
+        <div class="footer-section">
+          <h4>Services</h4>
+          <ul>
+            <li><a href="boats.html">Location de bateaux</a></li>
+            <li><a href="services.html">Services premium</a></li>
+            <li><a href="contact.html">Support client</a></li>
+          </ul>
+        </div>
+        
+        <div class="footer-section">
+          <h4>Légal</h4>
+          <ul>
+            <li><a href="#">Conditions générales</a></li>
+            <li><a href="#">Politique de confidentialité</a></li>
+            <li><a href="#">Mentions légales</a></li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="footer-bottom">
+        <p>&copy; 2024 SailingLoc. Tous droits réservés.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Modales -->
+  
+  <!-- Modale de connexion -->
+  <div id="login-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Connexion</h2>
+        <button class="modal-close">&times;</button>
+      </div>
+      <form id="login-form" class="auth-form">
+        <div class="form-group">
+          <label for="login-email">Email</label>
+          <input type="email" id="login-email" placeholder="votre@email.com" required>
+        </div>
+        <div class="form-group">
+          <label for="login-password">Mot de passe</label>
+          <input type="password" id="login-password" placeholder="Votre mot de passe" required>
+        </div>
+        <button type="submit" class="btn-primary btn-full">Se connecter</button>
+        <div class="auth-demo">
+          <p><strong>Compte de test :</strong></p>
+          <p><strong>Email:</strong> client@sailingloc.com</p>
+          <p><strong>Mot de passe:</strong> password123</p>
+          <button type="button" class="btn-secondary btn-small" onclick="document.getElementById('login-email').value='client@sailingloc.com'; document.getElementById('login-password').value='password123';">
+            Remplir automatiquement
+          </button>
+        </div>
+        <p class="auth-switch">
+          Pas encore de compte ? 
+          <a href="#" id="switch-to-register">Inscrivez-vous</a>
+        </p>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modale d'inscription -->
+  <div id="register-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Inscription</h2>
+        <button class="modal-close">&times;</button>
+      </div>
+      <form id="register-form" class="auth-form">
+        <div class="form-row">
+          <div class="form-group">
+            <input type="text" id="register-firstname" placeholder="Prénom" required>
+          </div>
+          <div class="form-group">
+            <input type="text" id="register-lastname" placeholder="Nom" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <input type="email" id="register-email" placeholder="Email" required>
+        </div>
+        <div class="form-group">
+          <input type="password" id="register-password" placeholder="Mot de passe" required>
+        </div>
+        <div class="form-group">
+          <input type="tel" id="register-phone" placeholder="Téléphone">
+        </div>
+        <div class="form-group">
+          <select id="register-role" required>
+            <option value="">Je suis...</option>
+            <option value="client">Client (je veux louer)</option>
+            <option value="owner">Propriétaire (je veux louer mon bateau)</option>
+          </select>
+        </div>
+        <button type="submit" class="btn-primary btn-full">S'inscrire</button>
+        <p class="auth-switch">
+          Déjà un compte ? 
+          <a href="#" id="switch-to-login">Connectez-vous</a>
+        </p>
+      </form>
+    </div>
+  </div>
+
+  <!-- Notifications -->
+  <div id="notifications-container" class="notifications-container"></div>
+
+  <script type="module" src="/src/main.js"></script>
+  <script type="module" src="/src/booking-confirmation.js"></script>
+</body>
+</html>
