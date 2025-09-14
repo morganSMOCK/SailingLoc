@@ -31,7 +31,8 @@ function updateTestScripts() {
     'debug-boats.html',
     'test-simple-boat.html',
     'test-api-direct.html',
-    'test-boat-card.html'
+    'test-boat-card.html',
+    'test-delete-boat.html'
   ];
   
   testFiles.forEach(fileName => {

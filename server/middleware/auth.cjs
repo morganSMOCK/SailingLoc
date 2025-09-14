@@ -161,12 +161,25 @@ const checkResourceOwnership = (resourceModel, resourceIdParam = 'id') => {
       const isOwner = resource.owner && resource.owner.toString() === userId;
       const isAdmin = user.role === 'admin';
 
+      // Logs de débogage pour la vérification de propriété
+      console.log('🔐 [CHECK OWNERSHIP] Vérification de propriété:');
+      console.log('🔐 [CHECK OWNERSHIP] Resource ID:', resourceId);
+      console.log('🔐 [CHECK OWNERSHIP] User ID:', userId);
+      console.log('🔐 [CHECK OWNERSHIP] Resource Owner:', resource.owner);
+      console.log('🔐 [CHECK OWNERSHIP] Resource Owner (string):', resource.owner ? resource.owner.toString() : 'null');
+      console.log('🔐 [CHECK OWNERSHIP] User Role:', user.role);
+      console.log('🔐 [CHECK OWNERSHIP] Is Owner:', isOwner);
+      console.log('🔐 [CHECK OWNERSHIP] Is Admin:', isAdmin);
+
       if (!isOwner && !isAdmin) {
+        console.log('❌ [CHECK OWNERSHIP] Accès refusé - ni propriétaire ni admin');
         return res.status(403).json({
           success: false,
           message: 'Non autorisé à accéder à cette ressource'
         });
       }
+
+      console.log('✅ [CHECK OWNERSHIP] Accès autorisé');
 
       // Ajouter la ressource à la requête pour éviter une nouvelle requête
       req.resource = resource;
