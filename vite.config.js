@@ -19,7 +19,8 @@ export default defineConfig({
         'debug-boats': resolve(__dirname, 'debug-boats.html'),
         'test-boat-card': resolve(__dirname, 'test-boat-card.html'),
         'clear-cache': resolve(__dirname, 'clear-cache.html'),
-        'test-index': resolve(__dirname, 'test-index.html')
+        'test-index': resolve(__dirname, 'test-index.html'),
+        'test-delete-boat': resolve(__dirname, 'test-delete-boat.html')
       }
     }
   },
