@@ -3611,6 +3611,8 @@ textarea:focus-visible {
   color: var(--primary-dark);
 }
 
+
+
 /* Responsive pour les pages de réservation */
 @media (max-width: 768px) {
   .booking-layout {
