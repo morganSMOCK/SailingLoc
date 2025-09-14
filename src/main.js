@@ -1935,6 +1935,21 @@ class SailingLocApp {
     try {
       this.showLoadingState();
       
+      console.log('🚤 [BOAT MANAGEMENT] Chargement des données de gestion des bateaux');
+      
+      // Vérifier l'authentification avant de charger les données
+      if (!this.currentUser) {
+        throw new Error('Vous devez être connecté pour accéder à la gestion des bateaux');
+      }
+
+      const token = this.storageManager.getToken();
+      if (!token) {
+        throw new Error('Token d\'authentification manquant. Veuillez vous reconnecter.');
+      }
+
+      console.log('🔐 [BOAT MANAGEMENT] Utilisateur connecté:', this.currentUser.email);
+      console.log('🔐 [BOAT MANAGEMENT] Token présent:', token ? 'Oui' : 'Non');
+      
       // Charger les statistiques et les bateaux en parallèle
       const [statsResponse, boatsResponse] = await Promise.all([
         this.boatService.getBoatStats(),
@@ -1951,9 +1966,20 @@ class SailingLocApp {
       }
 
       this.hideLoadingState();
+      console.log('✅ [BOAT MANAGEMENT] Données chargées avec succès');
     } catch (error) {
-      console.error('Erreur lors du chargement des données:', error);
-      this.showErrorState(error.message);
+      console.error('❌ [BOAT MANAGEMENT] Erreur lors du chargement des données:', error);
+      
+      // Gestion spécifique des erreurs d'authentification
+      if (error.message.includes('Authentification requise') || error.message.includes('Token')) {
+        this.showErrorState('Session expirée. Veuillez vous reconnecter.');
+        // Rediriger vers la page de connexion après un délai
+        setTimeout(() => {
+          window.location.href = 'index.html';
+        }, 3000);
+      } else {
+        this.showErrorState(error.message);
+      }
     }
   }
 
@@ -2256,6 +2282,20 @@ class SailingLocApp {
     }
 
     try {
+      // Vérifier l'authentification avant la suppression
+      if (!this.currentUser) {
+        throw new Error('Vous devez être connecté pour supprimer un bateau');
+      }
+
+      const token = this.storageManager.getToken();
+      if (!token) {
+        throw new Error('Token d\'authentification manquant. Veuillez vous reconnecter.');
+      }
+
+      console.log('🗑️ [DELETE BOAT] Tentative de suppression du bateau:', boatId);
+      console.log('🔐 [DELETE BOAT] Token présent:', token ? 'Oui' : 'Non');
+      console.log('👤 [DELETE BOAT] Utilisateur connecté:', this.currentUser ? this.currentUser.email : 'Non');
+
       const response = await this.boatService.deleteBoat(boatId);
       
       if (response.success) {
@@ -2265,8 +2305,18 @@ class SailingLocApp {
         throw new Error(response.message);
       }
     } catch (error) {
-      console.error('Erreur lors de la suppression:', error);
-      this.uiManager.showNotification(`Erreur: ${error.message}`, 'error');
+      console.error('❌ [DELETE BOAT] Erreur lors de la suppression:', error);
+      
+      // Gestion spécifique des erreurs d'authentification
+      if (error.message.includes('Authentification requise') || error.message.includes('Token')) {
+        this.uiManager.showNotification('Session expirée. Veuillez vous reconnecter.', 'error');
+        // Rediriger vers la page de connexion
+        setTimeout(() => {
+          window.location.href = 'index.html';
+        }, 2000);
+      } else {
+        this.uiManager.showNotification(`Erreur: ${error.message}`, 'error');
+      }
     }
   }
 
