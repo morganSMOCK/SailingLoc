@@ -28,6 +28,8 @@ class SailingLocApp {
     this.boatsPerPage = 12;
     this.currentFilters = {};
     this.selectedImages = [];
+    this.isLoadingBoats = false;
+    this.currentBoats = [];
     
     // Initialisation de l'application
     this.init();
@@ -1078,11 +1080,25 @@ class SailingLocApp {
    * Chargement des bateaux
    */
   async loadBoats(filters = {}, page = 1) {
+    // Protection contre les appels multiples simultanés
+    if (this.isLoadingBoats) {
+      console.log('⏳ Chargement déjà en cours, annulation de la requête');
+      return;
+    }
+    
+    this.isLoadingBoats = true;
+    
     try {
       const boatsGrid = document.getElementById('boats-grid');
       const boatsLoading = document.getElementById('boats-loading');
       
       if (boatsLoading) boatsLoading.style.display = 'block';
+      
+      // Vider la grille immédiatement pour éviter les doublons
+      if (boatsGrid) {
+        boatsGrid.innerHTML = '';
+        console.log('🧹 Grille vidée avant le chargement');
+      }
       
       const queryParams = {
         page,
@@ -1098,6 +1114,8 @@ class SailingLocApp {
       console.log('📡 Réponse API:', response);
       
       if (response.success) {
+        // Stocker les bateaux pour éviter les re-rendus
+        this.currentBoats = response.data.boats;
         this.renderBoats(response.data.boats);
         this.renderPagination(response.data.pagination);
         this.currentPage = page;
@@ -1113,6 +1131,7 @@ class SailingLocApp {
       this.uiManager.showNotification(`Erreur de connexion: ${error.message}`, 'error');
       this.renderBoats([]); // Afficher "aucun bateau"
     } finally {
+      this.isLoadingBoats = false;
       const boatsLoading = document.getElementById('boats-loading');
       if (boatsLoading) boatsLoading.style.display = 'none';
     }
@@ -1123,10 +1142,21 @@ class SailingLocApp {
    */
   renderBoats(boats) {
     const boatsGrid = document.getElementById('boats-grid');
-    if (!boatsGrid) return;
+    if (!boatsGrid) {
+      console.warn('⚠️ Grille de bateaux non trouvée');
+      return;
+    }
     
-    // Vider la grille
+    console.log(`🎨 Rendu de ${boats.length} bateaux`);
+    
+    // Vider la grille complètement
     boatsGrid.innerHTML = '';
+    
+    // Vérifier que la grille est bien vide
+    if (boatsGrid.children.length > 0) {
+      console.warn('⚠️ La grille n\'était pas vide, vidage forcé');
+      boatsGrid.innerHTML = '';
+    }
     
     if (boats.length === 0) {
       boatsGrid.innerHTML = `
@@ -1135,29 +1165,44 @@ class SailingLocApp {
           <p>Essayez de modifier vos critères de recherche</p>
         </div>
       `;
+      console.log('📭 Aucun bateau à afficher');
       return;
     }
     
+    // Créer un fragment pour optimiser les performances
+    const fragment = document.createDocumentFragment();
+    let successCount = 0;
+    let errorCount = 0;
+    
     boats.forEach((boat, index) => {
       try {
-        console.log(`Création de la carte pour le bateau ${index + 1}:`, boat.name, boat._id);
+        console.log(`🔧 Création de la carte pour le bateau ${index + 1}:`, boat.name, boat._id);
         const boatCard = this.createBoatCard(boat);
         if (boatCard && boatCard.nodeType) {
-          boatsGrid.appendChild(boatCard);
+          fragment.appendChild(boatCard);
+          successCount++;
           console.log(`✅ Carte créée avec succès pour: ${boat.name}`);
         } else {
           console.error('❌ Erreur: createBoatCard n\'a pas retourné un élément DOM valide pour le bateau:', boat);
           // Créer une carte d'erreur à la place
           const errorCard = this.createErrorCard(`Erreur: ${boat.name || 'Bateau inconnu'}`);
-          boatsGrid.appendChild(errorCard);
+          fragment.appendChild(errorCard);
+          errorCount++;
         }
       } catch (error) {
         console.error('❌ Erreur lors de la création de la carte du bateau:', error, boat);
         // Créer une carte d'erreur à la place
         const errorCard = this.createErrorCard(`Erreur: ${boat.name || 'Bateau inconnu'}`);
-        boatsGrid.appendChild(errorCard);
+        fragment.appendChild(errorCard);
+        errorCount++;
       }
     });
+    
+    // Ajouter tous les éléments d'un coup
+    boatsGrid.appendChild(fragment);
+    
+    console.log(`🎉 Rendu terminé: ${successCount} cartes créées, ${errorCount} erreurs`);
+    console.log(`📊 Total d'éléments dans la grille: ${boatsGrid.children.length}`);
   }
 
   /**
