@@ -21,7 +21,6 @@ export default defineConfig({
         'clear-cache': resolve(__dirname, 'clear-cache.html'),
         'test-index': resolve(__dirname, 'test-index.html'),
         'boat': resolve(__dirname, 'boat.html')
-        'test-delete-boat': resolve(__dirname, 'test-delete-boat.html')
 
       }
     }
