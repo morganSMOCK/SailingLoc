@@ -57,6 +57,8 @@
       border-radius: 5px;
     }
   </style>
+  <script type="module" src="/assets/main.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/style-Deg_6pYg.css">
 </head>
 <body>
   <div class="debug-container">
@@ -89,7 +91,21 @@
     </div>
   </div>
 
+  <!-- Script principal de l'application -->
+  
   <script>
+    // Attendre que l'application soit chargée
+    window.addEventListener('load', () => {
+      // Attendre un peu pour que l'app soit initialisée
+      setTimeout(() => {
+        if (window.app) {
+          log('✅ Application SailingLoc chargée', 'success');
+        } else {
+          log('❌ Application SailingLoc non chargée après délai', 'error');
+        }
+      }, 1000);
+    });
+
     // Données de test
     const testBoatData = {
       specifications: { length: 10, width: 10, fuelType: 'diesel' },
