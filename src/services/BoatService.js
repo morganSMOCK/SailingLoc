@@ -76,11 +76,12 @@ export class BoatService {
   }
 
   /**
-   * Création d'un nouveau bateau (propriétaires uniquement)
-   * @param {Object} boatData - Données du bateau
+   * Création d'un nouveau bateau
+
+  * @param {FormData} formData - Données du formulaire
    * @returns {Promise<Object>} Bateau créé
    */
-  async createBoat(boatData) {
+  async createBoat(formData) {
     try {
       const token = this.getAuthToken();
       
@@ -91,10 +92,10 @@ export class BoatService {
       const response = await fetch(this.boatsEndpoint, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
+          // Ne pas définir Content-Type pour FormData, le navigateur le fait automatiquement
         },
-        body: JSON.stringify(boatData)
+        body: formData
       });
 
       const data = await response.json();
@@ -146,38 +147,6 @@ export class BoatService {
     }
   }
 
-  /**
-   * Suppression d'un bateau
-   * @param {string} boatId - ID du bateau
-   * @returns {Promise<Object>} Confirmation de suppression
-   */
-  async deleteBoat(boatId) {
-    try {
-      const token = this.getAuthToken();
-      
-      if (!token) {
-        throw new Error('Authentification requise');
-      }
-
-      const response = await fetch(`${this.boatsEndpoint}/${boatId}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-
-      const data = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(data.message || 'Erreur lors de la suppression du bateau');
-      }
-
-      return data;
-    } catch (error) {
-      console.error('Erreur lors de la suppression du bateau:', error);
-      throw error;
-    }
-  }
 
   /**
    * Récupération des bateaux d'un propriétaire
@@ -281,6 +250,51 @@ export class BoatService {
       return data;
     } catch (error) {
       console.error('Erreur lors de la recherche par proximité:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Récupération des bateaux du propriétaire connecté
+   * @param {Object} params - Paramètres de filtrage
+   * @returns {Promise<Object>} Liste des bateaux du propriétaire
+   */
+  async getOwnerBoats(params = {}) {
+    try {
+      const token = this.getAuthToken();
+      
+      if (!token) {
+        throw new Error('Authentification requise');
+      }
+
+      // Construction de l'URL avec les paramètres de requête
+      const queryParams = new URLSearchParams();
+      
+      Object.keys(params).forEach(key => {
+        if (params[key] !== undefined && params[key] !== '') {
+          queryParams.append(key, params[key]);
+        }
+      });
+
+      const url = `${this.boatsEndpoint}/owner/my-boats?${queryParams.toString()}`;
+      
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || 'Erreur lors de la récupération des bateaux du propriétaire');
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Erreur lors de la récupération des bateaux du propriétaire:', error);
       throw error;
     }
   }
@@ -391,6 +405,163 @@ export class BoatService {
       return data;
     } catch (error) {
       console.error('Erreur lors de la suppression de l\'image:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Mise à jour d'un bateau
+   * @param {string} boatId - ID du bateau à mettre à jour
+   * @param {Object} boatData - Données du bateau à mettre à jour
+   * @param {File[]} images - Nouvelles images (optionnel)
+   * @returns {Promise<Object>} Bateau mis à jour
+   */
+  async updateBoat(boatId, boatData, images = null) {
+    try {
+      const token = this.getAuthToken();
+      if (!token) {
+        throw new Error('Authentification requise');
+      }
+
+      const formData = new FormData();
+      
+      // Ajouter les données du bateau
+      Object.keys(boatData).forEach(key => {
+        if (boatData[key] !== undefined && boatData[key] !== null) {
+          if (typeof boatData[key] === 'object') {
+            formData.append(key, JSON.stringify(boatData[key]));
+          } else {
+            formData.append(key, boatData[key]);
+          }
+        }
+      });
+
+      // Ajouter les nouvelles images si présentes
+      if (images && images.length > 0) {
+        images.forEach(image => {
+          formData.append('images', image);
+        });
+      }
+
+      const response = await fetch(`${this.boatsEndpoint}/${boatId}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: formData
+      });
+
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || 'Erreur lors de la mise à jour du bateau');
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour du bateau:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Suppression d'un bateau
+   * @param {string} boatId - ID du bateau à supprimer
+   * @param {boolean} force - Forcer la suppression même avec des réservations actives
+   * @returns {Promise<Object>} Résultat de la suppression
+   */
+  async deleteBoat(boatId, force = false) {
+    try {
+      const token = this.getAuthToken();
+      if (!token) {
+        throw new Error('Authentification requise');
+      }
+
+      const queryParams = force ? '?force=true' : '';
+      const response = await fetch(`${this.boatsEndpoint}/${boatId}${queryParams}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || 'Erreur lors de la suppression du bateau');
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Erreur lors de la suppression du bateau:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Restauration d'un bateau supprimé
+   * @param {string} boatId - ID du bateau à restaurer
+   * @returns {Promise<Object>} Bateau restauré
+   */
+  async restoreBoat(boatId) {
+    try {
+      const token = this.getAuthToken();
+      if (!token) {
+        throw new Error('Authentification requise');
+      }
+
+      const response = await fetch(`${this.boatsEndpoint}/${boatId}/restore`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || 'Erreur lors de la restauration du bateau');
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Erreur lors de la restauration du bateau:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Définir une image comme principale
+   * @param {string} boatId - ID du bateau
+   * @param {string} imageId - ID de l'image à définir comme principale
+   * @returns {Promise<Object>} Résultat de l'opération
+   */
+  async setMainImage(boatId, imageId) {
+    try {
+      const token = this.getAuthToken();
+      if (!token) {
+        throw new Error('Authentification requise');
+      }
+
+      const response = await fetch(`${this.boatsEndpoint}/${boatId}/images/${imageId}/main`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || 'Erreur lors de la définition de l\'image principale');
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Erreur lors de la définition de l\'image principale:', error);
       throw error;
     }
   }
@@ -509,7 +680,16 @@ export class BoatService {
    */
   getAuthToken() {
     try {
-      return localStorage.getItem('sailingloc_token');
+      // Utiliser le StorageManager pour la cohérence
+      if (window.app && window.app.storageManager) {
+        const token = window.app.storageManager.getToken();
+        console.log('🔐 [BOAT SERVICE] Token récupéré via StorageManager:', token ? 'Présent' : 'Absent');
+        return token;
+      }
+      // Fallback direct si l'app n'est pas disponible
+      const token = localStorage.getItem('sailingloc_token');
+      console.log('🔐 [BOAT SERVICE] Token récupéré via localStorage:', token ? 'Présent' : 'Absent');
+      return token;
     } catch (error) {
       console.error('Erreur lors de la récupération du token:', error);
       return null;

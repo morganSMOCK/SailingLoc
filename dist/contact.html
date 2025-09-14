@@ -8,8 +8,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <script type="module" crossorigin src="/assets/main-DO99a50-.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/style-DChPEksy.css">
+  <script type="module" crossorigin src="/assets/main-Df4-OBjS.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/style-Bu49pKes.css">
 </head>
 <body>
   <!-- Navigation -->
@@ -84,7 +84,7 @@
             <div class="contact-icon">📍</div>
             <div>
               <h4>Adresse</h4>
-              <p>Port de Plaisance<br>06400 Cannes, France</p>
+              <p>45 rue de la Loire<br>, 17000 La Rochelle, France</p>
             </div>
           </div>
           
@@ -100,7 +100,7 @@
             <div class="contact-icon">✉️</div>
             <div>
               <h4>Email</h4>
-              <p>contact@sailingloc.com</p>
+              <p>sailingloc98@gmail.com</p>
             </div>
           </div>
 
@@ -117,10 +117,7 @@
             <div>
               <h4>Réseaux sociaux</h4>
               <div class="social-links">
-                <a href="#" class="social-link">📘 Facebook</a>
                 <a href="#" class="social-link">📷 Instagram</a>
-                <a href="#" class="social-link">🐦 Twitter</a>
-                <a href="#" class="social-link">💼 LinkedIn</a>
               </div>
             </div>
           </div>
@@ -146,7 +143,6 @@
               <option value="reservation">Question sur une réservation</option>
               <option value="boat">Information sur un bateau</option>
               <option value="service">Demande de service</option>
-              <option value="partnership">Partenariat</option>
               <option value="other">Autre</option>
             </select>
           </div>
@@ -239,36 +235,6 @@
     </div>
   </section>
 
-  <!-- Section Carte -->
-  <section class="map-section">
-    <div class="container">
-      <div class="section-header">
-        <h2>Notre Localisation</h2>
-        <p>Retrouvez-nous au port de plaisance de Cannes</p>
-      </div>
-      
-      <div class="map-container">
-        <div class="map-placeholder">
-          <div class="map-content">
-            <h3>📍 Port de Plaisance de Cannes</h3>
-            <p>Quai Laubeuf, 06400 Cannes, France</p>
-            <div class="map-info">
-              <div class="map-info-item">
-                <strong>Accès :</strong> En voiture, bus ou train
-              </div>
-              <div class="map-info-item">
-                <strong>Parking :</strong> Parking du port disponible
-              </div>
-              <div class="map-info-item">
-                <strong>Métro :</strong> Ligne 1, arrêt Port
-              </div>
-            </div>
-            <button class="btn-primary" onclick="openMap()">Voir sur la carte</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
 
   <!-- Footer -->
   <footer class="footer">
@@ -590,5 +556,109 @@
       });
     });
   </script>
+
+  <!-- Modale d'ajout de bateau -->
+  <div id="add-boat-modal" class="modal modal-large">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Ajouter un bateau</h2>
+        <button class="modal-close">&times;</button>
+      </div>
+      <form id="add-boat-form" class="boat-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="boat-name">Nom du bateau</label>
+            <input type="text" id="boat-name" placeholder="Ex: Étoile des Mers" required>
+          </div>
+          <div class="form-group">
+            <label for="boat-type">Type de bateau</label>
+            <select id="boat-type" required>
+              <option value="">Sélectionner</option>
+              <option value="voilier">Voilier</option>
+              <option value="catamaran">Catamaran</option>
+              <option value="yacht">Yacht</option>
+              <option value="bateau_moteur">Bateau à moteur</option>
+              <option value="semi_rigide">Semi-rigide</option>
+              <option value="peniche">Péniche</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="boat-category">Catégorie</label>
+            <select id="boat-category" required>
+              <option value="">Sélectionner</option>
+              <option value="standard">Standard</option>
+              <option value="luxe">Luxe</option>
+              <option value="economique">Économique</option>
+              <option value="sportif">Sportif</option>
+              <option value="familial">Familial</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="boat-description">Description</label>
+          <textarea id="boat-description" rows="4" placeholder="Décrivez votre bateau, ses équipements, son histoire..."></textarea>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="boat-length">Longueur (m)</label>
+            <input type="number" id="boat-length" step="0.1" min="1" max="100" required>
+          </div>
+          <div class="form-group">
+            <label for="boat-width">Largeur (m)</label>
+            <input type="number" id="boat-width" step="0.1" min="1" max="20" required>
+          </div>
+          <div class="form-group">
+            <label for="boat-capacity">Capacité (personnes)</label>
+            <input type="number" id="boat-capacity" min="1" max="50" required>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="boat-city">Ville</label>
+            <input type="text" id="boat-city" placeholder="Ex: Cannes" required>
+          </div>
+          <div class="form-group">
+            <label for="boat-marina">Marina</label>
+            <input type="text" id="boat-marina" placeholder="Ex: Port de Cannes" required>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="boat-daily-rate">Prix par jour (€)</label>
+            <input type="number" id="boat-daily-rate" min="50" step="10" required>
+          </div>
+          <div class="form-group">
+            <label for="boat-security-deposit">Caution (€)</label>
+            <input type="number" id="boat-security-deposit" min="0" step="50" required>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="boat-images">Images du bateau</label>
+          <div class="image-upload-container">
+            <input type="file" id="boat-image-input" accept="image/*" multiple style="display: none;">
+            <button type="button" id="select-images-btn" class="btn-secondary">
+              📷 Sélectionner des images
+            </button>
+            <div id="image-preview-container" class="image-preview-container">
+              <!-- Les aperçus d'images seront ajoutés ici -->
+            </div>
+            <div class="image-help">
+              <small>Formats acceptés : JPG, PNG, WebP. Taille max : 5MB par image</small>
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" onclick="app.uiManager.hideModal('add-boat-modal')">Annuler</button>
+          <button type="submit" class="btn-primary">Ajouter le bateau</button>
+        </div>
+      </form>
+    </div>
+  </div>
 </body>
 </html>

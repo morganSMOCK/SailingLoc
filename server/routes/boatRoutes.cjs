@@ -8,6 +8,7 @@ const {
   checkResourceOwnership,
   logUserAction 
 } = require('../middleware/auth.cjs');
+const { uploadBoatImages, handleUploadError } = require('../middleware/upload.cjs');
 const Boat = require('../models/Boat.cjs');
 
 // Routes publiques (avec authentification optionnelle)
@@ -62,6 +63,8 @@ router.get('/:id/availability',
 router.post('/', 
   authenticateToken,
   requireOwner,
+  uploadBoatImages,
+  handleUploadError,
   logUserAction('BOAT_CREATE'),
   boatController.createBoat
 );
@@ -99,6 +102,42 @@ router.delete('/:id',
   checkResourceOwnership(Boat),
   logUserAction('BOAT_DELETE'),
   boatController.deleteBoat
+);
+
+/**
+ * @route   PUT /api/boats/:id/restore
+ * @desc    Restauration d'un bateau supprimé
+ * @access  Private/Owner (propriétaire du bateau)
+ */
+router.put('/:id/restore', 
+  authenticateToken,
+  checkResourceOwnership(Boat),
+  logUserAction('BOAT_RESTORE'),
+  boatController.restoreBoat
+);
+
+/**
+ * @route   DELETE /api/boats/:id/images/:imageId
+ * @desc    Suppression d'une image spécifique d'un bateau
+ * @access  Private/Owner (propriétaire du bateau)
+ */
+router.delete('/:id/images/:imageId', 
+  authenticateToken,
+  checkResourceOwnership(Boat),
+  logUserAction('BOAT_IMAGE_DELETE'),
+  boatController.deleteBoatImage
+);
+
+/**
+ * @route   PUT /api/boats/:id/images/:imageId/main
+ * @desc    Définir une image comme principale
+ * @access  Private/Owner (propriétaire du bateau)
+ */
+router.put('/:id/images/:imageId/main', 
+  authenticateToken,
+  checkResourceOwnership(Boat),
+  logUserAction('BOAT_IMAGE_MAIN'),
+  boatController.setMainImage
 );
 
 /**
