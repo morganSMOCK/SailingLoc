@@ -353,6 +353,12 @@ class SailingLocApp {
       addBoatForm.addEventListener('submit', (e) => this.handleAddBoat(e));
     }
     
+    // Formulaire d'édition de bateau
+    const editBoatForm = document.getElementById('edit-boat-form');
+    if (editBoatForm) {
+      editBoatForm.addEventListener('submit', (e) => this.handleEditBoat(e));
+    }
+    
     // Gestion de l'upload d'images
     this.setupImageUpload();
     
@@ -986,9 +992,6 @@ class SailingLocApp {
     }
   }
 
-  async editBoat(boatId) {
-    this.uiManager.showNotification('Fonctionnalité en cours de développement', 'info');
-  }
 
   async toggleBoatStatus(boatId) {
     this.uiManager.showNotification('Fonctionnalité en cours de développement', 'info');
@@ -1542,21 +1545,39 @@ class SailingLocApp {
    * Configuration de l'upload d'images
    */
   setupImageUpload() {
+    // Upload d'images pour le formulaire d'ajout
     const fileInput = document.getElementById('boat-image-input');
     const previewContainer = document.getElementById('image-preview-container');
     
-    if (!fileInput || !previewContainer) return;
+    if (fileInput && previewContainer) {
+      fileInput.addEventListener('change', (e) => {
+        this.handleImageSelection(e.target.files, 'add');
+      });
+    }
     
-    // Changement de fichiers
-    fileInput.addEventListener('change', (e) => {
-      this.handleImageSelection(e.target.files);
-    });
+    // Upload d'images pour le formulaire d'édition
+    const editFileInput = document.getElementById('edit-boat-images');
+    const editPreviewContainer = document.getElementById('edit-image-preview-container');
+    
+    if (editFileInput && editPreviewContainer) {
+      editFileInput.addEventListener('change', (e) => {
+        this.handleImageSelection(e.target.files, 'edit');
+      });
+    }
+    
+    // Gestion du clic sur la zone d'upload d'édition
+    const editUploadArea = document.getElementById('edit-image-upload-area');
+    if (editUploadArea) {
+      editUploadArea.addEventListener('click', () => {
+        editFileInput.click();
+      });
+    }
   }
   
   /**
    * Gestion de la sélection d'images
    */
-  handleImageSelection(files) {
+  handleImageSelection(files, type = 'add') {
     const maxSize = 5 * 1024 * 1024; // 5MB
     const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
     
@@ -1574,8 +1595,12 @@ class SailingLocApp {
       }
       
       // Ajout de l'image
-      this.selectedImages.push(file);
-      this.addImagePreview(file);
+      if (type === 'add') {
+        this.selectedImages.push(file);
+        this.addImagePreview(file);
+      } else if (type === 'edit') {
+        this.addEditImagePreview(file);
+      }
     });
   }
   
@@ -1598,6 +1623,26 @@ class SailingLocApp {
     
     reader.readAsDataURL(file);
   }
+
+  /**
+   * Ajout d'un aperçu d'image pour l'édition
+   */
+  addEditImagePreview(file) {
+    const previewContainer = document.getElementById('edit-image-preview-container');
+    const reader = new FileReader();
+    
+    reader.onload = (e) => {
+      const preview = document.createElement('div');
+      preview.className = 'image-preview-item new';
+      preview.innerHTML = `
+        <img src="${e.target.result}" alt="Aperçu">
+        <button type="button" class="remove-image-btn" onclick="app.removeEditImage('${file.name}')">×</button>
+      `;
+      previewContainer.appendChild(preview);
+    };
+    
+    reader.readAsDataURL(file);
+  }
   
   /**
    * Suppression d'une image
@@ -1605,6 +1650,33 @@ class SailingLocApp {
   removeImage(fileName) {
     this.selectedImages = this.selectedImages.filter(file => file.name !== fileName);
     this.updateImagePreviews();
+  }
+
+  /**
+   * Suppression d'une image d'édition
+   */
+  removeEditImage(fileName) {
+    const previewContainer = document.getElementById('edit-image-preview-container');
+    const previews = previewContainer.querySelectorAll('.image-preview-item.new');
+    previews.forEach(preview => {
+      const img = preview.querySelector('img');
+      if (img && img.src.includes(fileName)) {
+        preview.remove();
+      }
+    });
+  }
+
+  /**
+   * Suppression d'une image existante
+   */
+  removeExistingImage(index) {
+    // Cette méthode sera appelée pour supprimer une image existante
+    // Pour l'instant, on peut juste retirer l'élément du DOM
+    const previewContainer = document.getElementById('edit-image-preview-container');
+    const existingImages = previewContainer.querySelectorAll('.image-preview-item.existing');
+    if (existingImages[index]) {
+      existingImages[index].remove();
+    }
   }
   
   /**
@@ -1701,7 +1773,71 @@ class SailingLocApp {
       this.uiManager.hideLoading('add-boat-form');
     }
   }
-  
+
+  /**
+   * Gestion de l'édition de bateau
+   */
+  async handleEditBoat(e) {
+    e.preventDefault();
+
+    if (!this.currentUser) {
+      this.uiManager.showNotification('Vous devez être connecté pour modifier un bateau', 'error');
+      return;
+    }
+
+    const form = e.target;
+    const boatId = form.dataset.boatId;
+    
+    if (!boatId) {
+      this.uiManager.showNotification('ID du bateau manquant', 'error');
+      return;
+    }
+
+    const formData = new FormData(form);
+    
+    // Validation des champs requis
+    const requiredFields = ['name', 'type', 'category', 'length', 'width', 'capacity', 'city', 'pricePerDay', 'deposit'];
+    for (const field of requiredFields) {
+      if (!formData.get(field)) {
+        this.uiManager.showNotification(`Le champ ${field} est requis`, 'error');
+        return;
+      }
+    }
+
+    try {
+      this.uiManager.showLoading('edit-boat-form');
+
+      const response = await fetch(`${this.boatService.boatsEndpoint}/${boatId}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${this.currentUser.token}`
+        },
+        body: formData
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        this.uiManager.showNotification('Bateau modifié avec succès !', 'success');
+        this.uiManager.hideModal('edit-boat-modal');
+
+        // Reset du formulaire
+        form.reset();
+        this.selectedImages = [];
+        this.updateImagePreviews();
+
+        // Recharger la liste des bateaux
+        await this.loadBoatManagementData();
+      } else {
+        throw new Error(data.message || 'Erreur lors de la modification du bateau');
+      }
+    } catch (error) {
+      console.error('Erreur lors de la modification du bateau:', error);
+      this.uiManager.showNotification(`Erreur: ${error.message}`, 'error');
+    } finally {
+      this.uiManager.hideLoading('edit-boat-form');
+    }
+  }
 
   /**
    * Initiation d'une réservation
@@ -1793,7 +1929,7 @@ class SailingLocApp {
     const addFirstBoatBtn = document.getElementById('add-first-boat-btn');
     if (addFirstBoatBtn) {
       addFirstBoatBtn.addEventListener('click', () => {
-        window.location.href = 'index.html#add-boat';
+        this.uiManager.showModal('add-boat-modal');
       });
     }
   }
@@ -2163,17 +2299,61 @@ class SailingLocApp {
    * Affichage de la modal d'ajout de bateau
    */
   showAddBoatModal() {
-    // Rediriger vers la page d'accueil avec le formulaire d'ajout
-    window.location.href = 'index.html#add-boat';
+    // Ouvrir directement le modal d'ajout de bateau
+    this.uiManager.showModal('add-boat-modal');
   }
 
   /**
    * Affichage de la modal d'édition de bateau
    */
   showEditBoatModal(boat) {
-    // Pour l'instant, rediriger vers la page d'accueil avec l'ID du bateau
-    // TODO: Implémenter une vraie modal d'édition
-    window.location.href = `index.html#edit-boat-${boat._id}`;
+    // Remplir le formulaire avec les données du bateau
+    this.populateEditForm(boat);
+    // Ouvrir le modal d'édition
+    this.uiManager.showModal('edit-boat-modal');
+  }
+
+  /**
+   * Remplissage du formulaire d'édition avec les données du bateau
+   */
+  populateEditForm(boat) {
+    document.getElementById('edit-boat-name').value = boat.name || '';
+    document.getElementById('edit-boat-type').value = boat.type || '';
+    document.getElementById('edit-boat-category').value = boat.category || '';
+    document.getElementById('edit-boat-description').value = boat.description || '';
+    document.getElementById('edit-boat-length').value = boat.length || '';
+    document.getElementById('edit-boat-width').value = boat.width || '';
+    document.getElementById('edit-boat-capacity').value = boat.capacity || '';
+    document.getElementById('edit-boat-city').value = boat.city || '';
+    document.getElementById('edit-boat-marina').value = boat.marina || '';
+    document.getElementById('edit-boat-price').value = boat.pricePerDay || '';
+    document.getElementById('edit-boat-deposit').value = boat.deposit || '';
+    
+    // Stocker l'ID du bateau pour la mise à jour
+    document.getElementById('edit-boat-form').dataset.boatId = boat._id;
+    
+    // Afficher les images existantes
+    this.displayExistingImages(boat.images || []);
+  }
+
+  /**
+   * Affichage des images existantes du bateau
+   */
+  displayExistingImages(images) {
+    const container = document.getElementById('edit-image-preview-container');
+    container.innerHTML = '';
+    
+    if (images && images.length > 0) {
+      images.forEach((image, index) => {
+        const imageDiv = document.createElement('div');
+        imageDiv.className = 'image-preview-item existing';
+        imageDiv.innerHTML = `
+          <img src="${image}" alt="Image du bateau">
+          <button type="button" class="remove-image-btn" onclick="app.removeExistingImage(${index})">×</button>
+        `;
+        container.appendChild(imageDiv);
+      });
+    }
   }
 }
 
