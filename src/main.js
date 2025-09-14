@@ -2320,6 +2320,8 @@ class SailingLocApp {
       console.log('🗑️ [DELETE BOAT] Tentative de suppression du bateau:', boatId);
       console.log('🔐 [DELETE BOAT] Token présent:', token ? 'Oui' : 'Non');
       console.log('👤 [DELETE BOAT] Utilisateur connecté:', this.currentUser ? this.currentUser.email : 'Non');
+      console.log('👤 [DELETE BOAT] User ID:', this.currentUser ? this.currentUser._id : 'Non');
+      console.log('👤 [DELETE BOAT] User Role:', this.currentUser ? this.currentUser.role : 'Non');
 
       const response = await this.boatService.deleteBoat(boatId);
       

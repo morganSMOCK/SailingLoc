@@ -627,12 +627,22 @@ exports.deleteBoat = async (req, res) => {
 
     // Vérifier les droits de suppression
     const user = await User.findById(userId);
+    console.log('🔍 [BOAT] Vérification des permissions:');
+    console.log('🔍 [BOAT] User ID:', userId);
+    console.log('🔍 [BOAT] Boat Owner:', boat.owner.toString());
+    console.log('🔍 [BOAT] User Role:', user ? user.role : 'User not found');
+    console.log('🔍 [BOAT] Is Owner:', boat.owner.toString() === userId);
+    console.log('🔍 [BOAT] Is Admin:', user ? user.role === 'admin' : false);
+    
     if (boat.owner.toString() !== userId && user.role !== 'admin') {
+      console.log('❌ [BOAT] Accès refusé - utilisateur non autorisé');
       return res.status(403).json({
         success: false,
         message: 'Non autorisé à supprimer ce bateau'
       });
     }
+    
+    console.log('✅ [BOAT] Permissions validées');
 
     console.log('🔍 [BOAT] Vérification des réservations actives...');
 
