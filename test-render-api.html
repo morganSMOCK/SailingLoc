@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Test API Render - SailingLoc</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; background: #f0f8ff; }
+    .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+    .test-btn { display: inline-block; margin: 10px; padding: 15px 25px; background: linear-gradient(135deg, #007bff, #0056b3); color: white; text-decoration: none; border-radius: 8px; font-weight: bold; cursor: pointer; border: none; }
+    .test-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,123,255,0.3); }
+    .status { margin: 20px 0; padding: 20px; border-radius: 10px; text-align: center; }
+    .success { background: #d4edda; color: #155724; border: 2px solid #c3e6cb; }
+    .error { background: #f8d7da; color: #721c24; border: 2px solid #f5c6cb; }
+    .info { background: #d1ecf1; color: #0c5460; border: 2px solid #bee5eb; }
+    .loading { background: #fff3cd; color: #856404; border: 2px solid #ffeaa7; }
+    h1 { color: #333; text-align: center; margin-bottom: 30px; }
+    .emoji { font-size: 24px; margin-right: 10px; }
+    .log { background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 5px; padding: 15px; margin: 10px 0; font-family: monospace; white-space: pre-wrap; max-height: 300px; overflow-y: auto; }
+    .url { background: #e9ecef; padding: 5px 10px; border-radius: 3px; font-family: monospace; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1><span class="emoji">🌐</span>Test de Connexion API Render</h1>
+    
+    <div class="status info">
+      <strong>ℹ️ Test de connexion à votre backend Render</strong><br>
+      URL: <span class="url">https://sailingloc.onrender.com/api/boats</span>
+    </div>
+    
+    <div style="text-align: center; margin: 30px 0;">
+      <button class="test-btn" onclick="testAPI()">
+        <span class="emoji">🚀</span>Tester la connexion API
+      </button>
+      
+      <button class="test-btn" onclick="testBoatsPage()">
+        <span class="emoji">🛥️</span>Aller à la page des bateaux
+      </button>
+    </div>
+    
+    <div id="status" class="status" style="display: none;"></div>
+    <div id="log" class="log" style="display: none;"></div>
+  </div>
+
+  <script>
+    const API_URL = 'https://sailingloc.onrender.com/api/boats';
+    
+    function log(message) {
+      const logDiv = document.getElementById('log');
+      logDiv.style.display = 'block';
+      logDiv.textContent += new Date().toLocaleTimeString() + ': ' + message + '\n';
+      logDiv.scrollTop = logDiv.scrollHeight;
+    }
+    
+    function showStatus(message, type) {
+      const statusDiv = document.getElementById('status');
+      statusDiv.style.display = 'block';
+      statusDiv.className = `status ${type}`;
+      statusDiv.innerHTML = message;
+    }
+    
+    async function testAPI() {
+      log('🚀 Début du test de connexion...');
+      showStatus('⏳ Test en cours...', 'loading');
+      
+      try {
+        log(`📡 Tentative de connexion à: ${API_URL}`);
+        
+        const response = await fetch(API_URL, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          mode: 'cors'
+        });
+        
+        log(`📥 Réponse reçue: ${response.status} ${response.statusText}`);
+        
+        if (!response.ok) {
+          const errorText = await response.text();
+          log(`❌ Erreur: ${errorText}`);
+          showStatus(`❌ Erreur ${response.status}: ${errorText}`, 'error');
+          return;
+        }
+        
+        const data = await response.json();
+        log(`✅ Données reçues: ${JSON.stringify(data, null, 2)}`);
+        
+        if (data.boats && data.boats.length > 0) {
+          showStatus(`✅ Connexion réussie ! ${data.boats.length} bateau(x) trouvé(s)`, 'success');
+        } else {
+          showStatus('⚠️ Connexion réussie mais aucun bateau trouvé', 'info');
+        }
+        
+      } catch (error) {
+        log(`❌ Erreur de connexion: ${error.message}`);
+        showStatus(`❌ Erreur de connexion: ${error.message}`, 'error');
+      }
+    }
+    
+    function testBoatsPage() {
+      window.location.href = 'boats.html';
+    }
+    
+    // Test automatique au chargement
+    window.addEventListener('load', () => {
+      log('🔄 Page chargée, test automatique dans 2 secondes...');
+      setTimeout(testAPI, 2000);
+    });
+  </script>
+</body>
+</html>
