@@ -1,0 +1,262 @@
+ <!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test d'authentification - SailingLoc</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .test-section h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        .result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+        .log {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 Test d'authentification SailingLoc</h1>
+        <p>Ce script permet de diagnostiquer les problèmes d'authentification en production.</p>
+
+        <div class="test-section">
+            <h3>1. Vérification du localStorage</h3>
+            <button onclick="checkLocalStorage()">Vérifier le localStorage</button>
+            <div id="localStorageResult"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>2. Test de connexion</h3>
+            <div>
+                <input type="email" id="testEmail" placeholder="Email de test" style="width: 200px; padding: 5px; margin: 5px;">
+                <input type="password" id="testPassword" placeholder="Mot de passe" style="width: 200px; padding: 5px; margin: 5px;">
+                <button onclick="testLogin()">Tester la connexion</button>
+            </div>
+            <div id="loginResult"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>3. Test de récupération des bateaux</h3>
+            <button onclick="testGetBoats()" id="testBoatsBtn" disabled>Récupérer mes bateaux</button>
+            <div id="boatsResult"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>4. Test de suppression de bateau</h3>
+            <div>
+                <input type="text" id="testBoatId" placeholder="ID du bateau à supprimer" style="width: 200px; padding: 5px; margin: 5px;">
+                <button onclick="testDeleteBoat()" id="testDeleteBtn" disabled>Tester la suppression</button>
+            </div>
+            <div id="deleteResult"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>5. Logs de débogage</h3>
+            <button onclick="clearLogs()">Effacer les logs</button>
+            <div id="debugLogs" class="log"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        // Import des services
+        import { AuthService } from './src/services/AuthService.js';
+        import { BoatService } from './src/services/BoatService.js';
+        import { StorageManager } from './src/utils/StorageManager.js';
+
+        // Initialisation des services
+        const authService = new AuthService();
+        const boatService = new BoatService();
+        const storageManager = new StorageManager();
+
+        // Fonction de logging
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logElement = document.getElementById('debugLogs');
+            const logEntry = `[${timestamp}] ${type.toUpperCase()}: ${message}\n`;
+            logElement.textContent += logEntry;
+            logElement.scrollTop = logElement.scrollHeight;
+            console.log(`[AUTH DEBUG] ${message}`);
+        }
+
+        // Fonction pour afficher un résultat
+        function showResult(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="result ${type}">${message}</div>`;
+        }
+
+        // 1. Vérification du localStorage
+        window.checkLocalStorage = function() {
+            log('Vérification du localStorage...');
+            
+            const token = storageManager.getToken();
+            const user = storageManager.getUser();
+            const directToken = localStorage.getItem('sailingloc_token');
+            const directUser = localStorage.getItem('sailingloc_user');
+
+            let result = '<h4>Résultats:</h4>';
+            result += `<p><strong>Token via StorageManager:</strong> ${token ? 'Présent (' + token.substring(0, 20) + '...)' : 'Absent'}</p>`;
+            result += `<p><strong>Token direct:</strong> ${directToken ? 'Présent (' + directToken.substring(0, 20) + '...)' : 'Absent'}</p>`;
+            result += `<p><strong>User via StorageManager:</strong> ${user ? 'Présent (' + user.email + ')' : 'Absent'}</p>`;
+            result += `<p><strong>User direct:</strong> ${directUser ? 'Présent' : 'Absent'}</p>`;
+
+            if (token && user) {
+                result += '<p class="success">✅ Authentification détectée</p>';
+                document.getElementById('testBoatsBtn').disabled = false;
+                document.getElementById('testDeleteBtn').disabled = false;
+            } else {
+                result += '<p class="error">❌ Aucune authentification détectée</p>';
+            }
+
+            showResult('localStorageResult', result, token ? 'success' : 'error');
+            log(`Token présent: ${!!token}, User présent: ${!!user}`);
+        };
+
+        // 2. Test de connexion
+        window.testLogin = async function() {
+            const email = document.getElementById('testEmail').value;
+            const password = document.getElementById('testPassword').value;
+
+            if (!email || !password) {
+                showResult('loginResult', 'Veuillez saisir un email et un mot de passe', 'error');
+                return;
+            }
+
+            log(`Tentative de connexion avec ${email}...`);
+            showResult('loginResult', 'Connexion en cours...', 'info');
+
+            try {
+                const response = await authService.login(email, password);
+                log('Connexion réussie');
+                
+                // Sauvegarder les données
+                storageManager.setToken(response.data.token);
+                storageManager.setUser(response.data.user);
+                
+                showResult('loginResult', `✅ Connexion réussie! Utilisateur: ${response.data.user.email}`, 'success');
+                document.getElementById('testBoatsBtn').disabled = false;
+                document.getElementById('testDeleteBtn').disabled = false;
+            } catch (error) {
+                log(`Erreur de connexion: ${error.message}`, 'error');
+                showResult('loginResult', `❌ Erreur: ${error.message}`, 'error');
+            }
+        };
+
+        // 3. Test de récupération des bateaux
+        window.testGetBoats = async function() {
+            log('Test de récupération des bateaux...');
+            showResult('boatsResult', 'Récupération en cours...', 'info');
+
+            try {
+                const response = await boatService.getOwnerBoats();
+                log(`Bateaux récupérés: ${response.data.boats.length}`);
+                
+                let result = `<h4>✅ ${response.data.boats.length} bateaux trouvés:</h4>`;
+                response.data.boats.forEach(boat => {
+                    result += `<p>- ${boat.name} (ID: ${boat._id})</p>`;
+                });
+                
+                showResult('boatsResult', result, 'success');
+            } catch (error) {
+                log(`Erreur lors de la récupération des bateaux: ${error.message}`, 'error');
+                showResult('boatsResult', `❌ Erreur: ${error.message}`, 'error');
+            }
+        };
+
+        // 4. Test de suppression de bateau
+        window.testDeleteBoat = async function() {
+            const boatId = document.getElementById('testBoatId').value;
+
+            if (!boatId) {
+                showResult('deleteResult', 'Veuillez saisir un ID de bateau', 'error');
+                return;
+            }
+
+            log(`Test de suppression du bateau ${boatId}...`);
+            showResult('deleteResult', 'Test de suppression en cours...', 'info');
+
+            try {
+                const response = await boatService.deleteBoat(boatId);
+                log('Suppression réussie');
+                showResult('deleteResult', `✅ Suppression réussie: ${response.message}`, 'success');
+            } catch (error) {
+                log(`Erreur lors de la suppression: ${error.message}`, 'error');
+                showResult('deleteResult', `❌ Erreur: ${error.message}`, 'error');
+            }
+        };
+
+        // 5. Effacer les logs
+        window.clearLogs = function() {
+            document.getElementById('debugLogs').textContent = '';
+        };
+
+        // Vérification automatique au chargement
+        document.addEventListener('DOMContentLoaded', function() {
+            log('Script de test d\'authentification chargé');
+            checkLocalStorage();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test API Direct - SailingLoc</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .container {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+    .log-container {
+      background: #1e1e1e;
+      color: #00ff00;
+      padding: 15px;
+      border-radius: 5px;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      max-height: 400px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+    }
+    .error { color: #ff6b6b; }
+    .success { color: #51cf66; }
+    .warning { color: #ffd43b; }
+    .info { color: #74c0fc; }
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin: 5px;
+    }
+    button:hover { background: #0056b3; }
+    .data-display {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 5px;
+      margin: 10px 0;
+      border-left: 4px solid #007bff;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔍 Test API Direct - SailingLoc</h1>
+    <p>Cette page teste directement l'API pour diagnostiquer les problèmes.</p>
+    
+    <div>
+      <button onclick="testAPI()">🧪 Tester l'API</button>
+      <button onclick="testWithAuth()">🔐 Tester avec Auth</button>
+      <button onclick="checkAuth()">🔍 Vérifier Auth</button>
+      <button onclick="clearLogs()">🧹 Effacer les logs</button>
+    </div>
+    
+    <div class="data-display">
+      <h3>📊 Résultats</h3>
+      <div id="results"></div>
+    </div>
+    
+    <div>
+      <h3>📝 Logs</h3>
+      <div id="logs" class="log-container">Logs de test...\n</div>
+    </div>
+  </div>
+
+  <!-- Script principal de l'application -->
+  <script type="module" src="/src/main.js"></script>
+  
+  <script>
+    function log(message, type = 'info') {
+      const logsContainer = document.getElementById('logs');
+      const timestamp = new Date().toLocaleTimeString();
+      const className = type === 'error' ? 'error' : type === 'success' ? 'success' : type === 'warning' ? 'warning' : 'info';
+      logsContainer.innerHTML += `<span class="${className}">[${timestamp}] ${message}</span>\n`;
+      logsContainer.scrollTop = logsContainer.scrollHeight;
+      console.log(`[API-TEST] ${message}`);
+    }
+
+    function clearLogs() {
+      document.getElementById('logs').innerHTML = 'Logs effacés...\n';
+      document.getElementById('results').innerHTML = '';
+    }
+
+    function checkAuth() {
+      log('🔍 Vérification de l\'authentification...', 'info');
+      
+      const token = localStorage.getItem('authToken');
+      if (token) {
+        log('✅ Token d\'authentification trouvé', 'success');
+        log(`🔐 Token: ${token.substring(0, 20)}...`, 'info');
+        
+        // Vérifier si le token est valide
+        try {
+          const payload = JSON.parse(atob(token.split('.')[1]));
+          const exp = payload.exp * 1000;
+          const now = Date.now();
+          
+          if (exp > now) {
+            log('✅ Token valide (non expiré)', 'success');
+            log(`⏰ Expire le: ${new Date(exp).toLocaleString()}`, 'info');
+          } else {
+            log('❌ Token expiré', 'error');
+            log('💡 Reconnectez-vous sur l\'application principale', 'info');
+          }
+        } catch (error) {
+          log('⚠️ Token malformé', 'warning');
+        }
+      } else {
+        log('❌ Aucun token d\'authentification trouvé', 'error');
+        log('💡 Pour obtenir un token:', 'info');
+        log('   1. Allez sur l\'application principale', 'info');
+        log('   2. Connectez-vous avec vos identifiants', 'info');
+        log('   3. Revenez sur cette page de test', 'info');
+      }
+    }
+
+    async function testAPI() {
+      log('🧪 Test de l\'API bateaux...', 'info');
+      
+      try {
+        const url = 'https://sailingloc.onrender.com/api/boats';
+        log(`📡 URL: ${url}`, 'info');
+        
+        const response = await fetch(url);
+        log(`📊 Status: ${response.status} ${response.statusText}`, response.ok ? 'success' : 'error');
+        
+        const data = await response.json();
+        log(`📊 Réponse reçue: ${JSON.stringify(data).length} caractères`, 'info');
+        
+        if (data.success) {
+          log(`✅ Succès: ${data.data.boats.length} bateaux trouvés`, 'success');
+          
+          // Afficher les détails du premier bateau
+          if (data.data.boats.length > 0) {
+            const firstBoat = data.data.boats[0];
+            log(`📊 Premier bateau: ${firstBoat.name}`, 'info');
+            
+            // Afficher dans la section résultats
+            document.getElementById('results').innerHTML = `
+              <h4>Premier bateau:</h4>
+              <pre>${JSON.stringify(firstBoat, null, 2)}</pre>
+            `;
+            
+            // Tester la création de carte
+            testCardCreation(firstBoat);
+          }
+        } else {
+          log(`❌ Erreur API: ${data.message}`, 'error');
+        }
+        
+      } catch (error) {
+        log(`❌ Erreur de connexion: ${error.message}`, 'error');
+      }
+    }
+
+    async function testWithAuth() {
+      log('🔐 Test avec authentification...', 'info');
+      
+      try {
+        // Récupérer le token depuis localStorage
+        const token = localStorage.getItem('authToken');
+        if (!token) {
+          log('⚠️ Aucun token d\'authentification trouvé - test sans auth', 'warning');
+          log('💡 Connectez-vous d\'abord sur l\'application principale', 'info');
+          // Tester quand même sans auth
+          await testAPI();
+          return;
+        }
+        
+        log(`🔐 Token trouvé: ${token.substring(0, 20)}...`, 'info');
+        
+        const url = 'https://sailingloc.onrender.com/api/boats';
+        const response = await fetch(url, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        log(`📊 Status avec auth: ${response.status} ${response.statusText}`, response.ok ? 'success' : 'error');
+        
+        const data = await response.json();
+        log(`📊 Réponse avec auth: ${JSON.stringify(data).length} caractères`, 'info');
+        
+        if (data.success) {
+          log(`✅ Succès avec auth: ${data.data.boats.length} bateaux`, 'success');
+        } else {
+          log(`❌ Erreur avec auth: ${data.message}`, 'error');
+        }
+        
+      } catch (error) {
+        log(`❌ Erreur avec auth: ${error.message}`, 'error');
+      }
+    }
+
+    function testCardCreation(boat) {
+      log('🎨 Test de création de carte...', 'info');
+      
+      try {
+        // Créer un conteneur de test
+        const testContainer = document.createElement('div');
+        testContainer.style.border = '2px solid #007bff';
+        testContainer.style.padding = '10px';
+        testContainer.style.margin = '10px 0';
+        
+        // Créer la carte
+        const card = createTestCard(boat);
+        
+        if (card) {
+          testContainer.appendChild(card);
+          document.getElementById('results').appendChild(testContainer);
+          log('✅ Carte créée et affichée', 'success');
+        } else {
+          log('❌ Échec de la création de carte', 'error');
+        }
+        
+      } catch (error) {
+        log(`❌ Erreur dans testCardCreation: ${error.message}`, 'error');
+      }
+    }
+
+    function createTestCard(boat) {
+      try {
+        log('🔧 Création de la carte de test...', 'info');
+        
+        const card = document.createElement('div');
+        card.className = 'boat-card';
+        card.style.border = '1px solid #ddd';
+        card.style.borderRadius = '8px';
+        card.style.padding = '15px';
+        card.style.margin = '10px';
+        card.style.backgroundColor = '#f9f9f9';
+        
+        const boatName = boat.name || 'Nom non disponible';
+        const boatType = boat.type || 'voilier';
+        const city = boat.location?.city || 'Ville';
+        const country = boat.location?.country || 'Pays';
+        const maxPeople = boat.capacity?.maxPeople || 0;
+        const length = boat.specifications?.length || 0;
+        const dailyRate = boat.pricing?.dailyRate || 0;
+        
+        card.innerHTML = `
+          <h3>${boatName}</h3>
+          <p><strong>Type:</strong> ${boatType}</p>
+          <p><strong>Localisation:</strong> ${city}, ${country}</p>
+          <p><strong>Capacité:</strong> ${maxPeople} personnes</p>
+          <p><strong>Longueur:</strong> ${length}m</p>
+          <p><strong>Prix:</strong> ${dailyRate}€/jour</p>
+          <p><strong>ID:</strong> ${boat._id}</p>
+        `;
+        
+        log('✅ Carte de test créée', 'success');
+        return card;
+        
+      } catch (error) {
+        log(`❌ Erreur dans createTestCard: ${error.message}`, 'error');
+        return null;
+      }
+    }
+
+    // Initialisation
+    log('🚀 Page de test API chargée', 'success');
+    log('💡 Cliquez sur "Tester l\'API" pour commencer', 'info');
+    
+    // Vérification automatique de l'auth
+    setTimeout(() => {
+      checkAuth();
+    }, 1000);
+  </script>
+</body>
+</html>
