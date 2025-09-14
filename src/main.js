@@ -1236,11 +1236,41 @@ class SailingLocApp {
       const deposit   = boat.pricing?.securityDeposit ?? boat.deposit ?? null;
       const currency  = boat.pricing?.currency || 'EUR';
 
+      // Debug des images
+      console.log('🖼️ [DEBUG] Images du bateau:', {
+        imageUrls: boat.imageUrls,
+        images: boat.images,
+        boatId: boat._id,
+        boatName: boat.name
+      });
+
       // Image de secours si aucune n'est fournie
-      const imgSrc =
-        (Array.isArray(boat.imageUrls) && boat.imageUrls[0]) ||
-        (Array.isArray(boat.images) && boat.images[0]?.url) ||
-        'https://images.unsplash.com/photo-1508599589920-14cfa1c1fe4d?q=80&w=1200&auto=format&fit=crop';
+      let imgSrc = 'https://images.unsplash.com/photo-1508599589920-14cfa1c1fe4d?q=80&w=1200&auto=format&fit=crop';
+      
+      // Essayer différents formats d'images - PRIORITÉ AUX IMAGES UPLOADÉES
+      if (Array.isArray(boat.images) && boat.images.length > 0) {
+        if (typeof boat.images[0] === 'string') {
+          imgSrc = `https://sailingloc.onrender.com${boat.images[0]}`;
+          console.log('✅ Image trouvée dans images (string):', imgSrc);
+        } else if (boat.images[0]?.url) {
+          imgSrc = `https://sailingloc.onrender.com${boat.images[0].url}`;
+          console.log('✅ Image trouvée dans images (object):', imgSrc);
+        }
+      } else if (Array.isArray(boat.imageUrls) && boat.imageUrls.length > 0) {
+        const imageUrl = boat.imageUrls[0];
+        // Si c'est un objet avec fullUrl, corriger l'URL si elle pointe vers localhost
+        if (imageUrl.fullUrl) {
+          imgSrc = imageUrl.fullUrl.replace('http://localhost:3000', 'https://sailingloc.onrender.com');
+        } else {
+          imgSrc = `https://sailingloc.onrender.com${imageUrl.url || imageUrl}`;
+        }
+        console.log('✅ Image trouvée dans imageUrls:', imgSrc);
+      } else if (boat.imageUrl) {
+        imgSrc = boat.imageUrl.startsWith('http') ? boat.imageUrl : `https://sailingloc.onrender.com${boat.imageUrl}`;
+        console.log('✅ Image trouvée dans imageUrl:', imgSrc);
+      } else {
+        console.log('⚠️ Aucune image trouvée, utilisation de l\'image par défaut');
+      }
 
       const priceHtml = dailyRate != null
         ? `<div class="boat-price">
@@ -1364,24 +1394,8 @@ class SailingLocApp {
    * Affichage des détails d'un bateau
    */
   async showBoatDetails(boatId) {
-    try {
-      this.uiManager.showLoading('boat-modal');
-      
-      const response = await this.boatService.getBoatById(boatId);
-      
-      if (response.success) {
-        this.renderBoatDetails(response.data.boat);
-        this.uiManager.showModal('boat-modal');
-      } else {
-        this.uiManager.showNotification('Erreur lors du chargement des détails', 'error');
-      }
-      
-    } catch (error) {
-      console.error('Erreur lors du chargement des détails:', error);
-      this.uiManager.showNotification('Erreur lors du chargement des détails', 'error');
-    } finally {
-      this.uiManager.hideLoading('boat-modal');
-    }
+    // Redirection vers la page détail du bateau
+    window.location.href = `boat.html?id=${boatId}`;
   }
 
   /**
@@ -1803,11 +1817,13 @@ class SailingLocApp {
    */
   updateImagePreviews() {
     const previewContainer = document.getElementById('image-preview-container');
+    if (!previewContainer) return;
+    
     previewContainer.innerHTML = '';
     
-    this.selectedImages.forEach(file => {
-      this.addImagePreview(file);
-    });
+    if (this.selectedImageFiles && this.selectedImageFiles.length > 0) {
+      this.displayImagePreviews(this.selectedImageFiles);
+    }
   }
   
   /**
@@ -1851,10 +1867,49 @@ class SailingLocApp {
     formData.append('pricing[securityDeposit]', isNaN(securityDeposit) ? '' : securityDeposit);
   
     // Images
-    if (this.selectedImages && this.selectedImages.length > 0) {
-      this.selectedImages.forEach(file => formData.append('images', file));
+    if (this.selectedImageFiles && this.selectedImageFiles.length > 0) {
+      console.log('📸 Upload de', this.selectedImageFiles.length, 'image(s):');
+      this.selectedImageFiles.forEach((file, index) => {
+        console.log(`  Image ${index + 1}:`, file.name, file.type, file.size, 'bytes');
+        formData.append('images', file);
+      });
+    } else {
+      console.log('⚠️ Aucune image sélectionnée pour l\'upload');
     }
-  
+
+    // Validation des données requises
+    const requiredFields = {
+      'boat-name': 'Nom du bateau',
+      'boat-type': 'Type de bateau',
+      'boat-category': 'Catégorie',
+      'boat-capacity': 'Capacité',
+      'boat-daily-rate': 'Tarif journalier'
+    };
+
+    for (const [fieldId, fieldName] of Object.entries(requiredFields)) {
+      const field = document.getElementById(fieldId);
+      if (!field || !field.value.trim()) {
+        this.uiManager.showNotification(`${fieldName} est requis`, 'error');
+        return;
+      }
+    }
+
+    // Validation des valeurs numériques
+    if (isNaN(maxPeople) || maxPeople <= 0) {
+      this.uiManager.showNotification('La capacité doit être un nombre positif', 'error');
+      return;
+    }
+
+    if (isNaN(dailyRate) || dailyRate <= 0) {
+      this.uiManager.showNotification('Le tarif journalier doit être un nombre positif', 'error');
+      return;
+    }
+
+    console.log('📋 Données du bateau à envoyer:');
+    for (const [key, value] of formData.entries()) {
+      console.log(`${key}: ${value}`);
+    }
+
     try {
       this.uiManager.showLoading('add-boat-form');
   
@@ -1868,19 +1923,34 @@ class SailingLocApp {
       });
   
       const data = await response.json();
-  
+      
+      console.log('📡 Réponse de l\'API:', {
+        status: response.status,
+        ok: response.ok,
+        data: data
+      });
+      
       if (response.ok && data.success) {
+        console.log('✅ Bateau créé avec succès:', data.data);
+        console.log('🖼️ Images du bateau créé:', data.data?.images || data.data?.imageUrls);
+        
         this.uiManager.showNotification('Bateau ajouté avec succès !', 'success');
         this.uiManager.hideModal('add-boat-modal');
   
         // Reset du formulaire
         document.getElementById('add-boat-form').reset();
-        this.selectedImages = [];
+        this.selectedImageFiles = [];
         this.updateImagePreviews();
   
         // Recharger la liste des bateaux si le modal est ouvert
         if (document.getElementById('my-boats-modal').classList.contains('active')) {
           await this.loadOwnerBoats();
+        }
+        
+        // Recharger aussi la page de gestion des bateaux si elle est ouverte
+        if (window.location.pathname.includes('boat-management.html')) {
+          console.log('🔄 Rechargement de la page de gestion des bateaux...');
+          await this.loadBoats();
         }
       } else {
         throw new Error(data.message || 'Erreur lors de l\'ajout du bateau');
@@ -2049,6 +2119,215 @@ class SailingLocApp {
         this.uiManager.showModal('add-boat-modal');
       });
     }
+
+    // Event listeners pour les boutons d'action des cartes de bateaux
+    this.setupBoatCardActionListeners();
+    
+    // Event listeners pour l'upload d'images
+    this.setupImageUploadListeners();
+  }
+
+  /**
+   * Configuration des event listeners pour les boutons d'action des cartes de bateaux
+   */
+  setupBoatCardActionListeners() {
+    console.log('🔧 Configuration des event listeners pour les boutons d\'action');
+    
+    // Utiliser la délégation d'événements pour gérer les boutons dynamiquement créés
+    document.addEventListener('click', (e) => {
+      console.log('🖱️ Clic détecté sur:', e.target);
+      
+      // Gérer les boutons d'action des cartes de bateaux
+      const target = e.target.closest('.boat-action-btn');
+      if (target) {
+        const boatId = target.getAttribute('data-boat-id');
+        if (!boatId) {
+          console.log('❌ Pas d\'ID de bateau');
+          return;
+        }
+
+        console.log('✅ Bouton d\'action cliqué:', target.className, 'pour bateau:', boatId);
+
+        // Empêcher le comportement par défaut
+        e.preventDefault();
+        e.stopPropagation();
+
+        try {
+          if (target.classList.contains('edit-btn')) {
+            console.log('🔄 Appel de editBoat...');
+            this.editBoat(boatId);
+          } else if (target.classList.contains('images-btn')) {
+            console.log('🖼️ Appel de manageImages...');
+            this.manageImages(boatId);
+          } else if (target.classList.contains('delete-btn')) {
+            console.log('🗑️ Appel de deleteBoat...');
+            this.deleteBoat(boatId);
+          } else if (target.classList.contains('restore-btn')) {
+            console.log('🔄 Appel de restoreBoat...');
+            this.restoreBoat(boatId);
+          } else {
+            console.log('❌ Type de bouton non reconnu:', target.className);
+          }
+        } catch (error) {
+          console.error('❌ Erreur lors de l\'appel de la méthode:', error);
+          this.uiManager?.showNotification('Erreur lors de l\'exécution de l\'action', 'error');
+        }
+        return;
+      }
+      
+      // Gérer le bouton de sélection d'images dans les modales
+      if (e.target.id === 'select-images-btn') {
+        console.log('📷 Bouton de sélection d\'images cliqué');
+        e.preventDefault();
+        e.stopPropagation();
+        
+        // Empêcher les clics multiples
+        if (e.target.disabled) return;
+        e.target.disabled = true;
+        setTimeout(() => { e.target.disabled = false; }, 1000);
+        
+        const fileInput = document.getElementById('boat-image-input');
+        if (fileInput) {
+          fileInput.click();
+        } else {
+          console.error('❌ Input file non trouvé');
+        }
+        return;
+      }
+      
+      // Gérer le bouton d'upload d'images dans la modale de gestion
+      if (e.target.id === 'add-images-btn') {
+        console.log('📷 Bouton d\'ajout d\'images cliqué');
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const fileInput = document.getElementById('image-upload');
+        if (fileInput) {
+          fileInput.click();
+        } else {
+          console.error('❌ Input file non trouvé');
+        }
+        return;
+      }
+      
+      console.log('❌ Pas un bouton d\'action reconnu');
+    });
+    
+    console.log('✅ Event listeners configurés');
+  }
+
+  /**
+   * Configuration des event listeners pour l'upload d'images
+   */
+  setupImageUploadListeners() {
+    console.log('📷 Configuration des event listeners pour l\'upload d\'images');
+    
+    // Gérer le changement de fichier pour l'input principal
+    document.addEventListener('change', (e) => {
+      if (e.target.id === 'boat-image-input') {
+        console.log('📁 Fichiers sélectionnés dans l\'input principal');
+        this.handleImageSelection(e.target.files);
+      } else if (e.target.id === 'image-upload') {
+        console.log('📁 Fichiers sélectionnés dans la modale d\'images');
+        // Cette fonction sera gérée par la modale d'images
+        if (e.target.onchange) {
+          e.target.onchange(e);
+        }
+      }
+    });
+    
+    console.log('✅ Event listeners d\'upload configurés');
+  }
+
+  /**
+   * Gestion de la sélection d'images
+   */
+  handleImageSelection(files) {
+    console.log('🖼️ Gestion de la sélection d\'images:', files.length, 'fichier(s)');
+    
+    if (files.length === 0) {
+      console.log('❌ Aucun fichier sélectionné');
+      return;
+    }
+    
+    // Vérifier les types de fichiers
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+    const validFiles = Array.from(files).filter(file => {
+      if (!allowedTypes.includes(file.type)) {
+        console.warn('⚠️ Fichier ignoré (type non supporté):', file.name, file.type);
+        return false;
+      }
+      if (file.size > 5 * 1024 * 1024) { // 5MB
+        console.warn('⚠️ Fichier ignoré (trop volumineux):', file.name, file.size);
+        return false;
+      }
+      return true;
+    });
+    
+    if (validFiles.length === 0) {
+      this.uiManager?.showNotification('Aucun fichier valide sélectionné', 'warning');
+      return;
+    }
+    
+    console.log('✅', validFiles.length, 'fichier(s) valide(s) sélectionné(s)');
+    
+    // Afficher les aperçus
+    this.displayImagePreviews(validFiles);
+    
+    // Stocker les fichiers pour l'upload
+    this.selectedImageFiles = validFiles;
+  }
+
+  /**
+   * Affichage des aperçus d'images
+   */
+  displayImagePreviews(files) {
+    const container = document.getElementById('image-preview-container');
+    if (!container) {
+      console.error('❌ Container d\'aperçus non trouvé');
+      return;
+    }
+    
+    // Vider le container
+    container.innerHTML = '';
+    
+    files.forEach((file, index) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const previewDiv = document.createElement('div');
+        previewDiv.className = 'image-preview-item';
+        previewDiv.innerHTML = `
+          <img src="${e.target.result}" alt="Aperçu ${index + 1}">
+          <div class="image-preview-info">
+            <span class="image-name">${file.name}</span>
+            <span class="image-size">${(file.size / 1024 / 1024).toFixed(2)} MB</span>
+          </div>
+          <button type="button" class="remove-image-btn" data-index="${index}">×</button>
+        `;
+        container.appendChild(previewDiv);
+      };
+      reader.readAsDataURL(file);
+    });
+    
+    // Ajouter les event listeners pour supprimer les aperçus
+    container.addEventListener('click', (e) => {
+      if (e.target.classList.contains('remove-image-btn')) {
+        const index = parseInt(e.target.getAttribute('data-index'));
+        this.removeImagePreview(index);
+      }
+    });
+  }
+
+  /**
+   * Suppression d'un aperçu d'image
+   */
+  removeImagePreview(index) {
+    console.log('🗑️ Suppression de l\'aperçu', index);
+    
+    if (this.selectedImageFiles && this.selectedImageFiles[index]) {
+      this.selectedImageFiles.splice(index, 1);
+      this.displayImagePreviews(this.selectedImageFiles);
+    }
   }
 
   /**
@@ -2202,7 +2481,42 @@ class SailingLocApp {
     const statusClass = boat.status || 'available';
     const statusText = this.getStatusText(boat.status);
     const typeText = this.getTypeText(boat.type);
-    const mainImage = boat.images?.find(img => img.isMain)?.url || boat.images?.[0]?.url || 'boat-icon.svg';
+    
+    // Debug des images pour la gestion
+    console.log('🖼️ [DEBUG] Images du bateau (gestion):', {
+      imageUrls: boat.imageUrls,
+      images: boat.images,
+      boatId: boat._id,
+      boatName: boat.name
+    });
+    
+    // Gestion des images pour la carte de gestion
+    let mainImage = 'boat-icon.svg';
+    
+    // PRIORITÉ AUX IMAGES UPLOADÉES (boat.images)
+    if (Array.isArray(boat.images) && boat.images.length > 0) {
+      if (typeof boat.images[0] === 'string') {
+        mainImage = `https://sailingloc.onrender.com${boat.images[0]}`;
+        console.log('✅ Image de gestion trouvée dans images (string):', mainImage);
+      } else if (boat.images[0]?.url) {
+        mainImage = `https://sailingloc.onrender.com${boat.images[0].url}`;
+        console.log('✅ Image de gestion trouvée dans images (object):', mainImage);
+      }
+    } else if (Array.isArray(boat.imageUrls) && boat.imageUrls.length > 0) {
+      const imageUrl = boat.imageUrls[0];
+      // Si c'est un objet avec fullUrl, corriger l'URL si elle pointe vers localhost
+      if (imageUrl.fullUrl) {
+        mainImage = imageUrl.fullUrl.replace('http://localhost:3000', 'https://sailingloc.onrender.com');
+      } else {
+        mainImage = `https://sailingloc.onrender.com${imageUrl.url || imageUrl}`;
+      }
+      console.log('✅ Image de gestion trouvée dans imageUrls:', mainImage);
+    } else if (boat.imageUrl) {
+      mainImage = boat.imageUrl.startsWith('http') ? boat.imageUrl : `https://sailingloc.onrender.com${boat.imageUrl}`;
+      console.log('✅ Image de gestion trouvée dans imageUrl:', mainImage);
+    } else {
+      console.log('⚠️ Aucune image trouvée pour la gestion, utilisation de l\'icône par défaut');
+    }
 
     return `
       <div class="boat-management-card ${!boat.isActive ? 'inactive' : ''}" data-boat-id="${boat._id}">
@@ -2236,20 +2550,20 @@ class SailingLocApp {
           </div>
           
           <div class="boat-card-actions">
-            <button class="boat-action-btn" onclick="window.app.editBoat('${boat._id}')">
+            <button class="boat-action-btn edit-btn" data-boat-id="${boat._id}">
               <span>✏️</span>
               Modifier
             </button>
-            <button class="boat-action-btn" onclick="window.app.manageImages('${boat._id}')">
+            <button class="boat-action-btn images-btn" data-boat-id="${boat._id}">
               <span>🖼️</span>
               Images
             </button>
             ${boat.isActive ? 
-              `<button class="boat-action-btn danger" onclick="window.app.deleteBoat('${boat._id}')">
+              `<button class="boat-action-btn danger delete-btn" data-boat-id="${boat._id}">
                 <span>🗑️</span>
                 Supprimer
               </button>` :
-              `<button class="boat-action-btn primary" onclick="window.app.restoreBoat('${boat._id}')">
+              `<button class="boat-action-btn primary restore-btn" data-boat-id="${boat._id}">
                 <span>🔄</span>
                 Restaurer
               </button>`
@@ -2550,12 +2864,464 @@ class SailingLocApp {
       });
     }
   }
+
+  /**
+   * Édition d'un bateau
+   */
+  async editBoat(boatId) {
+    console.log('🔄 Édition du bateau:', boatId);
+    
+    try {
+      // Récupérer les données du bateau
+      const response = await this.boatService.getBoatById(boatId);
+      const boat = response.data || response;
+      
+      if (!boat) {
+        this.uiManager?.showNotification('Bateau non trouvé', 'error');
+        return;
+      }
+
+      // Ouvrir la modale d'édition
+      this.showEditBoatModal(boat);
+      
+    } catch (error) {
+      console.error('Erreur lors de l\'édition du bateau:', error);
+      this.uiManager?.showNotification('Erreur lors du chargement du bateau', 'error');
+    }
+  }
+
+  /**
+   * Suppression d'un bateau
+   */
+  async deleteBoat(boatId) {
+    console.log('🗑️ Suppression du bateau:', boatId);
+    
+    try {
+      // Récupérer les données du bateau pour confirmation
+      const response = await this.boatService.getBoatById(boatId);
+      const boat = response.data || response;
+      
+      if (!boat) {
+        this.uiManager?.showNotification('Bateau non trouvé', 'error');
+        return;
+      }
+
+      // Ouvrir la modale de confirmation
+      this.showDeleteBoatModal(boat);
+      
+    } catch (error) {
+      console.error('Erreur lors de la suppression du bateau:', error);
+      this.uiManager?.showNotification('Erreur lors du chargement du bateau', 'error');
+    }
+  }
+
+  /**
+   * Gestion des images d'un bateau
+   */
+  async manageImages(boatId) {
+    console.log('🖼️ Gestion des images du bateau:', boatId);
+    
+    try {
+      // Récupérer les données du bateau
+      const response = await this.boatService.getBoatById(boatId);
+      const boat = response.data || response;
+      
+      if (!boat) {
+        this.uiManager?.showNotification('Bateau non trouvé', 'error');
+        return;
+      }
+
+      // Ouvrir la modale de gestion des images
+      this.showImagesModal(boat);
+      
+    } catch (error) {
+      console.error('Erreur lors de la gestion des images:', error);
+      this.uiManager?.showNotification('Erreur lors du chargement du bateau', 'error');
+    }
+  }
+
+  /**
+   * Restauration d'un bateau
+   */
+  async restoreBoat(boatId) {
+    console.log('🔄 Restauration du bateau:', boatId);
+    
+    try {
+      await this.boatService.updateBoat(boatId, { isActive: true });
+      this.uiManager?.showNotification('Bateau restauré avec succès', 'success');
+      
+      // Recharger la liste des bateaux
+      this.loadBoats();
+      
+    } catch (error) {
+      console.error('Erreur lors de la restauration du bateau:', error);
+      this.uiManager?.showNotification('Erreur lors de la restauration', 'error');
+    }
+  }
+
+  /**
+   * Affichage de la modale d'édition
+   */
+  showEditBoatModal(boat) {
+    console.log('📝 Affichage de la modale d\'édition pour:', boat.name);
+    
+    const modal = document.getElementById('edit-boat-modal');
+    const form = document.getElementById('edit-boat-form');
+    
+    if (!modal || !form) {
+      console.error('Modale d\'édition non trouvée');
+      return;
+    }
+
+    // Remplir le formulaire avec les données du bateau
+    this.populateEditForm(form, boat);
+    
+    // Afficher la modale
+    modal.style.display = 'flex';
+    
+    // Configurer le bouton de sauvegarde
+    const saveBtn = document.getElementById('save-edit-btn');
+    if (saveBtn) {
+      saveBtn.onclick = () => this.saveBoatEdit(boat._id);
+    }
+  }
+
+  /**
+   * Remplissage du formulaire d'édition
+   */
+  populateEditForm(form, boat) {
+    // Vider le formulaire
+    form.innerHTML = '';
+    
+    // Créer le formulaire d'édition
+    form.innerHTML = `
+      <div class="form-row">
+        <div class="form-group">
+          <label for="edit-boat-name">Nom du bateau</label>
+          <input type="text" id="edit-boat-name" value="${boat.name || ''}" required>
+        </div>
+        <div class="form-group">
+          <label for="edit-boat-type">Type de bateau</label>
+          <select id="edit-boat-type" required>
+            <option value="voilier" ${boat.type === 'voilier' ? 'selected' : ''}>Voilier</option>
+            <option value="catamaran" ${boat.type === 'catamaran' ? 'selected' : ''}>Catamaran</option>
+            <option value="yacht" ${boat.type === 'yacht' ? 'selected' : ''}>Yacht</option>
+            <option value="bateau_moteur" ${boat.type === 'bateau_moteur' ? 'selected' : ''}>Bateau à moteur</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="edit-boat-category">Catégorie</label>
+          <select id="edit-boat-category" required>
+            <option value="standard" ${boat.category === 'standard' ? 'selected' : ''}>Standard</option>
+            <option value="luxe" ${boat.category === 'luxe' ? 'selected' : ''}>Luxe</option>
+            <option value="economique" ${boat.category === 'economique' ? 'selected' : ''}>Économique</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="edit-boat-description">Description</label>
+        <textarea id="edit-boat-description" rows="4">${boat.description || ''}</textarea>
+      </div>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label for="edit-boat-length">Longueur (m)</label>
+          <input type="number" id="edit-boat-length" value="${boat.specifications?.length || ''}" step="0.1" min="1" max="100" required>
+        </div>
+        <div class="form-group">
+          <label for="edit-boat-width">Largeur (m)</label>
+          <input type="number" id="edit-boat-width" value="${boat.specifications?.width || ''}" step="0.1" min="1" max="20" required>
+        </div>
+        <div class="form-group">
+          <label for="edit-boat-capacity">Capacité (personnes)</label>
+          <input type="number" id="edit-boat-capacity" value="${boat.capacity?.maxPeople || ''}" min="1" max="50" required>
+        </div>
+      </div>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label for="edit-boat-city">Ville</label>
+          <input type="text" id="edit-boat-city" value="${boat.location?.city || ''}" required>
+        </div>
+        <div class="form-group">
+          <label for="edit-boat-marina">Marina</label>
+          <input type="text" id="edit-boat-marina" value="${boat.location?.marina || ''}" required>
+        </div>
+      </div>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label for="edit-boat-daily-rate">Prix par jour (€)</label>
+          <input type="number" id="edit-boat-daily-rate" value="${boat.pricing?.dailyRate || ''}" min="50" step="10" required>
+        </div>
+        <div class="form-group">
+          <label for="edit-boat-security-deposit">Caution (€)</label>
+          <input type="number" id="edit-boat-security-deposit" value="${boat.pricing?.securityDeposit || ''}" min="0" step="50" required>
+        </div>
+      </div>
+    `;
+  }
+
+  /**
+   * Sauvegarde de l'édition d'un bateau
+   */
+  async saveBoatEdit(boatId) {
+    try {
+      console.log('💾 Sauvegarde de l\'édition du bateau:', boatId);
+      
+      // Récupérer les données du formulaire
+      const boatData = {
+        name: document.getElementById('edit-boat-name').value,
+        type: document.getElementById('edit-boat-type').value,
+        category: document.getElementById('edit-boat-category').value,
+        description: document.getElementById('edit-boat-description').value,
+        specifications: {
+          length: parseFloat(document.getElementById('edit-boat-length').value),
+          width: parseFloat(document.getElementById('edit-boat-width').value),
+          fuelType: 'diesel' // Valeur par défaut
+        },
+        capacity: {
+          maxPeople: parseInt(document.getElementById('edit-boat-capacity').value)
+        },
+        location: {
+          city: document.getElementById('edit-boat-city').value,
+          marina: document.getElementById('edit-boat-marina').value,
+          country: 'France' // Valeur par défaut
+        },
+        pricing: {
+          dailyRate: parseInt(document.getElementById('edit-boat-daily-rate').value),
+          securityDeposit: parseInt(document.getElementById('edit-boat-security-deposit').value),
+          currency: 'EUR'
+        }
+      };
+
+      // Mettre à jour le bateau
+      await this.boatService.updateBoat(boatId, boatData);
+      
+      this.uiManager.showNotification('Bateau mis à jour avec succès', 'success');
+      
+      // Fermer la modale
+      document.getElementById('edit-boat-modal').style.display = 'none';
+      
+      // Recharger la liste des bateaux
+      this.loadBoats();
+      
+    } catch (error) {
+      console.error('Erreur lors de la sauvegarde:', error);
+      this.uiManager.showNotification('Erreur lors de la sauvegarde', 'error');
+    }
+  }
+
+  /**
+   * Affichage de la modale de suppression
+   */
+  showDeleteBoatModal(boat) {
+    console.log('🗑️ Affichage de la modale de suppression pour:', boat.name);
+    
+    const modal = document.getElementById('delete-boat-modal');
+    const infoDiv = document.getElementById('delete-boat-info');
+    
+    if (!modal || !infoDiv) {
+      console.error('Modale de suppression non trouvée');
+      return;
+    }
+
+    // Afficher les informations du bateau
+    infoDiv.innerHTML = `
+      <div class="boat-info">
+        <h4>${boat.name}</h4>
+        <p><strong>Type:</strong> ${this.getTypeText(boat.type)}</p>
+        <p><strong>Capacité:</strong> ${boat.capacity?.maxPeople || 0} personnes</p>
+        <p><strong>Tarif:</strong> ${boat.pricing?.dailyRate || 0}€/jour</p>
+      </div>
+    `;
+    
+    // Afficher la modale
+    modal.style.display = 'flex';
+    
+    // Configurer le bouton de confirmation
+    const confirmBtn = document.getElementById('confirm-delete-btn');
+    if (confirmBtn) {
+      confirmBtn.onclick = () => this.confirmDeleteBoat(boat._id);
+    }
+  }
+
+  /**
+   * Confirmation de suppression d'un bateau
+   */
+  async confirmDeleteBoat(boatId) {
+    try {
+      console.log('🗑️ Confirmation de suppression du bateau:', boatId);
+      
+      const forceDelete = document.getElementById('force-delete-checkbox')?.checked || false;
+      
+      await this.boatService.deleteBoat(boatId, forceDelete);
+      
+      this.uiManager.showNotification('Bateau supprimé avec succès', 'success');
+      
+      // Fermer la modale
+      document.getElementById('delete-boat-modal').style.display = 'none';
+      
+      // Recharger la liste des bateaux
+      this.loadBoats();
+      
+    } catch (error) {
+      console.error('Erreur lors de la suppression:', error);
+      this.uiManager.showNotification('Erreur lors de la suppression', 'error');
+    }
+  }
+
+  /**
+   * Affichage de la modale de gestion des images
+   */
+  showImagesModal(boat) {
+    console.log('🖼️ Affichage de la modale de gestion des images pour:', boat.name);
+    
+    const modal = document.getElementById('images-modal');
+    const grid = document.getElementById('images-grid');
+    
+    if (!modal || !grid) {
+      console.error('Modale d\'images non trouvée');
+      return;
+    }
+
+    // Afficher les images actuelles
+    this.displayBoatImages(grid, boat);
+    
+    // Afficher la modale
+    modal.style.display = 'flex';
+    
+    // Configurer l'upload d'images
+    const uploadInput = document.getElementById('image-upload');
+    if (uploadInput) {
+      uploadInput.onchange = (e) => this.handleImageUpload(e, boat._id);
+    }
+  }
+
+  /**
+   * Affichage des images d'un bateau
+   */
+  displayBoatImages(container, boat) {
+    const images = boat.imageUrls || boat.images || [];
+    
+    if (images.length === 0) {
+      container.innerHTML = '<p class="no-images">Aucune image disponible</p>';
+      return;
+    }
+
+    container.innerHTML = images.map((image, index) => `
+      <div class="image-item">
+        <img src="${image.url || image}" alt="Image ${index + 1}">
+        <button class="delete-image-btn" onclick="window.app.deleteBoatImage('${boat._id}', '${image.id || index}')">
+          🗑️
+        </button>
+      </div>
+    `).join('');
+  }
+
+  /**
+   * Gestion de l'upload d'images
+   */
+  async handleImageUpload(event, boatId) {
+    const files = Array.from(event.target.files);
+    
+    if (files.length === 0) return;
+
+    try {
+      console.log('📤 Upload de', files.length, 'image(s) pour le bateau:', boatId);
+      
+      await this.boatService.updateBoat(boatId, {}, files);
+      
+      this.uiManager.showNotification('Images ajoutées avec succès', 'success');
+      
+      // Recharger les images
+      const response = await this.boatService.getBoatById(boatId);
+      const boat = response.data || response;
+      const grid = document.getElementById('images-grid');
+      this.displayBoatImages(grid, boat);
+      
+    } catch (error) {
+      console.error('Erreur lors de l\'upload des images:', error);
+      this.uiManager.showNotification('Erreur lors de l\'upload des images', 'error');
+    }
+  }
+
+  /**
+   * Suppression d'une image
+   */
+  async deleteBoatImage(boatId, imageId) {
+    try {
+      console.log('🗑️ Suppression de l\'image:', imageId, 'du bateau:', boatId);
+      
+      await this.boatService.deleteBoatImage(boatId, imageId);
+      
+      this.uiManager.showNotification('Image supprimée avec succès', 'success');
+      
+      // Recharger les images
+      const response = await this.boatService.getBoatById(boatId);
+      const boat = response.data || response;
+      const grid = document.getElementById('images-grid');
+      this.displayBoatImages(grid, boat);
+      
+    } catch (error) {
+      console.error('Erreur lors de la suppression de l\'image:', error);
+      this.uiManager.showNotification('Erreur lors de la suppression de l\'image', 'error');
+    }
+  }
+
+  /**
+   * Fermeture des modales
+   */
+  closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+      modal.style.display = 'none';
+    }
+  }
+
+  /**
+   * Initialisation des événements de fermeture des modales
+   */
+  initModalEvents() {
+    // Fermeture par clic sur le bouton X
+    document.addEventListener('click', (e) => {
+      if (e.target.classList.contains('modal-close')) {
+        const modal = e.target.closest('.modal');
+        if (modal) {
+          modal.style.display = 'none';
+        }
+      }
+    });
+
+    // Fermeture par clic en dehors de la modale
+    document.addEventListener('click', (e) => {
+      if (e.target.classList.contains('modal')) {
+        e.target.style.display = 'none';
+      }
+    });
+
+    // Fermeture par touche Escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        const openModal = document.querySelector('.modal[style*="flex"]');
+        if (openModal) {
+          openModal.style.display = 'none';
+        }
+      }
+    });
+  }
 }
 
 // Initialisation de l'application quand le DOM est chargé
 document.addEventListener('DOMContentLoaded', () => {
   // Création de l'instance globale de l'application
   window.app = new SailingLocApp();
+  
+  // Initialiser les événements de modales
+  if (window.app) {
+    window.app.initModalEvents();
+  }
 });
 
 // Export pour les modules
