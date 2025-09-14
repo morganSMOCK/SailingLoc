@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <script type="module" crossorigin src="/assets/main-CJu-3l90.js"></script>
+  <script type="module" crossorigin src="/assets/main-B1ZTtwxc.js"></script>
   <link rel="stylesheet" crossorigin href="/assets/style-Bu49pKes.css">
 </head>
 <body>
@@ -516,6 +516,116 @@
         <div class="form-actions">
           <button type="button" class="btn-secondary" onclick="app.uiManager.hideModal('add-boat-modal')">Annuler</button>
           <button type="submit" class="btn-primary">Ajouter le bateau</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modale d'édition de bateau -->
+  <div id="edit-boat-modal" class="modal modal-large">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Modifier le bateau</h2>
+        <button class="modal-close" onclick="app.uiManager.hideModal('edit-boat-modal')">&times;</button>
+      </div>
+      
+      <form id="edit-boat-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="edit-boat-name">Nom du bateau *</label>
+            <input type="text" id="edit-boat-name" name="name" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="edit-boat-type">Type de bateau *</label>
+            <select id="edit-boat-type" name="type" required>
+              <option value="">Sélectionner</option>
+              <option value="Voilier">Voilier</option>
+              <option value="Catamaran">Catamaran</option>
+              <option value="Yacht">Yacht</option>
+              <option value="Bateau à moteur">Bateau à moteur</option>
+              <option value="Semi-rigide">Semi-rigide</option>
+              <option value="Péniche">Péniche</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="edit-boat-category">Catégorie *</label>
+            <select id="edit-boat-category" name="category" required>
+              <option value="">Sélectionner</option>
+              <option value="Standard">Standard</option>
+              <option value="Luxe">Luxe</option>
+              <option value="Économique">Économique</option>
+              <option value="Sportif">Sportif</option>
+              <option value="Familial">Familial</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="edit-boat-capacity">Capacité (personnes) *</label>
+            <input type="number" id="edit-boat-capacity" name="capacity" min="1" max="50" required>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="edit-boat-description">Description</label>
+          <textarea id="edit-boat-description" name="description" rows="4" placeholder="Décrivez votre bateau..."></textarea>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="edit-boat-length">Longueur (m) *</label>
+            <input type="number" id="edit-boat-length" name="length" step="0.1" min="0" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="edit-boat-width">Largeur (m) *</label>
+            <input type="number" id="edit-boat-width" name="width" step="0.1" min="0" required>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="edit-boat-city">Ville *</label>
+            <input type="text" id="edit-boat-city" name="city" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="edit-boat-marina">Marina</label>
+            <input type="text" id="edit-boat-marina" name="marina">
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="edit-boat-price">Prix par jour (€) *</label>
+            <input type="number" id="edit-boat-price" name="pricePerDay" min="0" step="0.01" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="edit-boat-deposit">Caution (€) *</label>
+            <input type="number" id="edit-boat-deposit" name="deposit" min="0" step="0.01" required>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label>Images du bateau</label>
+          <div class="image-upload-area" id="edit-image-upload-area">
+            <div class="upload-placeholder">
+              <span class="upload-icon">📷</span>
+              <span>Sélectionner des images</span>
+            </div>
+            <input type="file" id="edit-boat-images" name="images" multiple accept="image/*" style="display: none;">
+          </div>
+          <div class="image-preview-container" id="edit-image-preview-container"></div>
+          <small class="form-help">Formats acceptés : JPG, PNG, WebP. Taille max : 5MB par image</small>
+        </div>
+        
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" onclick="app.uiManager.hideModal('edit-boat-modal')">Annuler</button>
+          <button type="submit" class="btn-primary">Modifier le bateau</button>
         </div>
       </form>
     </div>
