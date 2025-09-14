@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Simple Bateau - SailingLoc</title>
+  <link rel="stylesheet" href="/src/style.css">
+  <style>
+    body {
+      padding: 20px;
+      font-family: Arial, sans-serif;
+    }
+    .test-container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .test-section {
+      margin-bottom: 30px;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+    }
+    .boats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+    .log-container {
+      background: #1e1e1e;
+      color: #00ff00;
+      padding: 15px;
+      border-radius: 5px;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      max-height: 300px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+    }
+    .error { color: #ff6b6b; }
+    .success { color: #51cf66; }
+    .warning { color: #ffd43b; }
+    .info { color: #74c0fc; }
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin: 5px;
+    }
+    button:hover { background: #0056b3; }
+  </style>
+</head>
+<body>
+  <div class="test-container">
+    <h1>🧪 Test Simple - Création de Carte de Bateau</h1>
+    
+    <div class="test-section">
+      <h3>📊 Test de création de carte</h3>
+      <button onclick="testSimpleCard()">Tester la création simple</button>
+      <button onclick="testWithRealData()">Tester avec données réelles</button>
+      <button onclick="clearLogs()">Effacer les logs</button>
+    </div>
+    
+    <div class="test-section">
+      <h3>📝 Logs</h3>
+      <div id="logs" class="log-container">Logs de test...\n</div>
+    </div>
+    
+    <div class="test-section">
+      <h3>🚢 Résultat</h3>
+      <div class="boats-grid" id="boats-grid">
+        <!-- Les cartes de test apparaîtront ici -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Données de test simplifiées
+    const simpleBoatData = {
+      _id: 'test123',
+      name: 'Bateau Test',
+      type: 'voilier',
+      location: {
+        city: 'Nice',
+        country: 'France'
+      },
+      capacity: {
+        maxPeople: 8
+      },
+      specifications: {
+        length: 12
+      },
+      pricing: {
+        dailyRate: 150
+      },
+      rating: {
+        average: 4.5,
+        totalReviews: 10
+      },
+      images: [],
+      imageUrls: []
+    };
+
+    function log(message, type = 'info') {
+      const logsContainer = document.getElementById('logs');
+      const timestamp = new Date().toLocaleTimeString();
+      const className = type === 'error' ? 'error' : type === 'success' ? 'success' : type === 'warning' ? 'warning' : 'info';
+      logsContainer.innerHTML += `<span class="${className}">[${timestamp}] ${message}</span>\n`;
+      logsContainer.scrollTop = logsContainer.scrollHeight;
+      console.log(`[TEST] ${message}`);
+    }
+
+    function clearLogs() {
+      document.getElementById('logs').innerHTML = 'Logs effacés...\n';
+    }
+
+    // Test simple de création de carte
+    function testSimpleCard() {
+      log('🧪 Test de création de carte simple...', 'info');
+      
+      try {
+        const grid = document.getElementById('boats-grid');
+        grid.innerHTML = '';
+        
+        log('📊 Données de test:', 'info');
+        log(JSON.stringify(simpleBoatData, null, 2), 'info');
+        
+        // Créer la carte manuellement
+        const card = createSimpleBoatCard(simpleBoatData);
+        
+        if (card) {
+          grid.appendChild(card);
+          log('✅ Carte créée et ajoutée avec succès', 'success');
+        } else {
+          log('❌ Échec de la création de carte', 'error');
+        }
+        
+      } catch (error) {
+        log(`❌ Erreur: ${error.message}`, 'error');
+        log(`📊 Stack: ${error.stack}`, 'error');
+      }
+    }
+
+    // Test avec données réelles de l'API
+    async function testWithRealData() {
+      log('🧪 Test avec données réelles...', 'info');
+      
+      try {
+        const grid = document.getElementById('boats-grid');
+        grid.innerHTML = '';
+        
+        // Appel direct à l'API
+        log('📡 Appel API...', 'info');
+        const response = await fetch('https://sailingloc.onrender.com/api/boats');
+        const data = await response.json();
+        
+        log(`📊 Réponse API: ${data.success ? 'Succès' : 'Échec'}`, data.success ? 'success' : 'error');
+        
+        if (data.success && data.data.boats.length > 0) {
+          const boat = data.data.boats[0];
+          log(`📊 Premier bateau: ${boat.name}`, 'info');
+          log(JSON.stringify(boat, null, 2), 'info');
+          
+          const card = createSimpleBoatCard(boat);
+          if (card) {
+            grid.appendChild(card);
+            log('✅ Carte créée avec données réelles', 'success');
+          } else {
+            log('❌ Échec de la création avec données réelles', 'error');
+          }
+        } else {
+          log('❌ Aucun bateau trouvé dans la réponse', 'error');
+        }
+        
+      } catch (error) {
+        log(`❌ Erreur API: ${error.message}`, 'error');
+      }
+    }
+
+    // Fonction de création de carte simplifiée
+    function createSimpleBoatCard(boat) {
+      try {
+        log('🔧 Début de création de carte...', 'info');
+        
+        // Validation
+        if (!boat || !boat._id) {
+          log('❌ Données de bateau invalides', 'error');
+          return null;
+        }
+        
+        log('✅ Validation OK', 'success');
+        
+        // Créer l'élément
+        const card = document.createElement('div');
+        card.className = 'boat-card';
+        card.setAttribute('data-boat-id', boat._id);
+        
+        log('✅ Élément DOM créé', 'success');
+        
+        // Données nettoyées
+        const boatName = (boat.name || 'Nom non disponible').replace(/[<>]/g, '');
+        const boatType = formatBoatType(boat.type || 'voilier');
+        const city = (boat.location?.city || 'Ville').replace(/[<>]/g, '');
+        const country = (boat.location?.country || 'Pays').replace(/[<>]/g, '');
+        const maxPeople = boat.capacity?.maxPeople || 0;
+        const length = boat.specifications?.length || 0;
+        const dailyRate = boat.pricing?.dailyRate || 0;
+        const rating = boat.rating?.average || 0;
+        const totalReviews = boat.rating?.totalReviews || 0;
+        
+        log(`📊 Données nettoyées: ${boatName}, ${boatType}, ${city}`, 'info');
+        
+        // Image par défaut
+        const mainImage = 'https://images.pexels.com/photos/1001682/pexels-photo-1001682.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop';
+        
+        // Étoiles
+        const starsHTML = renderStars(rating);
+        log(`⭐ Étoiles générées: ${starsHTML}`, 'info');
+        
+        // HTML
+        card.innerHTML = `
+          <div class="boat-image">
+            <img src="${mainImage}" alt="${boatName}" loading="lazy">
+            <div class="boat-badge">${boatType}</div>
+            <div class="boat-rating">
+              <span class="rating-stars">${starsHTML}</span>
+              <span class="rating-count">(${totalReviews})</span>
+            </div>
+          </div>
+          <div class="boat-content">
+            <h3 class="boat-name">${boatName}</h3>
+            <p class="boat-location">📍 ${city}, ${country}</p>
+            <div class="boat-specs">
+              <span class="spec">👥 ${maxPeople} pers.</span>
+              <span class="spec">📏 ${length}m</span>
+            </div>
+            <div class="boat-price">
+              <span class="price">${dailyRate}€</span>
+              <span class="price-unit">/jour</span>
+            </div>
+            <button class="btn-primary btn-full boat-details-btn">Voir les détails</button>
+          </div>
+        `;
+        
+        log('✅ innerHTML défini', 'success');
+        
+        // Vérifier le contenu
+        log(`📊 Contenu de la carte: ${card.innerHTML.length} caractères`, 'info');
+        log(`📊 Nombre d'enfants: ${card.children.length}`, 'info');
+        
+        return card;
+        
+      } catch (error) {
+        log(`❌ Erreur dans createSimpleBoatCard: ${error.message}`, 'error');
+        log(`📊 Stack: ${error.stack}`, 'error');
+        return null;
+      }
+    }
+
+    // Fonctions utilitaires
+    function formatBoatType(type) {
+      const types = {
+        'voilier': 'Voilier',
+        'catamaran': 'Catamaran',
+        'yacht': 'Yacht',
+        'bateau_moteur': 'Bateau à moteur',
+        'bateau à moteur': 'Bateau à moteur',
+        'semi_rigide': 'Semi-rigide',
+        'peniche': 'Péniche'
+      };
+      return types[type] || type;
+    }
+
+    function renderStars(rating) {
+      const fullStars = Math.floor(rating);
+      const hasHalfStar = rating % 1 >= 0.5;
+      const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+      
+      let stars = '';
+      
+      // Étoiles pleines
+      for (let i = 0; i < fullStars; i++) {
+        stars += '⭐';
+      }
+      
+      // Demi-étoile
+      if (hasHalfStar) {
+        stars += '⭐';
+      }
+      
+      // Étoiles vides
+      for (let i = 0; i < emptyStars; i++) {
+        stars += '☆';
+      }
+      
+      return stars;
+    }
+
+    // Initialisation
+    log('🚀 Page de test chargée', 'success');
+    log('💡 Cliquez sur "Tester la création simple" pour commencer', 'info');
+  </script>
+</body>
+</html>
