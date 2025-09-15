@@ -190,10 +190,33 @@ boatSchema.index({ owner: 1 });
 
 // Virtual pour l'URL complète des images
 boatSchema.virtual('imageUrls').get(function() {
+  if (!this.images || this.images.length === 0) return [];
+  const baseUrl = process.env.BASE_URL || 'https://sailingloc.onrender.com';
   return this.images.map(img => ({
     ...img.toObject(),
-    fullUrl: img.url.startsWith('http') ? img.url : `${process.env.BASE_URL || 'http://localhost:3000'}/${img.url}`
+    fullUrl: img.url.startsWith('http') ? img.url : `${baseUrl}${img.url}`
   }));
+});
+
+// Virtual pour l'image de couverture
+boatSchema.virtual('coverImageUrl').get(function() {
+  if (!this.images || this.images.length === 0) return null;
+  
+  const baseUrl = process.env.BASE_URL || 'https://sailingloc.onrender.com';
+  
+  // Chercher l'image principale
+  const mainImage = this.images.find(img => img.isMain);
+  if (mainImage && mainImage.url) {
+    return mainImage.url.startsWith('http') ? mainImage.url : `${baseUrl}${mainImage.url}`;
+  }
+  
+  // Sinon prendre la première image
+  const firstImage = this.images[0];
+  if (firstImage && firstImage.url) {
+    return firstImage.url.startsWith('http') ? firstImage.url : `${baseUrl}${firstImage.url}`;
+  }
+  
+  return null;
 });
 
 // Méthode pour obtenir l'image principale

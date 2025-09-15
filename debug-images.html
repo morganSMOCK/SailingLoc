@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Images - SailingLoc</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .debug-section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; border-radius: 8px; }
+        .image-test { margin: 10px 0; }
+        .image-test img { max-width: 200px; height: auto; border: 2px solid #ddd; margin: 5px; }
+        .error { color: red; }
+        .success { color: green; }
+        .info { color: blue; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Debug des Images SailingLoc</h1>
+    
+    <div class="debug-section">
+        <h2>📊 Données de l'API</h2>
+        <div id="api-data">Chargement...</div>
+    </div>
+    
+    <div class="debug-section">
+        <h2>🖼️ Test des Images</h2>
+        <div id="image-tests">Chargement...</div>
+    </div>
+    
+    <div class="debug-section">
+        <h2>🔗 URLs Testées</h2>
+        <div id="url-tests">Chargement...</div>
+    </div>
+
+    <script>
+        async function debugImages() {
+            console.log('🔍 Début du debug des images...');
+            
+            try {
+                // Récupérer les données de l'API
+                const response = await fetch('/api/boats');
+                const data = await response.json();
+                
+                console.log('📊 Données API:', data);
+                
+                if (data.success && data.data.boats.length > 0) {
+                    const boat = data.data.boats[0];
+                    console.log('🚤 Bateau sélectionné:', boat);
+                    
+                    // Afficher les données de l'API
+                    document.getElementById('api-data').innerHTML = `
+                        <p><strong>Nom:</strong> ${boat.name}</p>
+                        <p><strong>ID:</strong> ${boat._id}</p>
+                        <p><strong>Images trouvées:</strong> ${boat.images?.length || 0}</p>
+                        <p><strong>CoverImageUrl:</strong> ${boat.coverImageUrl || 'undefined'}</p>
+                        <pre>${JSON.stringify(boat.images, null, 2)}</pre>
+                    `;
+                    
+                    // Tester les images
+                    if (boat.images && boat.images.length > 0) {
+                        const imageTests = document.getElementById('image-tests');
+                        const urlTests = document.getElementById('url-tests');
+                        
+                        let html = '';
+                        let urls = '';
+                        
+                        boat.images.forEach((img, index) => {
+                            const relativeUrl = img.url;
+                            const absoluteUrl = `https://sailingloc.onrender.com${relativeUrl}`;
+                            
+                            urls += `
+                                <div class="image-test">
+                                    <p><strong>Image ${index + 1}:</strong></p>
+                                    <p>URL relative: <code>${relativeUrl}</code></p>
+                                    <p>URL absolue: <code>${absoluteUrl}</code></p>
+                                    <p>IsMain: ${img.isMain}</p>
+                                </div>
+                            `;
+                            
+                            html += `
+                                <div class="image-test">
+                                    <h3>Image ${index + 1} (${img.isMain ? 'PRINCIPALE' : 'secondaire'})</h3>
+                                    <p>URL: ${absoluteUrl}</p>
+                                    <img src="${absoluteUrl}" 
+                                         alt="Test image ${index + 1}" 
+                                         onload="this.style.border='2px solid green'; this.nextElementSibling.textContent='✅ Chargée avec succès';"
+                                         onerror="this.style.border='2px solid red'; this.nextElementSibling.textContent='❌ Erreur de chargement'; console.error('Erreur image:', this.src);">
+                                    <p class="status"></p>
+                                </div>
+                            `;
+                        });
+                        
+                        imageTests.innerHTML = html;
+                        urlTests.innerHTML = urls;
+                    } else {
+                        document.getElementById('image-tests').innerHTML = '<p class="error">Aucune image trouvée dans boat.images</p>';
+                    }
+                } else {
+                    document.getElementById('api-data').innerHTML = '<p class="error">Aucun bateau trouvé dans l\'API</p>';
+                }
+                
+            } catch (error) {
+                console.error('❌ Erreur lors du debug:', error);
+                document.getElementById('api-data').innerHTML = `<p class="error">Erreur: ${error.message}</p>`;
+            }
+        }
+        
+        // Démarrer le debug
+        debugImages();
+    </script>
+</body>
+</html>

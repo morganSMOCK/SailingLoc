@@ -18,13 +18,62 @@ const categoryMappingToFrench = {
   'budget': 'budget'
 };
 
+// Fonction pour traiter les images d'un bateau
+const processBoatImages = (boat) => {
+  const boatObj = boat.toObject ? boat.toObject() : boat;
+  const baseUrl = process.env.BASE_URL || 'https://sailingloc.onrender.com';
+  
+  // Traiter les images si elles existent
+  if (boatObj.images && Array.isArray(boatObj.images)) {
+    boatObj.images = boatObj.images.map(img => ({
+      ...img,
+      url: img.url.startsWith('http') ? img.url : `${baseUrl}${img.url}`,
+      fullUrl: img.url.startsWith('http') ? img.url : `${baseUrl}${img.url}`
+    }));
+    
+    // Ajouter coverImageUrl
+    const mainImage = boatObj.images.find(img => img.isMain);
+    if (mainImage) {
+      boatObj.coverImageUrl = mainImage.url;
+    } else if (boatObj.images.length > 0) {
+      boatObj.coverImageUrl = boatObj.images[0].url;
+    }
+  }
+  
+  // Traiter imageUrls pour compatibilité legacy
+  if (boatObj.imageUrls && Array.isArray(boatObj.imageUrls)) {
+    boatObj.imageUrls = boatObj.imageUrls.map(img => {
+      if (typeof img === 'string') {
+        return {
+          url: img.startsWith('http') ? img : `${baseUrl}${img}`,
+          fullUrl: img.startsWith('http') ? img : `${baseUrl}${img}`
+        };
+      }
+      return {
+        ...img,
+        url: img.url ? (img.url.startsWith('http') ? img.url : `${baseUrl}${img.url}`) : img,
+        fullUrl: img.fullUrl ? img.fullUrl.replace('http://localhost:3000', baseUrl).replace('//', '/') : (img.url ? `${baseUrl}${img.url}` : img)
+      };
+    });
+  }
+  
+  // Traiter imageUrl pour compatibilité legacy
+  if (boatObj.imageUrl) {
+    boatObj.imageUrl = boatObj.imageUrl.startsWith('http') ? boatObj.imageUrl : `${baseUrl}${boatObj.imageUrl}`;
+  }
+  
+  return boatObj;
+};
+
 // Fonction pour convertir les données du bateau en français
 const convertBoatToFrench = (boat) => {
-  const boatObj = boat.toObject ? boat.toObject() : boat;
+  // Convertir en objet JSON avec les virtuals
+  const boatObj = boat.toJSON ? boat.toJSON({ virtuals: true }) : boat;
+  const processedBoat = processBoatImages(boatObj);
   return {
-    ...boatObj,
-    type: typeMappingToFrench[boatObj.type] || boatObj.type,
-    category: categoryMappingToFrench[boatObj.category] || boatObj.category
+    ...processedBoat,
+    type: typeMappingToFrench[processedBoat.type] || processedBoat.type,
+    category: categoryMappingToFrench[processedBoat.category] || processedBoat.category
   };
 };
 
