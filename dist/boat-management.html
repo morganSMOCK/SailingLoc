@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Bateaux - SailingLoc</title>
+    <link rel="icon" href="boat-icon.svg" type="image/svg+xml">
+  <script type="module" crossorigin src="/assets/boat-management-B76UsoAX.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/AuthService-hkblqokD.js">
+  <link rel="modulepreload" crossorigin href="/assets/main-D1Bj_nyQ.js">
+  <link rel="stylesheet" crossorigin href="/assets/style-PcnroYTo.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav id="navbar" class="navbar">
+        <div class="nav-container">
+          <div class="nav-brand">
+            <h2>⛵ SailingLoc</h2>
+          </div>
+          
+          <div class="nav-menu" id="nav-menu">
+            <a href="index.html" class="nav-link active" data-i18n="nav.home">Accueil</a>
+            <a href="boats.html" class="nav-link" data-i18n="nav.boats">Bateaux</a>
+      <a href="experience.html" class="nav-link" data-i18n="nav.experience">Experience</a>
+            <a href="contact.html" class="nav-link" data-i18n="nav.contact">Contact</a>
+          </div>
+          
+          <div class="nav-auth">
+            <select id="langSwitcher" aria-label="Language" style="margin-right:12px">
+              <option value="fr">FR </option>
+              <option value="en">EN</option>
+            </select>
+            <button id="login-btn" class="btn-secondary" data-i18n="auth.login">Connexion</button>
+            <button id="register-btn" class="btn-primary" data-i18n="auth.register">Inscription</button>
+            
+            <!-- Menu utilisateur (caché par défaut) -->
+            <div id="user-menu" class="user-menu" style="display: none;">
+              <div class="user-avatar" id="user-avatar">
+                <span id="user-initials">JD</span>
+              </div>
+              <div class="user-dropdown" id="user-dropdown">
+                <div class="user-info">
+                  <div class="user-name" id="user-name">John Doe</div>
+                  
+                  <div class="user-email" id="user-email">john@example.com</div>
+                </div>
+                <div class="dropdown-divider"></div>
+                <a href="#" id="profile-link" class="dropdown-item">
+                  <span class="dropdown-icon">👤</span>
+                  Mon Profil
+                </a>
+                <a href="#" id="bookings-link" class="dropdown-item">
+                  <span class="dropdown-icon">📋</span>
+                  Mes Réservations
+                </a>
+                <a href="#" id="boats-link" class="dropdown-item" style="display: none;">
+                  <span class="dropdown-icon">🛥️</span>
+                  Mes Bateaux
+                </a>
+                <div class="dropdown-divider"></div>
+                <a href="#" id="logout-link" class="dropdown-item logout">
+                  <span class="dropdown-icon">🚪</span>
+                  Déconnexion
+                </a>
+              </div>
+            </div>
+          </div>
+          
+          <div class="mobile-menu-toggle" id="mobile-menu-toggle">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </div>
+      </nav>
+
+    <!-- Contenu principal -->
+    <main class="main-content">
+        <div class="container">
+            <!-- En-tête de la page -->
+            <div class="page-header">
+                <h1>Gestion de mes Bateaux</h1>
+                <p>Gérez vos bateaux, modifiez les informations et suivez les réservations</p>
+                <button class="btn btn-primary" id="add-boat-btn">
+                    <i class="icon">+</i>
+                    Ajouter un Bateau
+                </button>
+            </div>
+
+            <!-- Filtres et recherche -->
+            <div class="filters-section">
+                <div class="filters-row">
+                    <div class="filter-group">
+                        <label for="status-filter">Statut :</label>
+                        <select id="status-filter" class="filter-select">
+                            <option value="">Tous</option>
+                            <option value="available">Disponible</option>
+                            <option value="booked">Réservé</option>
+                            <option value="maintenance">Maintenance</option>
+                            <option value="inactive">Inactif</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="type-filter">Type :</label>
+                        <select id="type-filter" class="filter-select">
+                            <option value="">Tous les types</option>
+                            <option value="voilier">Voilier</option>
+                            <option value="catamaran">Catamaran</option>
+                            <option value="yacht">Yacht</option>
+                            <option value="bateau_moteur">Bateau à moteur</option>
+                        </select>
+                    </div>
+                    
+                    <div class="search-group">
+                        <input type="text" id="search-input" placeholder="Rechercher un bateau..." class="search-input">
+                        <button class="btn btn-outline" id="search-btn">Rechercher</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statistiques -->
+            <div class="stats-section" id="stats-section">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">🚤</div>
+                        <div class="stat-content">
+                            <h3 id="total-boats">0</h3>
+                            <p>Total Bateaux</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">✅</div>
+                        <div class="stat-content">
+                            <h3 id="available-boats">0</h3>
+                            <p>Disponibles</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📅</div>
+                        <div class="stat-content">
+                            <h3 id="total-bookings">0</h3>
+                            <p>Réservations</p>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Liste des bateaux -->
+            <div class="boats-section">
+                <div class="boats-header">
+                    <h2>Mes Bateaux</h2>
+                    <div class="view-controls">
+                        <button class="view-btn active" id="grid-view-btn" data-view="grid">
+                            <i class="icon">⊞</i>
+                        </button>
+                        <button class="view-btn" id="list-view-btn" data-view="list">
+                            <i class="icon">☰</i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Message de chargement -->
+                <div class="loading-message" id="loading-message">
+                    <div class="spinner"></div>
+                    <p>Chargement de vos bateaux...</p>
+                </div>
+
+                <!-- Message d'erreur -->
+                <div class="error-message" id="error-message" style="display: none;">
+                    <div class="error-icon">⚠️</div>
+                    <p id="error-text">Une erreur est survenue lors du chargement des bateaux.</p>
+                    <button class="btn btn-outline" id="retry-btn">Réessayer</button>
+                </div>
+
+                <!-- Message vide -->
+                <div class="empty-message" id="empty-message" style="display: none;">
+                    <div class="empty-icon">🚤</div>
+                    <h3>Aucun bateau trouvé</h3>
+                    <p>Vous n'avez pas encore ajouté de bateau à votre flotte.</p>
+                    <button class="btn btn-primary" id="add-first-boat-btn">Ajouter mon premier bateau</button>
+                </div>
+
+                <!-- Grille des bateaux -->
+                <div class="boats-grid" id="boats-grid">
+                    <!-- Les bateaux seront chargés dynamiquement ici -->
+                </div>
+
+                <!-- Pagination -->
+                <div class="pagination" id="pagination" style="display: none;">
+                    <button class="btn btn-outline" id="prev-page-btn" disabled>
+                        <i class="icon">←</i>
+                        Précédent
+                    </button>
+                    <span class="page-info" id="page-info">Page 1 sur 1</span>
+                    <button class="btn btn-outline" id="next-page-btn" disabled>
+                        Suivant
+                        <i class="icon">→</i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modale de connexion -->
+    <div id="login-modal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Connexion</h2>
+          <button class="modal-close">&times;</button>
+        </div>
+        <form id="login-form" class="auth-form">
+          <div class="form-group">
+            <label for="login-email">Email</label>
+            <input type="email" id="login-email" placeholder="votre@email.com" required>
+          </div>
+          <div class="form-group">
+            <label for="login-password">Mot de passe</label>
+            <input type="password" id="login-password" placeholder="Votre mot de passe" required>
+          </div>
+          <button type="submit" class="btn-primary btn-full">Se connecter</button>
+          <p class="auth-switch">
+            Pas encore de compte ? 
+            <a href="#" id="switch-to-register">Inscrivez-vous</a>
+          </p>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modale d'inscription -->
+    <div id="register-modal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Inscription</h2>
+          <button class="modal-close">&times;</button>
+        </div>
+        <form id="register-form" class="auth-form">
+          <div class="form-row">
+            <div class="form-group">
+              <input type="text" id="register-firstname" placeholder="Prénom" required>
+            </div>
+            <div class="form-group">
+              <input type="text" id="register-lastname" placeholder="Nom" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <input type="email" id="register-email" placeholder="Email" required>
+          </div>
+          <div class="form-group">
+            <input type="password" id="register-password" placeholder="Mot de passe" required>
+          </div>
+          <div class="form-group">
+            <input type="tel" id="register-phone" placeholder="Téléphone">
+          </div>
+          <div class="form-group">
+            <select id="register-role" required>
+              <option value="">Je suis...</option>
+              <option value="client">Client (je veux louer)</option>
+              <option value="owner">Propriétaire (je veux louer mon bateau)</option>
+            </select>
+          </div>
+          <button type="submit" class="btn-primary btn-full">S'inscrire</button>
+          <p class="auth-switch">
+            Déjà un compte ? 
+            <a href="#" id="switch-to-login">Connectez-vous</a>
+          </p>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modale de profil -->
+    <div id="profile-modal" class="modal modal-large">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Mon Profil</h2>
+          <button class="modal-close">&times;</button>
+        </div>
+        
+        <div class="profile-tabs">
+          <button class="tab-btn active" data-tab="profile-info">Informations</button>
+          <button class="tab-btn" data-tab="profile-security">Sécurité</button>
+          <button class="tab-btn" data-tab="profile-preferences">Préférences</button>
+        </div>
+        
+        <div class="profile-content">
+          <!-- Onglet Informations -->
+          <div id="profile-info" class="tab-content active">
+            <form id="profile-form" class="profile-form">
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Prénom</label>
+                  <input type="text" id="profile-firstname" required>
+                </div>
+                <div class="form-group">
+                  <label>Nom</label>
+                  <input type="text" id="profile-lastname" required>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="profile-email" readonly>
+              </div>
+              <div class="form-group">
+                <label>Téléphone</label>
+                <input type="tel" id="profile-phone">
+              </div>
+              <button type="submit" class="btn-primary">Mettre à jour</button>
+            </form>
+          </div>
+          
+          <!-- Onglet Sécurité -->
+          <div id="profile-security" class="tab-content">
+            <form id="change-password-form" class="profile-form">
+              <div class="form-group">
+                <label>Mot de passe actuel</label>
+                <input type="password" id="current-password" required>
+              </div>
+              <div class="form-group">
+                <label>Nouveau mot de passe</label>
+                <input type="password" id="new-password" required>
+              </div>
+              <div class="form-group">
+                <label>Confirmer le nouveau mot de passe</label>
+                <input type="password" id="confirm-password" required>
+              </div>
+              <button type="submit" class="btn-primary">Changer le mot de passe</button>
+            </form>
+          </div>
+          
+          <!-- Onglet Préférences -->
+          <div id="profile-preferences" class="tab-content">
+            <div class="preferences-form">
+              <div class="form-group">
+                <label>
+                  <input type="checkbox" id="email-notifications">
+                  Recevoir des notifications par email
+                </label>
+              </div>
+              <div class="form-group">
+                <label>
+                  <input type="checkbox" id="sms-notifications">
+                  Recevoir des notifications par SMS
+                </label>
+              </div>
+              <button type="button" class="btn-primary">Sauvegarder les préférences</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modale des réservations -->
+    <div id="bookings-modal" class="modal modal-large">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Mes Réservations</h2>
+          <button class="modal-close">&times;</button>
+        </div>
+        
+        <div class="bookings-filters">
+          <select id="bookings-status-filter">
+            <option value="">Tous les statuts</option>
+            <option value="pending">En attente</option>
+            <option value="confirmed">Confirmée</option>
+            <option value="paid">Payée</option>
+            <option value="active">En cours</option>
+            <option value="completed">Terminée</option>
+            <option value="cancelled">Annulée</option>
+          </select>
+          <button id="refresh-bookings" class="btn-secondary">Actualiser</button>
+        </div>
+        
+        <div id="bookings-list" class="bookings-list">
+          <!-- Les réservations seront chargées dynamiquement -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Modale des bateaux du propriétaire -->
+    <div id="my-boats-modal" class="modal modal-large">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Mes Bateaux</h2>
+          <button class="modal-close">&times;</button>
+        </div>
+        
+        <div class="boats-actions">
+          <button id="add-boat-btn" class="btn-primary">Ajouter un bateau</button>
+          <button id="refresh-boats" class="btn-secondary">Actualiser</button>
+        </div>
+        
+        <div id="my-boats-list" class="my-boats-list">
+          <!-- Les bateaux seront chargés dynamiquement -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Modale des détails de bateau -->
+    <div id="boat-modal" class="modal modal-large">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 id="boat-modal-title">Détails du bateau</h2>
+          <button class="modal-close">&times;</button>
+        </div>
+        <div id="boat-details" class="boat-details">
+          <!-- Les détails seront chargés dynamiquement -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal de modification de bateau -->
+    <div class="modal" id="edit-boat-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Modifier le Bateau</h2>
+                <button class="modal-close" id="close-edit-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="edit-boat-form">
+                    <!-- Le contenu du formulaire sera généré dynamiquement -->
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="cancel-edit-btn">Annuler</button>
+                <button class="btn btn-primary" id="save-edit-btn">Sauvegarder</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de confirmation de suppression -->
+    <div class="modal" id="delete-boat-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Confirmer la Suppression</h2>
+                <button class="modal-close" id="close-delete-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="warning-icon">⚠️</div>
+                <p id="delete-message">Êtes-vous sûr de vouloir supprimer ce bateau ?</p>
+                <div class="delete-warning" id="delete-warning" style="display: none;">
+                    <p><strong>Attention :</strong> Ce bateau a des réservations actives ou futures.</p>
+                    <div class="active-bookings" id="active-bookings"></div>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="force-delete-checkbox">
+                    <label for="force-delete-checkbox">Forcer la suppression (annulera les réservations futures)</label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="cancel-delete-btn">Annuler</button>
+                <button class="btn btn-danger" id="confirm-delete-btn">Supprimer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de gestion des images -->
+    <div class="modal" id="images-modal">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h2>Gestion des Images</h2>
+                <button class="modal-close" id="close-images-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="images-section">
+                    <div class="images-grid" id="images-grid">
+                        <!-- Les images seront chargées dynamiquement ici -->
+                    </div>
+                    <div class="add-images-section">
+                        <input type="file" id="new-images-input" multiple accept="image/*" style="display: none;">
+                        <button class="btn btn-outline" id="add-images-btn">
+                            <i class="icon">+</i>
+                            Ajouter des Images
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="close-images-btn">Fermer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modale d'ajout de bateau -->
+    <div id="add-boat-modal" class="modal modal-large">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Ajouter un bateau</h2>
+          <button class="modal-close">&times;</button>
+        </div>
+        <form id="add-boat-form" class="boat-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="boat-name">Nom du bateau</label>
+              <input type="text" id="boat-name" placeholder="Ex: Étoile des Mers" required>
+            </div>
+            <div class="form-group">
+              <label for="boat-type">Type de bateau</label>
+              <select id="boat-type" required>
+                <option value="">Sélectionner</option>
+                <option value="voilier">Voilier</option>
+                <option value="catamaran">Catamaran</option>
+                <option value="yacht">Yacht</option>
+                <option value="bateau_moteur">Bateau à moteur</option>
+                <option value="semi_rigide">Semi-rigide</option>
+                <option value="peniche">Péniche</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="boat-category">Catégorie</label>
+              <select id="boat-category" required>
+                <option value="">Sélectionner</option>
+                <option value="standard">Standard</option>
+                <option value="luxe">Luxe</option>
+                <option value="economique">Économique</option>
+                <option value="sportif">Sportif</option>
+                <option value="familial">Familial</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="boat-description">Description</label>
+            <textarea id="boat-description" rows="4" placeholder="Décrivez votre bateau, ses équipements, son histoire..."></textarea>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="boat-length">Longueur (m)</label>
+              <input type="number" id="boat-length" step="0.1" min="1" max="100" required>
+            </div>
+            <div class="form-group">
+              <label for="boat-width">Largeur (m)</label>
+              <input type="number" id="boat-width" step="0.1" min="1" max="20" required>
+            </div>
+            <div class="form-group">
+              <label for="boat-capacity">Capacité (personnes)</label>
+              <input type="number" id="boat-capacity" min="1" max="50" required>
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="boat-city">Ville</label>
+              <input type="text" id="boat-city" placeholder="Ex: Cannes" required>
+            </div>
+            <div class="form-group">
+              <label for="boat-marina">Marina</label>
+              <input type="text" id="boat-marina" placeholder="Ex: Port de Cannes" required>
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="boat-daily-rate">Prix par jour (€)</label>
+              <input type="number" id="boat-daily-rate" min="50" step="10" required>
+            </div>
+            <div class="form-group">
+              <label for="boat-security-deposit">Caution (€)</label>
+              <input type="number" id="boat-security-deposit" min="0" step="50" required>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="boat-images">Images du bateau</label>
+            <div class="image-upload-container">
+              <input type="file" id="boat-image-input" accept="image/*" multiple style="display: none;">
+              <button type="button" id="select-images-btn" class="btn-secondary">
+                📷 Sélectionner des images
+              </button>
+              <div id="image-preview-container" class="image-preview-container">
+                <!-- Les aperçus d'images seront ajoutés ici -->
+              </div>
+              <div class="image-help">
+                <small>Formats acceptés : JPG, PNG, WebP. Taille max : 5MB par image</small>
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-actions">
+            <button type="button" class="btn-secondary" onclick="app.uiManager.hideModal('add-boat-modal')">Annuler</button>
+            <button type="submit" class="btn-primary">Ajouter le bateau</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modale de suppression -->
+    <div id="delete-boat-modal" class="modal" style="display: none;">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Supprimer le bateau</h3>
+          <span class="modal-close">&times;</span>
+        </div>
+        <div class="modal-body">
+          <p>Êtes-vous sûr de vouloir supprimer ce bateau ?</p>
+          <div id="delete-boat-info"></div>
+          <p><strong>Cette action est irréversible !</strong></p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="window.app.closeModal('delete-boat-modal')">Annuler</button>
+          <button type="button" class="btn btn-danger" id="confirm-delete-btn">Supprimer définitivement</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modale d'édition -->
+    <div id="edit-boat-modal" class="modal" style="display: none;">
+      <div class="modal-content large">
+        <div class="modal-header">
+          <h3>Modifier le bateau</h3>
+          <span class="modal-close">&times;</span>
+        </div>
+        <div class="modal-body">
+          <form id="edit-boat-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="edit-name">Nom du bateau *</label>
+                <input type="text" id="edit-name" name="name" required>
+              </div>
+              <div class="form-group">
+                <label for="edit-type">Type *</label>
+                <select id="edit-type" name="type" required>
+                  <option value="yacht">Yacht</option>
+                  <option value="sailboat">Voilier</option>
+                  <option value="motorboat">Bateau à moteur</option>
+                  <option value="catamaran">Catamaran</option>
+                </select>
+              </div>
+            </div>
+            
+            <div class="form-row">
+              <div class="form-group">
+                <label for="edit-category">Catégorie *</label>
+                <select id="edit-category" name="category" required>
+                  <option value="luxury">Luxe</option>
+                  <option value="standard">Standard</option>
+                  <option value="economy">Économique</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="edit-status">Statut *</label>
+                <select id="edit-status" name="status" required>
+                  <option value="available">Disponible</option>
+                  <option value="booked">Réservé</option>
+                  <option value="maintenance">Maintenance</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="edit-capacity">Capacité (personnes) *</label>
+                <input type="number" id="edit-capacity" name="capacity" min="1" max="50" required>
+              </div>
+              <div class="form-group">
+                <label for="edit-length">Longueur (mètres)</label>
+                <input type="number" id="edit-length" name="length" step="0.1" min="0">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="edit-width">Largeur (mètres)</label>
+                <input type="number" id="edit-width" name="width" step="0.1" min="0">
+              </div>
+              <div class="form-group">
+                <label for="edit-fuel">Type de carburant</label>
+                <select id="edit-fuel" name="fuelType">
+                  <option value="diesel">Diesel</option>
+                  <option value="gasoline">Essence</option>
+                  <option value="electric">Électrique</option>
+                  <option value="hybrid">Hybride</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="edit-daily-rate">Tarif journalier (€) *</label>
+                <input type="number" id="edit-daily-rate" name="dailyRate" min="0" step="0.01" required>
+              </div>
+              <div class="form-group">
+                <label for="edit-security-deposit">Caution (€)</label>
+                <input type="number" id="edit-security-deposit" name="securityDeposit" min="0" step="0.01">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="edit-description">Description</label>
+              <textarea id="edit-description" name="description" rows="4" placeholder="Décrivez votre bateau..."></textarea>
+            </div>
+
+            <div class="form-group">
+              <label>Localisation</label>
+              <div class="form-row">
+                <div class="form-group">
+                  <input type="text" id="edit-marina" name="marina" placeholder="Port/Marina">
+                </div>
+                <div class="form-group">
+                  <input type="text" id="edit-city" name="city" placeholder="Ville">
+                </div>
+                <div class="form-group">
+                  <input type="text" id="edit-country" name="country" placeholder="Pays">
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="window.app.closeModal('edit-boat-modal')">Annuler</button>
+          <button type="button" class="btn btn-primary" id="save-edit-btn">Sauvegarder</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modale de gestion des images -->
+    <div id="images-modal" class="modal" style="display: none;">
+      <div class="modal-content large">
+        <div class="modal-header">
+          <h3>Gestion des images</h3>
+          <span class="modal-close">&times;</span>
+        </div>
+        <div class="modal-body">
+          <div id="images-grid" class="images-grid">
+            <!-- Les images existantes seront affichées ici -->
+          </div>
+          
+          <div class="add-images-section">
+            <h4>Ajouter de nouvelles images</h4>
+            <input type="file" id="image-upload" multiple accept="image/*" style="display: none;">
+            <button type="button" class="add-images-btn" onclick="document.getElementById('image-upload').click()">
+              <span>📷</span> Choisir des images
+            </button>
+            <p class="help-text">Sélectionnez une ou plusieurs images (JPG, PNG, WebP)</p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="window.app.closeModal('images-modal')">Fermer</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notifications -->
+    <div class="notifications" id="notifications"></div>
+
+    <!-- Scripts -->
+</body>
+</html>
