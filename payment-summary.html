@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Récapitulatif de paiement - SailingLoc</title>
+    <link rel="stylesheet" href="src/style.css">
+    <link rel="stylesheet" href="experience-sailingloc-v3.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <a href="index.html" class="nav-logo">
+                    <img src="public/boat-icon.svg" alt="SailingLoc" class="logo-img">
+                    <span class="logo-text">SailingLoc</span>
+                </a>
+            </div>
+            <div class="nav-menu" id="nav-menu">
+                <a href="index.html" class="nav-link">Accueil</a>
+                <a href="boats.html" class="nav-link">Bateaux</a>
+                <a href="experience.html" class="nav-link">Expérience</a>
+                <a href="services.html" class="nav-link">Services</a>
+                <a href="contact.html" class="nav-link">Contact</a>
+                <div class="nav-auth" id="nav-auth">
+                    <!-- Rempli par JavaScript -->
+                </div>
+            </div>
+            <div class="nav-toggle" id="nav-toggle">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Breadcrumb -->
+    <section class="breadcrumb-section">
+        <div class="container">
+            <nav class="breadcrumb">
+                <a href="index.html" class="breadcrumb-link">Accueil</a>
+                <span class="breadcrumb-separator">›</span>
+                <a href="boats.html" class="breadcrumb-link">Bateaux</a>
+                <span class="breadcrumb-separator">›</span>
+                <span class="breadcrumb-current" id="breadcrumb-boat-name">Paiement</span>
+            </nav>
+        </div>
+    </section>
+
+    <!-- Hero Section -->
+    <section class="payment-hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">Récapitulatif de votre réservation</h1>
+                <p class="hero-subtitle">Vérifiez les détails avant de procéder au paiement</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <div class="payment-layout">
+                <!-- Boat Summary -->
+                <section class="boat-summary-section">
+                    <div class="boat-card" id="boat-card">
+                        <div class="boat-image-container">
+                            <img id="boat-image" src="" alt="Bateau" class="boat-image">
+                        </div>
+                        <div class="boat-details">
+                            <h2 class="boat-name" id="boat-name">Chargement...</h2>
+                            <p class="boat-type" id="boat-type">—</p>
+                            <div class="boat-location" id="boat-location">—</div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Booking Details -->
+                <section class="booking-details-section">
+                    <div class="details-card">
+                        <h3 class="details-title">Détails de la réservation</h3>
+                        
+                        <div class="details-grid">
+                            <div class="detail-item">
+                                <span class="detail-label">Date de début</span>
+                                <span class="detail-value" id="start-date">—</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Date de fin</span>
+                                <span class="detail-value" id="end-date">—</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Durée</span>
+                                <span class="detail-value" id="duration">—</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Passagers</span>
+                                <span class="detail-value" id="guests">—</span>
+                            </div>
+                        </div>
+
+                        <div class="pricing-breakdown">
+                            <div class="pricing-item">
+                                <span class="pricing-label">Prix par jour</span>
+                                <span class="pricing-value" id="daily-price">— €</span>
+                            </div>
+                            <div class="pricing-item">
+                                <span class="pricing-label">Nombre de jours</span>
+                                <span class="pricing-value" id="days-count">—</span>
+                            </div>
+                            <div class="pricing-item">
+                                <span class="pricing-label">Sous-total</span>
+                                <span class="pricing-value" id="subtotal">— €</span>
+                            </div>
+                            <div class="pricing-item total">
+                                <span class="pricing-label">Total</span>
+                                <span class="pricing-value" id="total-price">— €</span>
+                            </div>
+                        </div>
+
+                        <div class="payment-section">
+                            <h4 class="payment-title">Paiement sécurisé</h4>
+                            <p class="payment-description">Votre paiement est protégé par Stripe</p>
+                            
+                            <button id="stripe-pay-button" class="btn-primary btn-full">
+                                <span class="btn-text">Payer maintenant</span>
+                                <span class="btn-icon">💳</span>
+                            </button>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>⛵ SailingLoc</h3>
+                    <p>Votre partenaire de confiance pour la location de bateaux de luxe</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Navigation</h4>
+                    <ul>
+                        <li><a href="index.html">Accueil</a></li>
+                        <li><a href="boats.html">Bateaux</a></li>
+                        <li><a href="experience.html">Expérience</a></li>
+                        <li><a href="services.html">Services</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="contact.html">Contact</a></li>
+                        <li><a href="conditions.html">Conditions</a></li>
+                        <li><a href="confidentialite.html">Confidentialité</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 SailingLoc. Tous droits réservés.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script type="module" src="src/init.js"></script>
+    <script type="module" src="src/payment-summary.js"></script>
+</body>
+</html>
