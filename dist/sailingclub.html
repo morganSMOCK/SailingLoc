@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SailingLoc - Sailing Club</title>
+  <meta name="description" content="Rejoignez le Sailing Club de SailingLoc pour des expériences exclusives, des événements et des avantages réservés aux membres." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script type="module" crossorigin src="/assets/AuthService-hkblqokD.js"></script>
+  <script type="module" src="/assets/main.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/style-PcnroYTo.css">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav id="navbar" class="navbar">
+    <div class="nav-container">
+      <div class="nav-brand">
+        <h2>⛵ SailingLoc</h2>
+      </div>
+      <div class="nav-menu" id="nav-menu">
+        <a href="index.html" class="nav-link" data-i18n="nav.home">Accueil</a>
+        <a href="boats.html" class="nav-link" data-i18n="nav.boats">Bateaux</a>
+  <a href="experience.html" class="nav-link" data-i18n="nav.experience">Experience</a>
+        <a href="contact.html" class="nav-link" data-i18n="nav.contact">Contact</a>
+      </div>
+      <div class="nav-auth">
+        <button id="login-btn" class="btn-secondary">Connexion</button>
+        <button id="register-btn" class="btn-primary">Inscription</button>
+        <!-- Menu utilisateur (caché par défaut) -->
+        <div id="user-menu" class="user-menu" style="display: none;">
+          <div class="user-avatar" id="user-avatar">
+            <span id="user-initials">JD</span>
+          </div>
+          <div class="user-dropdown" id="user-dropdown">
+            <div class="user-info">
+              <div class="user-name" id="user-name">John Doe</div>
+              <div class="user-email" id="user-email">john@example.com</div>
+            </div>
+            <div class="dropdown-divider"></div>
+            <a href="#" id="profile-link" class="dropdown-item">
+              <span class="dropdown-icon">👤</span>
+              Mon Profil
+            </a>
+            <a href="#" id="bookings-link" class="dropdown-item">
+              <span class="dropdown-icon">📋</span>
+              Mes Réservations
+            </a>
+            <a href="#" id="boats-link" class="dropdown-item" style="display: none;">
+              <span class="dropdown-icon">🛥️</span>
+              Mes Bateaux
+            </a>
+            <div class="dropdown-divider"></div>
+            <a href="#" id="logout-link" class="dropdown-item logout">
+              <span class="dropdown-icon">🚪</span>
+              Déconnexion
+            </a>
+          </div>
+        </div>
+      </div>
+      
+      <div class="mobile-menu-toggle" id="mobile-menu-toggle">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1 class="hero-title">Sailing Club</h1>
+      <p class="hero-subtitle">Rejoignez notre club pour profiter d'avantages exclusifs, d'événements et d'une communauté passionnée de navigation.</p>
+    </div>
+  </section>
+
+  <!-- Section Club Members (pagination) -->
+  <section id="club-members" class="boats-section">
+    <div class="container">
+      <div class="section-header">
+        <h2>Membres du Club</h2>
+        <p>Découvrez les membres et leurs expériences.</p>
+      </div>
+      <div id="members-loading" class="loading-spinner" style="display: none;">
+        <div class="spinner"></div>
+        <p>Chargement des membres...</p>
+      </div>
+      <div id="members-grid" class="boats-grid"></div>
+      <div id="members-pagination" class="pagination" style="display: none;">
+        <button id="prev-page" class="btn-page">Précédent</button>
+        <div id="page-numbers" class="page-numbers"></div>
+        <button id="next-page" class="btn-page">Suivant</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>⛵ SailingLoc</h3>
+          <p>Votre partenaire de confiance pour la location de bateaux de luxe</p>
+        </div>
+        <div class="footer-section">
+          <h4>Services</h4>
+          <ul>
+            <li><a href="boats.html">Location de bateaux</a></li>
+            <li><a href="experience.html">Experience premium</a></li>
+            <li><a href="contact.html">Support client</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h4>Légal</h4>
+          <ul>
+            <li><a href="#">Conditions générales</a></li>
+            <li><a href="#">Politique de confidentialité</a></li>
+            <li><a href="#">Mentions légales</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2024 SailingLoc. Tous droits réservés.</p>
+      </div>
+    </div>
+  </footer>
+  <script>
+    // Pagination JS (similaire à boats)
+    const members = Array.from({length: 23}, (_, i) => ({name: `Membre ${i+1}`, experience: `Expérience ${i+1}`}));
+    const membersPerPage = 6;
+    let currentPage = 1;
+    function renderMembers(page) {
+      const grid = document.getElementById('members-grid');
+      grid.innerHTML = '';
+      const start = (page-1)*membersPerPage;
+      const end = start+membersPerPage;
+      members.slice(start, end).forEach(m => {
+        const card = document.createElement('div');
+        card.className = 'boat-card';
+        card.innerHTML = `<h3>${m.name}</h3><p>${m.experience}</p>`;
+        grid.appendChild(card);
+      });
+    }
+    function renderPagination() {
+      const totalPages = Math.ceil(members.length/membersPerPage);
+      document.getElementById('members-pagination').style.display = totalPages > 1 ? '' : 'none';
+      const pageNumbers = document.getElementById('page-numbers');
+      pageNumbers.innerHTML = '';
+      for(let i=1;i<=totalPages;i++){
+        const btn = document.createElement('button');
+        btn.className = 'btn-page';
+        btn.textContent = i;
+        if(i===currentPage) btn.classList.add('active');
+        btn.onclick = ()=>{currentPage=i;renderMembers(currentPage);renderPagination();};
+        pageNumbers.appendChild(btn);
+      }
+    }
+    document.getElementById('prev-page').onclick = ()=>{
+      if(currentPage>1){currentPage--;renderMembers(currentPage);renderPagination();}
+    };
+    document.getElementById('next-page').onclick = ()=>{
+      const totalPages = Math.ceil(members.length/membersPerPage);
+      if(currentPage<totalPages){currentPage++;renderMembers(currentPage);renderPagination();}
+    };
+    renderMembers(currentPage);
+    renderPagination();
+  </script>
+</body>
+</html>
