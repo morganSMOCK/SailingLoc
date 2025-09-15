@@ -225,6 +225,42 @@ boatSchema.methods.getMainImage = function() {
   return mainImage || this.images[0] || null;
 };
 
+// Méthode pour vérifier la disponibilité
+boatSchema.methods.isAvailable = function(startDate, endDate) {
+  // Vérifier si le bateau est actif
+  if (!this.isActive || this.status !== 'available') {
+    return false;
+  }
+  
+  // Pour l'instant, retourner true si le bateau est actif et disponible
+  // TODO: Implémenter la vérification des réservations existantes
+  return true;
+};
+
+// Méthode pour calculer le prix total
+boatSchema.methods.calculateTotalPrice = function(startDate, endDate) {
+  if (!this.pricing || !this.pricing.dailyRate) {
+    return null;
+  }
+  
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+  const days = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+  
+  const dailyRate = this.pricing.dailyRate;
+  const subtotal = dailyRate * days;
+  const serviceFee = subtotal * 0.1; // 10% de frais de service
+  const total = subtotal + serviceFee;
+  
+  return {
+    dailyRate,
+    days,
+    subtotal,
+    serviceFee,
+    total
+  };
+};
+
 // Middleware pre-save pour s'assurer qu'une seule image principale
 boatSchema.pre('save', function(next) {
   if (this.images && this.images.length > 0) {
