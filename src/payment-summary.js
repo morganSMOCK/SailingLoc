@@ -1,3 +1,4 @@
+
 import { StripeService } from './services/StripeService.js';
 import { AppStateService } from './services/AppStateService.js';
 
@@ -103,7 +104,7 @@ async function initializePage() {
 // Charger les données du bateau
 async function loadBoatData() {
   try {
-    const response = await fetch(`/api/boats/${boatId}`);
+    const response = await fetch(`${getApiBaseUrl()}/boats/${boatId}`);
     if (!response.ok) {
       throw new Error(`Erreur HTTP: ${response.status}`);
     }

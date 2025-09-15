@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Politique de confidentialité – SailingLoc</title>
+  <meta name="description" content="Politique de confidentialité de SailingLoc : données collectées, finalités, bases légales, durées de conservation, destinataires, transferts, cookies, droits RGPD et contact DPO.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Styles spécifiques à la page Confidentialité (même style que Mentions) -->
+  <style>
+    .pp-layout{
+      display:grid; 
+      grid-template-columns: minmax(220px, 320px) 1fr; 
+      gap: var(--space-2xl, 2rem);
+      align-items:start;
+    }
+    .pp-toc{ position: sticky; top: 92px; align-self:start; }
+    .pp-toc .toc-card{
+      background:#fff; border:1px solid var(--gray-200); border-radius: var(--radius-2xl, 18px);
+      box-shadow: var(--shadow-lg); padding: 16px 16px 6px;
+    }
+    .pp-toc h3{ margin:0 0 6px; font-weight:900; font-size:1.05rem; letter-spacing:-.01em; color:var(--gray-900); }
+    .toc-list{ list-style:none; padding:4px 2px 10px; margin:0; display:grid; gap:8px; max-height:58vh; overflow:auto; }
+    .toc-list a{
+      display:block; text-decoration:none; font-weight:700; color:var(--gray-700);
+      padding:8px 10px; border-radius:12px; border:1px solid transparent; transition: var(--transition-fast, .15s ease); line-height:1.35;
+    }
+    .toc-list a:hover{ background: var(--gray-50); border-color: var(--gray-200); transform: translateX(2px); }
+    .toc-list a.is-active{ background: rgba(0,102,255,.06); border-color:#bcd3ff; color: var(--primary); }
+    .toc-actions{ display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
+    .btn-outline{
+      display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:10px 12px;
+      font-weight:800; font-size:.9rem; border-radius:14px; border:2px solid var(--gray-200); background:#fff; color:var(--gray-700);
+      cursor:pointer; transition: var(--transition-fast, .15s ease);
+    }
+    .btn-outline:hover{ border-color: var(--primary); color: var(--primary); transform: translateY(-1px); }
+    .badge{
+      display:inline-flex; align-items:center; gap:6px; padding:6px 10px; border-radius:999px; font-weight:800; font-size:.8rem;
+      border:1px solid #d8e3ff; background:#f7fbff; color:#203a5b;
+    }
+    .legal-meta{ display:flex; gap:10px; flex-wrap:wrap; margin-top:10px; }
+
+    .privacy-grid{ display:grid; gap: var(--space-2xl, 2rem); }
+    .privacy-section{
+      background:#fff; border:1px solid var(--gray-200); border-radius: var(--radius-2xl);
+      box-shadow: var(--shadow-lg); padding: clamp(16px, 2vw, 24px);
+    }
+    .privacy-section .section-title{ display:flex; align-items:center; gap:10px; margin-bottom:8px; }
+    .anchor{ font:inherit; color:var(--gray-400); text-decoration:none; }
+    .legal-list{ margin: 8px 0 0 1.25rem; }
+    .grid-2{ display:grid; grid-template-columns: 1fr 1fr; gap:14px; }
+    .info-block{
+      background:#f8fafc; border:1px solid var(--gray-200); border-radius:14px; padding:12px 14px; font-weight:700; color:var(--gray-700);
+    }
+    .kpi-lite{ display:grid; grid-template-columns: repeat(auto-fit, minmax(160px,1fr)); gap:10px; margin-top:12px; }
+    .kpi-lite .kpi{ background:rgba(255,255,255,.6); border:1px solid var(--gray-200); }
+    table.privacy-table{ width:100%; border-collapse: collapse; margin-top:8px; }
+    table.privacy-table th, table.privacy-table td{ border:1px solid var(--gray-200); padding:10px 12px; vertical-align:top; }
+    table.privacy-table th{ background:#f7fbff; text-align:left; }
+    @media (max-width:980px){ .pp-layout{ grid-template-columns: 1fr; } .pp-toc{ position: static; } }
+  </style>
+  <script type="module" crossorigin src="/assets/AuthService-BR8AMDic.js"></script>
+  <script type="module" src="/assets/main.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/style-PcnroYTo.css">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav id="navbar" class="navbar">
+    <div class="nav-container">
+      <div class="nav-brand" style="display:flex; align-items:center; gap:10px;">
+        <img src="/assets/sailingloc_logo_mark_no_text_512-CzIWSV09.png" alt="Logo SailingLoc" style="height:48px;vertical-align:middle;">
+        <h2 style="
+          font-size:2.2rem; font-weight:900;
+          background: linear-gradient(90deg, #2f7fe0 0%, #35c1a0 100%);
+          -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+          letter-spacing:-1px; margin:0;">
+          SailingLoc
+        </h2>
+      </div>
+
+      <div class="nav-menu" id="nav-menu">
+        <a href="index.html" class="nav-link" data-i18n="nav.home">Accueil</a>
+        <a href="boats.html" class="nav-link" data-i18n="nav.boats">Bateaux</a>
+        <a href="experience.html" class="nav-link" data-i18n="nav.experience">Experience</a>
+        <a href="contact.html" class="nav-link" data-i18n="nav.contact">Contact</a>
+      </div>
+
+      <div class="nav-auth">
+        <select id="langSwitcher" aria-label="Language" style="margin-right:12px">
+          <option value="fr" selected>FR</option>
+          <option value="en">EN</option>
+        </select>
+        <button id="login-btn" class="btn-secondary" data-i18n="auth.login">Connexion</button>
+        <button id="register-btn" class="btn-primary" data-i18n="auth.register">Inscription</button>
+
+        <!-- Menu utilisateur (caché par défaut) -->
+        <div id="user-menu" class="user-menu" style="display:none;">
+          <div class="user-avatar" id="user-avatar"><span id="user-initials">JD</span></div>
+          <div class="user-dropdown" id="user-dropdown">
+            <div class="user-info">
+              <div class="user-name" id="user-name">John Doe</div>
+              <div class="user-email" id="user-email">john@example.com</div>
+            </div>
+            <div class="dropdown-divider"></div>
+            <a href="#" id="profile-link" class="dropdown-item"><span class="dropdown-icon">👤</span>Mon Profil</a>
+            <a href="#" id="bookings-link" class="dropdown-item"><span class="dropdown-icon">📋</span>Mes Réservations</a>
+            <a href="#" id="boats-link" class="dropdown-item" style="display:none;"><span class="dropdown-icon">🛥️</span>Mes Bateaux</a>
+            <div class="dropdown-divider"></div>
+            <a href="#" id="logout-link" class="dropdown-item logout"><span class="dropdown-icon">🚪</span>Déconnexion</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="mobile-menu-toggle" id="mobile-menu-toggle"><span></span><span></span><span></span></div>
+    </div>
+  </nav>
+
+  <!-- Fil d’Ariane -->
+  <nav class="breadcrumb" aria-label="Breadcrumb" style="margin-top:78px">
+    <div class="container">
+      <a href="index.html">Accueil</a> &nbsp;›&nbsp; <span>Politique de confidentialité</span>
+    </div>
+  </nav>
+
+  <!-- Héro -->
+  <section class="page-header">
+    <div class="container">
+      <h1>Politique de confidentialité</h1>
+      <p>Comment nous collectons, utilisons et protégeons vos données personnelles sur SailingLoc, et comment exercer vos droits.</p>
+      <div class="kpis kpi-lite">
+        <div class="kpi"><span>14 sept. 2025</span><small>Dernière mise à jour</small></div>
+        <div class="kpi"><span>RGPD / ePrivacy</span><small>Cadre légal</small></div>
+        <div class="kpi"><span>À compléter</span><small>Contact DPO</small></div>
+      </div>
+    </div>
+  </section>
+
+  <main class="main-content">
+    <div class="container pp-layout">
+      <!-- Sommaire collant -->
+      <aside class="pp-toc">
+        <div class="toc-card">
+          <h3>Sommaire</h3>
+          <ul class="toc-list" id="toc-pp">
+            <li><a href="#qui">1. Qui sommes-nous ?</a></li>
+            <li><a href="#donnees">2. Données que nous collectons</a></li>
+            <li><a href="#finalites">3. Finalités de traitement</a></li>
+            <li><a href="#bases">4. Bases légales</a></li>
+            <li><a href="#durees">5. Durées de conservation</a></li>
+            <li><a href="#destinataires">6. Destinataires & sous-traitants</a></li>
+            <li><a href="#transferts">7. Transferts hors UE</a></li>
+            <li><a href="#droits">8. Vos droits & contact</a></li>
+            <li><a href="#cookies">9. Cookies & consentement</a></li>
+            <li><a href="#securite">10. Sécurité</a></li>
+            <li><a href="#mineurs">11. Utilisation par des mineurs</a></li>
+            <li><a href="#prospection">12. Prospection & désinscription</a></li>
+            <li><a href="#automatisation">13. Décisions automatisées</a></li>
+            <li><a href="#maj">14. Mises à jour de la politique</a></li>
+          </ul>
+          <div class="toc-actions">
+            <button class="btn-outline" onclick="window.print()">🖨️ Imprimer / PDF</button>
+            <a href="#top" class="btn-outline">↑ Haut de page</a>
+          </div>
+          <div class="legal-meta">
+            <span class="badge">Version : 1.0</span>
+            <span class="badge">Langue : FR</span>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Contenu -->
+      <div class="privacy-grid">
+        <section id="qui" class="privacy-section">
+          <h2 class="section-title">1. Qui sommes-nous ? <a class="anchor" href="#qui">#</a></h2>
+          <div class="grid-2">
+            <div class="info-block">
+              <p><strong>Éditeur :</strong> À compléter (ex. SailingLoc SAS)</p>
+              <p><strong>Adresse :</strong> À compléter</p>
+              <p><strong>N° RCS / SIREN / TVA :</strong> À compléter</p>
+            </div>
+            <div class="info-block">
+              <p><strong>Responsable du traitement :</strong> À compléter</p>
+              <p><strong>Délégué à la protection des données (DPO) :</strong> À compléter</p>
+              <p><strong>Contact DPO :</strong> À compléter (email dédié)</p>
+            </div>
+          </div>
+          <p style="margin-top:8px;">SailingLoc est une plateforme d’intermédiation mettant en relation propriétaires de bateaux et locataires.</p>
+        </section>
+
+        <section id="donnees" class="privacy-section">
+          <h2 class="section-title">2. Données que nous collectons <a class="anchor" href="#donnees">#</a></h2>
+          <ul class="legal-list">
+            <li><strong>Compte & profil :</strong> identité, coordonnées, préférences, vérifications (à compléter).</li>
+            <li><strong>Réservations & transactions :</strong> détails de locations, historiques, montants, statut de paiement (les cartes sont traitées par notre prestataire de paiement).</li>
+            <li><strong>Contenus fournis :</strong> descriptions de bateaux, photos, avis et messages.</li>
+            <li><strong>Support & sécurité :</strong> échanges avec le support, logs, détection de fraude/abus.</li>
+            <li><strong>Données techniques :</strong> identifiants de terminal, IP, navigateur, pages vues, cookies/traceurs (voir <a href="#cookies">Cookies</a>).</li>
+            <li><strong>Réseaux sociaux / SSO (optionnel) :</strong> si vous vous connectez via un tiers (À compléter).</li>
+          </ul>
+        </section>
+
+        <section id="finalites" class="privacy-section">
+          <h2 class="section-title">3. Finalités de traitement <a class="anchor" href="#finalites">#</a></h2>
+          <ul class="legal-list">
+            <li>Fourniture du service, gestion des comptes et réservations, relation client.</li>
+            <li>Sécurité, prévention de la fraude et respect des obligations légales.</li>
+            <li>Personnalisation de l’expérience (recommandations, tri, contenu pertinent).</li>
+            <li>Mesure d’audience et amélioration produit (statistiques agrégées).</li>
+            <li>Prospection commerciale (emails, notifications) si consentement ou intérêt légitime applicable (voir <a href="#prospection">§12</a>).</li>
+          </ul>
+        </section>
+
+        <section id="bases" class="privacy-section">
+          <h2 class="section-title">4. Bases légales <a class="anchor" href="#bases">#</a></h2>
+          <ul class="legal-list">
+            <li><strong>Exécution du contrat</strong> (art. 6-1-b RGPD) : création de compte, réservations, paiements.</li>
+            <li><strong>Intérêt légitime</strong> (6-1-f) : sécurité, lutte contre la fraude, amélioration produit, statistiques internes.</li>
+            <li><strong>Obligation légale</strong> (6-1-c) : comptabilité, lutte anti-blanchiment si applicable, gestion des droits.</li>
+            <li><strong>Consentement</strong> (6-1-a) : cookies non essentiels, newsletters, certaines opérations marketing.</li>
+          </ul>
+        </section>
+
+        <section id="durees" class="privacy-section">
+          <h2 class="section-title">5. Durées de conservation <a class="anchor" href="#durees">#</a></h2>
+          <table class="privacy-table">
+            <thead><tr><th>Catégorie</th><th>Durée</th></tr></thead>
+            <tbody>
+              <tr><td>Compte inactif</td><td>À compléter (ex. 3 ans après dernier contact ou suppression sur demande)</td></tr>
+              <tr><td>Données de réservation</td><td>À compléter (ex. durée de la relation + 5 ans)</td></tr>
+              <tr><td>Facturation & comptabilité</td><td>10 ans (obligation légale FR)</td></tr>
+              <tr><td>Logs de sécurité</td><td>À compléter (ex. 6 à 12 mois)</td></tr>
+              <tr><td>Prospection</td><td>3 ans à compter du dernier contact ou jusqu’au retrait du consentement</td></tr>
+              <tr><td>Cookies</td><td>Voir <a href="#cookies">§9</a> (ex. 13 mois pour les traceurs soumis à consentement)</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="destinataires" class="privacy-section">
+          <h2 class="section-title">6. Destinataires & sous-traitants <a class="anchor" href="#destinataires">#</a></h2>
+          <p>Accès limité aux équipes habilitées de SailingLoc et à nos prestataires :</p>
+          <ul class="legal-list">
+            <li><strong>Hébergement & CDN :</strong> À compléter</li>
+            <li><strong>Paiement :</strong> À compléter (PSP conforme PCI-DSS)</li>
+            <li><strong>Envoi d’emails & notifications :</strong> À compléter</li>
+            <li><strong>Analytics & A/B test :</strong> À compléter</li>
+            <li><strong>Support & CRM :</strong> À compléter</li>
+            <li><strong>Vérification d’identité (si utilisée) :</strong> À compléter</li>
+          </ul>
+          <p>Des obligations contractuelles (DPA) encadrent ces traitements.</p>
+        </section>
+
+        <section id="transferts" class="privacy-section">
+          <h2 class="section-title">7. Transferts hors UE <a class="anchor" href="#transferts">#</a></h2>
+          <p>Si certains prestataires sont situés hors UE/EEE, des garanties appropriées sont mises en place (Clauses Contractuelles Types, mesures complémentaires). <strong>À compléter</strong> (liste des pays/prestataires concernés).</p>
+        </section>
+
+        <section id="droits" class="privacy-section">
+          <h2 class="section-title">8. Vos droits & contact <a class="anchor" href="#droits">#</a></h2>
+          <ul class="legal-list">
+            <li>Droits d’accès, rectification, effacement, opposition, limitation, portabilité (art. 15 à 22 RGPD).</li>
+            <li>Retrait du consentement à tout moment pour les traitements basés sur celui-ci.</li>
+            <li>Directives post-mortem (FR) sur le sort de vos données.</li>
+          </ul>
+          <p><strong>Exercer vos droits :</strong> depuis votre compte ou par email à <strong>À compléter (DPO/contact)</strong>. Une preuve d’identité peut être demandée. Réponse sous 1 mois (prolongeable dans les cas complexes).</p>
+          <p>Réclamation possible auprès de l’autorité de contrôle (CNIL.fr) si nécessaire.</p>
+        </section>
+
+        <section id="cookies" class="privacy-section">
+          <h2 class="section-title">9. Cookies & consentement <a class="anchor" href="#cookies">#</a></h2>
+          <ul class="legal-list">
+            <li><strong>Techniques/nécessaires :</strong> fonctionnement du site (exempts de consentement).</li>
+            <li><strong>Mesure d’audience :</strong> À compléter (ex. mode exempté ou consentement via CMP).</li>
+            <li><strong>Marketing & personnalisation :</strong> soumis à votre consentement préalable.</li>
+          </ul>
+          <p><strong>Gérer vos préférences :</strong> via la bannière lors de la première visite et à tout moment ici : <a href="#" id="open-consent">Paramètres cookies</a> (À intégrer avec votre CMP).</p>
+        </section>
+
+        <section id="securite" class="privacy-section">
+          <h2 class="section-title">10. Sécurité <a class="anchor" href="#securite">#</a></h2>
+          <p>Mesures techniques et organisationnelles en place : chiffrement en transit, contrôle d’accès, sauvegardes, journalisation, durcissement des environnements, revue des sous-traitants. <strong>À compléter</strong> pour vos mesures spécifiques.</p>
+        </section>
+
+        <section id="mineurs" class="privacy-section">
+          <h2 class="section-title">11. Utilisation par des mineurs <a class="anchor" href="#mineurs">#</a></h2>
+          <p>Le service s’adresse aux personnes majeures. Pour la France, si un traitement repose sur le consentement, l’âge de consentement numérique est de 15 ans (avec consentement parental en-dessous).</p>
+        </section>
+
+        <section id="prospection" class="privacy-section">
+          <h2 class="section-title">12. Prospection & désinscription <a class="anchor" href="#prospection">#</a></h2>
+          <p>Vous pouvez vous opposer à tout moment à la prospection : lien de désinscription présent dans nos emails ou réglages de votre compte.</p>
+        </section>
+
+        <section id="automatisation" class="privacy-section">
+          <h2 class="section-title">13. Décisions automatisées <a class="anchor" href="#automatisation">#</a></h2>
+          <p>Recommandations de bateaux et classements peuvent utiliser des règles/algorithmes (profilage non déterminant). Aucune décision produisant des effets juridiques sans intervention humaine. Vous pouvez demander un avis humain en cas de contestation.</p>
+        </section>
+
+        <section id="maj" class="privacy-section">
+          <h2 class="section-title">14. Mises à jour de la politique <a class="anchor" href="#maj">#</a></h2>
+          <div class="grid-2">
+            <div class="info-block"><strong>Version :</strong> 1.0</div>
+            <div class="info-block"><strong>Date :</strong> 14/09/2025</div>
+          </div>
+          <p style="margin-top:8px;color:#6b7280;"><em>Ce document est fourni à titre informatif et ne constitue pas un conseil juridique.</em></p>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer (ton snippet) -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>⛵ SailingLoc</h3>
+          <p>Votre partenaire de confiance pour la location de bateaux de luxe</p>
+        </div>
+        
+        <div class="footer-section">
+          <h4>Services</h4>
+          <ul>
+            <li><a href="boats.html">Location de bateaux</a></li>
+            <li><a href="experience.html">Experience premium</a></li>
+            <li><a href="contact.html">Support client</a></li>
+          </ul>
+        </div>
+        
+        <div class="footer-section">
+          <h4>Légal</h4>
+          <ul>
+            <li><a href="conditions.html">Conditions générales</a></li>
+            <li><a href="confidentialite.html">Politique de confidentialité</a></li>
+            <li><a href="mentions.html">Mentions légales</a></li>
+          </ul>
+        </div>
+      </div><!-- fermeture pour .footer-content -->
+      
+      <div class="footer-bottom">
+        <p>&copy; 2025 SailingLoc. Tous droits réservés.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Surbrillance auto du sommaire (privacy)
+    (function(){
+      const links = Array.from(document.querySelectorAll('#toc-pp a'));
+      const map = new Map(links.map(a => [a.getAttribute('href').slice(1), a]));
+      const sections = Array.from(document.querySelectorAll('main section[id]'));
+      const obs = new IntersectionObserver((entries)=>{
+        entries.forEach(e=>{
+          if(e.isIntersecting){
+            const id = e.target.id;
+            links.forEach(l=>l.classList.remove('is-active'));
+            const link = map.get(id);
+            if(link) link.classList.add('is-active');
+          }
+        });
+      }, { rootMargin: "-40% 0px -50% 0px", threshold: 0.01 });
+      sections.forEach(sec=>obs.observe(sec));
+    })();
+
+    // (Optionnel) Ouvrir la CMP depuis le lien "Paramètres cookies"
+    document.getElementById('open-consent')?.addEventListener('click', function(e){
+      e.preventDefault();
+      // À intégrer selon votre CMP (OneTrust, Didomi, Axeptio…)
+      // Exemples :
+      // window.axeptio?.openPreferences();
+      // window.didomiConsent?.show();
+    });
+  </script>
+</body>
+</html>
+

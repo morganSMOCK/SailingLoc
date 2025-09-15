@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Conditions Générales d’Utilisation (CGU) – SailingLoc</title>
+  <meta name="description" content="Conditions générales d’utilisation de SailingLoc : règles d’usage, réservations, paiements, annulations, responsabilités, assurances, données personnelles et litiges.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Styles spécifiques à la page CGU (léger et compatible avec ton style.css) -->
+  <style>
+    .cgu-layout{
+      display:grid; 
+      grid-template-columns: minmax(220px, 320px) 1fr; 
+      gap: var(--space-2xl, 2rem);
+      align-items:start;
+    }
+    .cgu-toc{
+      position: sticky; 
+      top: 92px; 
+      align-self:start;
+    }
+    .cgu-toc .toc-card{
+      background:#fff; 
+      border:1px solid var(--gray-200); 
+      border-radius: var(--radius-2xl, 18px);
+      box-shadow: var(--shadow-lg);
+      padding: 16px 16px 6px;
+    }
+    .cgu-toc h3{
+      margin:0 0 6px; 
+      font-weight:900; 
+      font-size:1.05rem; 
+      letter-spacing:-.01em; 
+      color:var(--gray-900);
+    }
+    .toc-list{
+      list-style:none; 
+      padding:4px 2px 10px; 
+      margin:0; 
+      display:grid; 
+      gap:8px;
+      max-height: 58vh; 
+      overflow:auto;
+    }
+    .toc-list a{
+      display:block; 
+      text-decoration:none; 
+      font-weight:700;
+      color:var(--gray-700);
+      padding:8px 10px; 
+      border-radius:12px; 
+      border:1px solid transparent;
+      transition: var(--transition-fast, .15s ease);
+      line-height:1.35;
+    }
+    .toc-list a:hover{ 
+      background: var(--gray-50); 
+      border-color: var(--gray-200); 
+      transform: translateX(2px);
+    }
+    .toc-list a.is-active{
+      background: rgba(0,102,255,.06);
+      border-color: #bcd3ff;
+      color: var(--primary);
+    }
+    .toc-actions{
+      display:flex; 
+      gap:8px; 
+      margin-top:10px; 
+      flex-wrap:wrap;
+    }
+    .btn-outline{
+      display:inline-flex; align-items:center; justify-content:center;
+      gap:8px; padding:10px 12px; font-weight:800; font-size:.9rem;
+      border-radius:14px; border:2px solid var(--gray-200); 
+      background:#fff; color:var(--gray-700); cursor:pointer;
+      transition: var(--transition-fast, .15s ease);
+    }
+    .btn-outline:hover{ border-color: var(--primary); color: var(--primary); transform: translateY(-1px); }
+    .badge{
+      display:inline-flex; align-items:center; gap:6px; 
+      padding:6px 10px; border-radius:999px; font-weight:800; 
+      font-size:.8rem; border:1px solid #d8e3ff; background:#f7fbff; color:#203a5b;
+    }
+    .legal-meta{
+      display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;
+    }
+    .legal-grid{
+      display:grid; gap: var(--space-2xl, 2rem);
+    }
+    .legal-section{
+      background:#fff; border:1px solid var(--gray-200); border-radius: var(--radius-2xl);
+      box-shadow: var(--shadow-lg); padding: clamp(16px, 2vw, 24px);
+    }
+    .legal-section .section-title{
+      display:flex; align-items:center; gap:10px; margin-bottom:8px;
+    }
+    .anchor{
+      font: inherit; color: var(--gray-400); text-decoration:none;
+    }
+    .legal-list{
+      margin: 10px 0 0 1.25rem;
+    }
+    .legal-grid-2{
+      display:grid; grid-template-columns: 1fr 1fr; gap:16px;
+    }
+    .legal-callout{
+      background:#f8fafc; border:1px solid var(--gray-200); border-radius:14px;
+      padding:12px 14px; font-weight:700; color:var(--gray-700);
+    }
+    .kpi-lite{
+      display:grid; grid-template-columns: repeat(auto-fit, minmax(160px,1fr)); gap:10px; margin-top:12px;
+    }
+    .kpi-lite .kpi{
+      background:rgba(255,255,255,.6); border:1px solid var(--gray-200);
+    }
+    .responsa{
+      display:grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap:14px;
+    }
+    .responsa .card{
+      border-radius:16px;
+    }
+
+    @media (max-width: 980px){
+      .cgu-layout{ grid-template-columns: 1fr; }
+      .cgu-toc{ position: static; }
+    }
+  </style>
+  <script type="module" crossorigin src="/assets/AuthService-BR8AMDic.js"></script>
+  <script type="module" src="/assets/main.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/style-PcnroYTo.css">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav id="navbar" class="navbar">
+    <div class="nav-container">
+      <div class="nav-brand" style="display:flex; align-items:center; gap:10px;">
+        <img src="/assets/sailingloc_logo_mark_no_text_512-CzIWSV09.png" alt="Logo SailingLoc" style="height:48px;vertical-align:middle;">
+        <h2 style="
+          font-size:2.2rem; font-weight:900;
+          background: linear-gradient(90deg, #2f7fe0 0%, #35c1a0 100%);
+          -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+          letter-spacing:-1px; margin:0;">
+          SailingLoc
+        </h2>
+      </div>
+
+      <div class="nav-menu" id="nav-menu">
+        <a href="index.html" class="nav-link" data-i18n="nav.home">Accueil</a>
+        <a href="boats.html" class="nav-link" data-i18n="nav.boats">Bateaux</a>
+        <a href="experience.html" class="nav-link" data-i18n="nav.experience">Experience</a>
+        <a href="contact.html" class="nav-link" data-i18n="nav.contact">Contact</a>
+      </div>
+
+      <div class="nav-auth">
+        <select id="langSwitcher" aria-label="Language" style="margin-right:12px">
+          <option value="fr" selected>FR</option>
+          <option value="en">EN</option>
+        </select>
+        <button id="login-btn" class="btn-secondary" data-i18n="auth.login">Connexion</button>
+        <button id="register-btn" class="btn-primary" data-i18n="auth.register">Inscription</button>
+
+        <!-- Menu utilisateur (caché par défaut) -->
+        <div id="user-menu" class="user-menu" style="display:none;">
+          <div class="user-avatar" id="user-avatar"><span id="user-initials">JD</span></div>
+          <div class="user-dropdown" id="user-dropdown">
+            <div class="user-info">
+              <div class="user-name" id="user-name">John Doe</div>
+              <div class="user-email" id="user-email">john@example.com</div>
+            </div>
+            <div class="dropdown-divider"></div>
+            <a href="#" id="profile-link" class="dropdown-item"><span class="dropdown-icon">👤</span>Mon Profil</a>
+            <a href="#" id="bookings-link" class="dropdown-item"><span class="dropdown-icon">📋</span>Mes Réservations</a>
+            <a href="#" id="boats-link" class="dropdown-item" style="display:none;"><span class="dropdown-icon">🛥️</span>Mes Bateaux</a>
+            <div class="dropdown-divider"></div>
+            <a href="#" id="logout-link" class="dropdown-item logout"><span class="dropdown-icon">🚪</span>Déconnexion</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="mobile-menu-toggle" id="mobile-menu-toggle"><span></span><span></span><span></span></div>
+    </div>
+  </nav>
+
+  <!-- Fil d’Ariane -->
+  <nav class="breadcrumb" aria-label="Breadcrumb" style="margin-top:78px">
+    <div class="container">
+      <a href="index.html">Accueil</a> &nbsp;›&nbsp; <span>Conditions générales d’utilisation</span>
+    </div>
+  </nav>
+
+  <!-- En-tête “héro” légal -->
+  <section class="page-header">
+    <div class="container">
+      <h1>Conditions Générales d’Utilisation (CGU)</h1>
+      <p>Cadre contractuel régissant l’accès et l’usage de la plateforme d’intermédiation SailingLoc.</p>
+      <div class="kpis kpi-lite">
+        <div class="kpi"><span>14 sept. 2025</span><small>Dernière mise à jour</small></div>
+        <div class="kpi"><span>UE &amp; Suisse</span><small>Champ d’application</small></div>
+        <div class="kpi"><span>18+</span><small>Âge minimum</small></div>
+      </div>
+    </div>
+  </section>
+
+  <main class="main-content">
+    <div class="container cgu-layout">
+      <!-- Sommaire collant -->
+      <aside class="cgu-toc">
+        <div class="toc-card">
+          <h3>Sommaire</h3>
+          <ul class="toc-list" id="toc">
+            <li><a href="#objet">1. Objet</a></li>
+            <li><a href="#definitions">2. Définitions</a></li>
+            <li><a href="#acceptation">3. Acceptation</a></li>
+            <li><a href="#acces">4. Accès au service</a></li>
+            <li><a href="#compte">5. Compte & sécurité</a></li>
+            <li><a href="#paiements">6. Réservations & paiements</a></li>
+            <li><a href="#annulations">7. Annulations</a></li>
+            <li><a href="#oblig-prop">8. Obligations Propriétaires</a></li>
+            <li><a href="#oblig-loc">9. Obligations Locataires</a></li>
+            <li><a href="#caution">10. Caution</a></li>
+            <li><a href="#assurances">11. Assurances</a></li>
+            <li><a href="#conduites">12. Conduites interdites</a></li>
+            <li><a href="#ip">13. Propriété intellectuelle</a></li>
+            <li><a href="#donnees">14. Données & cookies</a></li>
+            <li><a href="#responsabilite">15. Responsabilités</a></li>
+            <li><a href="#force-majeure">16. Force majeure</a></li>
+            <li><a href="#suspension">17. Suspension & résiliation</a></li>
+            <li><a href="#modifs">18. Modifications</a></li>
+            <li><a href="#droit">19. Droit & litiges</a></li>
+            <li><a href="#contact">20. Contact</a></li>
+          </ul>
+          <div class="toc-actions">
+            <button class="btn-outline" onclick="window.print()">🖨️ Imprimer / PDF</button>
+            <a href="#top" class="btn-outline">↑ Haut de page</a>
+          </div>
+          <div class="legal-meta">
+            <span class="badge">Version&nbsp;: 1.0</span>
+            <span class="badge">Langue&nbsp;: FR</span>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Contenu des CGU -->
+      <div class="legal-grid">
+
+        <!-- Récap visuel responsabilités -->
+        <div class="responsa">
+          <div class="card">
+            <div class="card-head">
+              <h3>Vous êtes Locataire</h3><span class="open-badge">Essentiel</span>
+            </div>
+            <p class="legal-callout">Respectez l’Annonce, la sécurité & le permis. Restituez le bateau en temps et en état.</p>
+          </div>
+          <div class="card">
+            <div class="card-head">
+              <h3>Vous êtes Propriétaire</h3><span class="open-badge">Essentiel</span>
+            </div>
+            <p class="legal-callout">Bateau conforme et assuré, Annonce exacte, réservations honorées, conformité légale.</p>
+          </div>
+          <div class="card">
+            <div class="card-head">
+              <h3>SailingLoc</h3><span class="open-badge">Plateforme</span>
+            </div>
+            <p class="legal-callout">Intermédiation, sécurité de l’espace, modération. Pas partie au contrat de location.</p>
+          </div>
+        </div>
+
+        <section id="objet" class="legal-section">
+          <h2 class="section-title">1. Objet <a class="anchor" href="#objet">#</a></h2>
+          <p>SailingLoc (la « Plateforme ») met en relation des propriétaires de bateaux (« Propriétaires ») et des personnes souhaitant louer un bateau (« Locataires »). Les présentes CGU encadrent l’accès et l’usage des services proposés.</p>
+        </section>
+
+        <section id="definitions" class="legal-section">
+          <h2 class="section-title">2. Définitions <a class="anchor" href="#definitions">#</a></h2>
+          <ul class="legal-list">
+            <li><strong>Utilisateur</strong> : toute personne utilisant la Plateforme.</li>
+            <li><strong>Annonce</strong> : page décrivant un bateau, son prix et ses conditions.</li>
+            <li><strong>Réservation</strong> : demande de location initiée par un Locataire et confirmée par un Propriétaire.</li>
+            <li><strong>Frais de service</strong> : frais et commissions applicables, le cas échéant.</li>
+          </ul>
+        </section>
+
+        <section id="acceptation" class="legal-section">
+          <h2 class="section-title">3. Acceptation <a class="anchor" href="#acceptation">#</a></h2>
+          <p>L’utilisation de la Plateforme implique l’acceptation pleine et entière des CGU. En cas de désaccord, cessez l’utilisation des services.</p>
+        </section>
+
+        <section id="acces" class="legal-section">
+          <h2 class="section-title">4. Accès au service <a class="anchor" href="#acces">#</a></h2>
+          <p>Accès 24/7 sous réserve de maintenance, mises à jour ou force majeure. Des modifications, suspensions ou retraits temporaires peuvent intervenir sans préavis si nécessaire.</p>
+        </section>
+
+        <section id="compte" class="legal-section">
+          <h2 class="section-title">5. Compte & sécurité <a class="anchor" href="#compte">#</a></h2>
+          <ul class="legal-list">
+            <li>Vous devez être majeur et juridiquement capable.</li>
+            <li>Informations exactes et mises à jour ; un seul compte par personne.</li>
+            <li>Confidentialité des identifiants : toute action via votre compte est réputée vôtre.</li>
+            <li>Signalez sans délai un accès non autorisé.</li>
+          </ul>
+        </section>
+
+        <section id="paiements" class="legal-section">
+          <h2 class="section-title">6. Réservations & paiements <a class="anchor" href="#paiements">#</a></h2>
+          <p>Les prix, durées, cautions et conditions figurent sur l’Annonce ou lors des échanges. Les paiements peuvent transiter par un prestataire tiers (escrow, PSP). Des frais de service SailingLoc peuvent s’appliquer.</p>
+          <div class="legal-grid-2" style="margin-top:10px;">
+            <div class="legal-callout">Les devises, taxes et frais locaux peuvent s’ajouter selon la zone de navigation.</div>
+            <div class="legal-callout">Toute tentative de contournement de la Plateforme peut entraîner la suspension du compte.</div>
+          </div>
+        </section>
+
+        <section id="annulations" class="legal-section">
+          <h2 class="section-title">7. Annulations & remboursements <a class="anchor" href="#annulations">#</a></h2>
+          <p>La politique d’annulation est précisée dans l’Annonce (délais, pénalités, non-remboursables). Cas typiques :</p>
+          <ul class="legal-list">
+            <li><strong>Météo défavorable</strong> : report, avoir ou remboursement partiel/total selon la politique et la législation locale.</li>
+            <li><strong>Indisponibilité du bateau</strong> : solutions alternatives, remboursement, ou annulation sans frais.</li>
+          </ul>
+        </section>
+
+        <section id="oblig-prop" class="legal-section">
+          <h2 class="section-title">8. Obligations des Propriétaires <a class="anchor" href="#oblig-prop">#</a></h2>
+          <ul class="legal-list">
+            <li>Annonce exacte et non contrefaisante, photos authentiques.</li>
+            <li>Bateau conforme, entretenu, en règle et assuré le cas échéant.</li>
+            <li>Respect des réservations confirmées et de la réglementation en vigueur.</li>
+          </ul>
+        </section>
+
+        <section id="oblig-loc" class="legal-section">
+          <h2 class="section-title">9. Obligations des Locataires <a class="anchor" href="#oblig-loc">#</a></h2>
+          <ul class="legal-list">
+            <li>Permis adéquat si requis ; respect des zones et règles de sécurité.</li>
+            <li>Utilisation diligente ; signalement des incidents ; respect des horaires.</li>
+            <li>Restitution dans l’état prévu ; carburant selon l’accord.</li>
+          </ul>
+        </section>
+
+        <section id="caution" class="legal-section">
+          <h2 class="section-title">10. Caution & dépôt de garantie <a class="anchor" href="#caution">#</a></h2>
+          <p>Une caution peut être exigée et retenue partiellement ou totalement en cas de dommage, perte, retard ou non-respect contractuel dûment constaté.</p>
+        </section>
+
+        <section id="assurances" class="legal-section">
+          <h2 class="section-title">11. Assurances <a class="anchor" href="#assurances">#</a></h2>
+          <p>Propriétaires et Locataires veillent à détenir les assurances appropriées (RC, dommages, assistance). Les conditions des assureurs tiers prévalent en cas de sinistre.</p>
+        </section>
+
+        <section id="conduites" class="legal-section">
+          <h2 class="section-title">12. Conduites interdites & modération <a class="anchor" href="#conduites">#</a></h2>
+          <p>Interdits : usurpation d’identité, contournement de la Plateforme, contenus illicites ou discriminatoires, spam, intrusion, ingénierie sociale. SailingLoc peut retirer des contenus et/ou suspendre des comptes en cas de violation.</p>
+        </section>
+
+        <section id="ip" class="legal-section">
+          <h2 class="section-title">13. Propriété intellectuelle <a class="anchor" href="#ip">#</a></h2>
+          <p>Les éléments de la Plateforme (textes, logos, marques, design) sont protégés. Toute reproduction non autorisée est prohibée. En publiant du contenu, vous garantissez vos droits et concédez à SailingLoc une licence non exclusive mondiale, gratuite, pour l’hébergement, l’affichage et la promotion des Annonces.</p>
+        </section>
+
+        <section id="donnees" class="legal-section">
+          <h2 class="section-title">14. Données personnelles & cookies <a class="anchor" href="#donnees">#</a></h2>
+          <p>Le traitement des données est détaillé dans la <a href="confidentialite.html">Politique de confidentialité</a>. Les mécanismes de cookies/traceurs sont expliqués dans cette politique et/ou via la bannière dédiée.</p>
+        </section>
+
+        <section id="responsabilite" class="legal-section">
+          <h2 class="section-title">15. Responsabilités & limites <a class="anchor" href="#responsabilite">#</a></h2>
+          <ul class="legal-list">
+            <li>SailingLoc est un intermédiaire et n’est pas partie aux contrats entre Utilisateurs.</li>
+            <li>Sous réserve des dispositions d’ordre public, SailingLoc n’est pas responsable des indisponibilités, retards, dommages, pertes, manquements contractuels entre Utilisateurs ou de la force majeure.</li>
+            <li>Chaque Utilisateur demeure responsable de sa conformité légale et réglementaire.</li>
+          </ul>
+        </section>
+
+        <section id="force-majeure" class="legal-section">
+          <h2 class="section-title">16. Force majeure <a class="anchor" href="#force-majeure">#</a></h2>
+          <p>Aucune partie n’est responsable d’un manquement dû à un événement imprévisible, irrésistible et extérieur (catastrophe, guerre, pannes générales, décisions administratives).</p>
+        </section>
+
+        <section id="suspension" class="legal-section">
+          <h2 class="section-title">17. Suspension & résiliation <a class="anchor" href="#suspension">#</a></h2>
+          <p>SailingLoc peut suspendre ou résilier un compte en cas de fraude, violation des CGU, comportement illicite, ou sur demande d’une autorité. Vous pouvez supprimer votre compte sous réserve de l’exécution des réservations en cours.</p>
+        </section>
+
+        <section id="modifs" class="legal-section">
+          <h2 class="section-title">18. Modifications des CGU <a class="anchor" href="#modifs">#</a></h2>
+          <p>Les CGU peuvent évoluer pour des motifs légaux, techniques ou opérationnels. La version en vigueur est celle publiée ici à la date indiquée. La poursuite d’usage vaut acceptation.</p>
+        </section>
+
+        <section id="droit" class="legal-section">
+          <h2 class="section-title">19. Droit applicable & litiges <a class="anchor" href="#droit">#</a></h2>
+          <p>Droit français. Recherche de résolution amiable prioritaire ; à défaut, juridictions françaises compétentes. Les consommateurs peuvent recourir à la médiation et/ou à la plateforme européenne de règlement en ligne des litiges.</p>
+        </section>
+
+        <section id="contact" class="legal-section">
+          <h2 class="section-title">20. Contact <a class="anchor" href="#contact">#</a></h2>
+          <p>Support : via la <a href="contact.html">page Contact</a>. Pour les questions juridiques liées aux CGU, utilisez ce même canal.</p>
+          <p style="margin-top:10px; color:#6b7280;"><em>Note : Ce modèle n’est pas un conseil juridique. Adaptez-le à vos spécificités et faites-le relire par un professionnel.</em></p>
+        </section>
+
+        <!-- Historique des versions -->
+        <div class="legal-section">
+          <h2 class="section-title">Historique des versions</h2>
+          <ul class="legal-list">
+            <li><strong>1.0 – 14/09/2025</strong> : Première publication.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer (intégré tel que fourni, avec une fermeture de div ajoutée) -->
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>⛵ SailingLoc</h3>
+          <p>Votre partenaire de confiance pour la location de bateaux de luxe</p>
+        </div>
+        
+        <div class="footer-section">
+          <h4>Services</h4>
+          <ul>
+            <li><a href="boats.html">Location de bateaux</a></li>
+            <li><a href="experience.html">Experience premium</a></li>
+            <li><a href="contact.html">Support client</a></li>
+          </ul>
+        </div>
+        
+        <div class="footer-section">
+          <h4>Légal</h4>
+          <ul>
+            <li><a href="conditions.html">Conditions générales</a></li>
+            <li><a href="confidentialite.html">Politique de confidentialité</a></li>
+            <li><a href="mentions.html">Mentions légales</a></li>
+          </ul>
+        </div>
+      </div><!-- fermeture ajoutée pour .footer-content -->
+
+      <div class="footer-bottom">
+        <p>&copy; 2025 SailingLoc. Tous droits réservés.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Surbrillance auto du sommaire
+    (function(){
+      const links = Array.from(document.querySelectorAll('#toc a'));
+      const map = new Map(
+        links.map(a => [a.getAttribute('href').slice(1), a])
+      );
+      const obs = new IntersectionObserver((entries)=>{
+        entries.forEach(e=>{
+          if(e.isIntersecting){
+            const id = e.target.id;
+            links.forEach(l=>l.classList.remove('is-active'));
+            const link = map.get(id);
+            if(link) link.classList.add('is-active');
+          }
+        });
+      }, { rootMargin: "-40% 0px -50% 0px", threshold: 0.01 });
+
+      document.querySelectorAll('section[id]').forEach(sec=>obs.observe(sec));
+    })();
+  </script>
+</body>
+</html>

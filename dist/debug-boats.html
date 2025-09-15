@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Debug Bateaux - SailingLoc</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .debug-container {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+    .log-container {
+      background: #1e1e1e;
+      color: #00ff00;
+      padding: 15px;
+      border-radius: 5px;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      max-height: 300px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+    }
+    .error { color: #ff6b6b; }
+    .success { color: #51cf66; }
+    .warning { color: #ffd43b; }
+    .info { color: #74c0fc; }
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin: 5px;
+    }
+    button:hover { background: #0056b3; }
+    .boats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+    .test-section {
+      border: 1px solid #ddd;
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 5px;
+    }
+  </style>
+  <script type="module" crossorigin src="/assets/AuthService-BR8AMDic.js"></script>
+  <script type="module" src="/assets/main.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/style-PcnroYTo.css">
+</head>
+<body>
+  <div class="debug-container">
+    <h1>🔍 Debug des Bateaux - SailingLoc</h1>
+    <p>Cette page vous aide à diagnostiquer les problèmes d'affichage des bateaux.</p>
+    
+    <div class="test-section">
+      <h3>📊 État actuel</h3>
+      <button onclick="checkCurrentState()">Vérifier l'état actuel</button>
+      <button onclick="testBoatService()">Tester le service bateaux</button>
+      <button onclick="clearLogs()">Effacer les logs</button>
+    </div>
+    
+    <div class="test-section">
+      <h3>🧪 Tests de création de cartes</h3>
+      <button onclick="testCreateBoatCard()">Tester createBoatCard</button>
+      <button onclick="testWithRealData()">Tester avec données réelles</button>
+    </div>
+    
+    <div class="test-section">
+      <h3>📝 Logs de débogage</h3>
+      <div id="debug-logs" class="log-container">Logs de débogage apparaîtront ici...\n</div>
+    </div>
+    
+    <div class="test-section">
+      <h3>🚢 Cartes créées</h3>
+      <div class="boats-grid" id="boats-grid">
+        <!-- Les cartes de test apparaîtront ici -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Script principal de l'application -->
+  
+  <script>
+    // Attendre que l'application soit chargée
+    window.addEventListener('load', () => {
+      // Attendre un peu pour que l'app soit initialisée
+      setTimeout(() => {
+        if (window.app) {
+          log('✅ Application SailingLoc chargée', 'success');
+        } else {
+          log('❌ Application SailingLoc non chargée après délai', 'error');
+        }
+      }, 1000);
+    });
+
+    // Données de test
+    const testBoatData = {
+      specifications: { length: 10, width: 10, fuelType: 'diesel' },
+      capacity: { maxPeople: 10 },
+      location: { city: 'Nice', marina: 'Port de Canne', country: 'France' },
+      pricing: { dailyRate: 200, securityDeposit: 1000, currency: 'EUR' },
+      _id: '68c45f5ff0ebd2594d8f434e',
+      amenities: [],
+      category: 'standard',
+      createdAt: '2025-09-12T17:58:55.559Z',
+      description: 'gregerg',
+      id: '68c45f5ff0ebd2594d8f434e',
+      imageUrls: [],
+      images: [],
+      isActive: true,
+      name: 'Bateau morgan',
+      owner: {
+        _id: '68befdaea15ed31c9bb53d0c',
+        firstName: 'Martin',
+        lastName: 'Clara',
+        fullName: 'Martin Clara',
+        id: '68befdaea15ed31c9bb53d0c'
+      },
+      rules: [],
+      status: 'available',
+      type: 'bateau à moteur',
+      updatedAt: '2025-09-12T17:58:55.559Z',
+      __v: 0
+    };
+
+    // Fonction de log
+    function log(message, type = 'info') {
+      const logsContainer = document.getElementById('debug-logs');
+      const timestamp = new Date().toLocaleTimeString();
+      const className = type === 'error' ? 'error' : type === 'success' ? 'success' : type === 'warning' ? 'warning' : 'info';
+      logsContainer.innerHTML += `<span class="${className}">[${timestamp}] ${message}</span>\n`;
+      logsContainer.scrollTop = logsContainer.scrollHeight;
+      console.log(`[DEBUG] ${message}`);
+    }
+
+    function clearLogs() {
+      document.getElementById('debug-logs').innerHTML = 'Logs effacés...\n';
+    }
+
+    // Vérifier l'état actuel
+    function checkCurrentState() {
+      log('🔍 Vérification de l\'état actuel...', 'info');
+      
+      // Vérifier si l'app est chargée
+      if (window.app) {
+        log('✅ Application SailingLoc chargée', 'success');
+        log(`📊 Utilisateur actuel: ${window.app.currentUser ? window.app.currentUser.email : 'Non connecté'}`, 'info');
+        log(`🚢 Bateaux actuels: ${window.app.currentBoats ? window.app.currentBoats.length : 0}`, 'info');
+      } else {
+        log('❌ Application SailingLoc non chargée', 'error');
+      }
+      
+      // Vérifier les fonctions de débogage
+      if (window.debugSailingLoc) {
+        log('✅ Fonctions de débogage disponibles', 'success');
+      } else {
+        log('❌ Fonctions de débogage non disponibles', 'error');
+      }
+      
+      // Vérifier le fichier JS chargé
+      const scripts = document.querySelectorAll('script[src*="main-"]');
+      if (scripts.length > 0) {
+        const src = scripts[scripts.length - 1].src;
+        log(`📦 Fichier JS chargé: ${src.split('/').pop()}`, 'info');
+      } else {
+        log('❌ Aucun fichier JS principal trouvé', 'error');
+      }
+    }
+
+    // Tester le service bateaux
+    async function testBoatService() {
+      log('🧪 Test du service bateaux...', 'info');
+      
+      try {
+        if (!window.app || !window.app.boatService) {
+          log('❌ Service bateaux non disponible', 'error');
+          return;
+        }
+        
+        log('📡 Appel API pour récupérer les bateaux...', 'info');
+        const response = await window.app.boatService.getBoats();
+        
+        if (response.success) {
+          log(`✅ ${response.data.boats.length} bateaux récupérés`, 'success');
+          log(`📊 Données: ${JSON.stringify(response.data.boats[0], null, 2)}`, 'info');
+        } else {
+          log(`❌ Erreur API: ${response.message}`, 'error');
+        }
+      } catch (error) {
+        log(`❌ Erreur lors du test: ${error.message}`, 'error');
+      }
+    }
+
+    // Tester createBoatCard
+    function testCreateBoatCard() {
+      log('🧪 Test de createBoatCard...', 'info');
+      
+      try {
+        if (!window.app) {
+          log('❌ Application non disponible', 'error');
+          return;
+        }
+        
+        log('🔧 Création d\'une carte de test...', 'info');
+        const card = window.app.createBoatCard(testBoatData);
+        
+        if (card && card.nodeType) {
+          log('✅ Carte créée avec succès', 'success');
+          log(`📊 Type de nœud: ${card.nodeType}`, 'info');
+          log(`📊 Classe: ${card.className}`, 'info');
+          
+          // Ajouter la carte à la grille
+          const grid = document.getElementById('boats-grid');
+          grid.innerHTML = '';
+          grid.appendChild(card);
+        } else {
+          log('❌ Carte non créée correctement', 'error');
+          log(`📊 Résultat: ${card}`, 'error');
+        }
+      } catch (error) {
+        log(`❌ Erreur lors du test: ${error.message}`, 'error');
+        log(`📊 Stack: ${error.stack}`, 'error');
+      }
+    }
+
+    // Tester avec données réelles
+    async function testWithRealData() {
+      log('🧪 Test avec données réelles...', 'info');
+      
+      try {
+        if (!window.app) {
+          log('❌ Application non disponible', 'error');
+          return;
+        }
+        
+        // Charger les bateaux réels
+        await window.app.loadBoats();
+        
+        if (window.app.currentBoats && window.app.currentBoats.length > 0) {
+          log(`✅ ${window.app.currentBoats.length} bateaux chargés`, 'success');
+          
+          // Tester la création de cartes pour tous les bateaux
+          const grid = document.getElementById('boats-grid');
+          grid.innerHTML = '';
+          
+          window.app.currentBoats.forEach((boat, index) => {
+            try {
+              log(`🔧 Test carte ${index + 1}: ${boat.name}`, 'info');
+              const card = window.app.createBoatCard(boat);
+              
+              if (card && card.nodeType) {
+                grid.appendChild(card);
+                log(`✅ Carte ${index + 1} créée: ${boat.name}`, 'success');
+              } else {
+                log(`❌ Carte ${index + 1} échouée: ${boat.name}`, 'error');
+              }
+            } catch (error) {
+              log(`❌ Erreur carte ${index + 1}: ${error.message}`, 'error');
+            }
+          });
+        } else {
+          log('❌ Aucun bateau chargé', 'error');
+        }
+      } catch (error) {
+        log(`❌ Erreur lors du test: ${error.message}`, 'error');
+      }
+    }
+
+    // Initialisation
+    log('🚀 Page de debug chargée', 'success');
+    log('💡 Utilisez les boutons ci-dessus pour diagnostiquer les problèmes', 'info');
+    
+    // Auto-vérification après 2 secondes
+    setTimeout(() => {
+      checkCurrentState();
+    }, 2000);
+  </script>
+</body>
+</html>

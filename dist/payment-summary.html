@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Récapitulatif de paiement — SailingLoc</title>
+  <meta name="description" content="Récapitulatif de votre réservation et paiement sécurisé avec Stripe.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* Styles spécifiques pour la page de paiement */
+    .payment-hero{
+      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+      color: #fff;
+      padding: clamp(40px, 8vw, 80px) 0;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .payment-hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.05"/><circle cx="10" cy="60" r="0.5" fill="white" opacity="0.05"/><circle cx="90" cy="40" r="0.5" fill="white" opacity="0.05"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+      opacity: 0.3;
+    }
+    .payment-hero h1{
+      font-family: var(--font-display);
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      margin-bottom: 16px;
+      position: relative;
+      z-index: 1;
+    }
+    .payment-hero p{
+      opacity: 0.95;
+      font-size: 1.2rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .payment-page{
+      padding: clamp(30px, 5vw, 60px) 0;
+      background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+    }
+    .payment-grid{
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(20px, 4vw, 40px);
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    @media (max-width: 1024px){
+      .payment-grid{grid-template-columns: 1fr; gap: 30px;}
+    }
+
+    .payment-card, .summary-card{
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 24px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      padding: clamp(24px, 3vw, 32px);
+      transition: all 0.3s ease;
+    }
+    .payment-card:hover, .summary-card:hover{
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      transform: translateY(-2px);
+    }
+
+    .boat-image{
+      width: 100%;
+      height: 200px;
+      border-radius: 16px;
+      overflow: hidden;
+      margin-bottom: 20px;
+      position: relative;
+    }
+    .boat-image img{
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+    .boat-image:hover img{
+      transform: scale(1.05);
+    }
+
+    .boat-title{
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #1e293b;
+      margin-bottom: 8px;
+    }
+    .boat-type{
+      display: inline-block;
+      background: linear-gradient(135deg, #e0e7ff 0%, #f0f4ff 100%);
+      color: #4f46e5;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.875rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+    .boat-location{
+      color: #64748b;
+      font-size: 0.95rem;
+      margin-bottom: 16px;
+    }
+
+    .booking-details{
+      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+      border-radius: 16px;
+      padding: 20px;
+      margin: 20px 0;
+    }
+    .detail-row{
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .detail-row:last-child{
+      margin-bottom: 0;
+    }
+    .detail-label{
+      color: #64748b;
+      font-weight: 600;
+    }
+    .detail-value{
+      color: #1e293b;
+      font-weight: 700;
+    }
+
+    .price-section{
+      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+      border-radius: 16px;
+      padding: 20px;
+      margin: 20px 0;
+    }
+    .price-row{
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .price-row:last-child{
+      margin-bottom: 0;
+      padding-top: 12px;
+      border-top: 2px solid #e2e8f0;
+      font-weight: 800;
+      font-size: 1.1rem;
+    }
+    .price-label{
+      color: #64748b;
+      font-weight: 600;
+    }
+    .price-value{
+      color: #1e293b;
+      font-weight: 700;
+    }
+
+    .btn-primary{
+      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+      color: #fff;
+      border: none;
+      padding: 16px 32px;
+      border-radius: 16px;
+      font-weight: 700;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+    }
+    .btn-primary:hover{
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(59, 130, 246, 0.6);
+    }
+    .btn-primary:active{
+      transform: translateY(0);
+    }
+    .btn-primary:disabled{
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .loading{
+      opacity: 0.6;
+      pointer-events: none;
+    }
+    .loading::after{
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 20px;
+      height: 20px;
+      margin: -10px 0 0 -10px;
+      border: 2px solid #f3f3f3;
+      border-top: 2px solid #667eea;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin{
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .error-message{
+      background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+      border: 2px solid #fecaca;
+      color: #dc2626;
+      padding: 16px 20px;
+      border-radius: 16px;
+      margin: 16px 0;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .error-message::before{
+      content: '⚠️';
+      font-size: 1.2rem;
+    }
+
+    .success-message{
+      background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+      border: 2px solid #bbf7d0;
+      color: #166534;
+      padding: 16px 20px;
+      border-radius: 16px;
+      margin: 16px 0;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .success-message::before{
+      content: '✅';
+      font-size: 1.2rem;
+    }
+  </style>
+  <script type="module" crossorigin src="/assets/payment-summary-rYBKALIQ.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/AuthService-BR8AMDic.js">
+  <link rel="modulepreload" crossorigin href="/assets/init-CvdFLqyy.js">
+  <link rel="modulepreload" crossorigin href="/assets/apiConfig-Hw5SgeDb.js">
+  <link rel="stylesheet" crossorigin href="/assets/style-PcnroYTo.css">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav id="navbar" class="navbar">
+    <div class="nav-container">
+      <div class="nav-brand" style="display: flex; align-items: center; gap: 10px;">
+        <img src="/assets/sailingloc_logo_mark_no_text_512-CzIWSV09.png" alt="Logo SailingLoc" style="height:48px;vertical-align:middle;">
+        <h2 style="
+          font-size:2.2rem;
+          font-weight:900;
+          background: linear-gradient(90deg, #2f7fe0 0%, #35c1a0 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+          letter-spacing: -1px;
+          margin: 0;
+        ">
+          SailingLoc
+        </h2>
+      </div>
+      
+      <div class="nav-menu" id="nav-menu">
+        <a href="index.html" class="nav-link">Accueil</a>
+        <a href="boats.html" class="nav-link">Bateaux</a>
+        <a href="experience.html" class="nav-link">Experience</a>
+        <a href="contact.html" class="nav-link">Contact</a>
+      </div>
+      
+      <div class="nav-auth">
+        <button id="login-btn" class="btn-secondary">Connexion</button>
+        <button id="register-btn" class="btn-primary">Inscription</button>
+        
+        <!-- Menu utilisateur (caché par défaut) -->
+        <div id="user-menu" class="user-menu" style="display: none;">
+          <div class="user-avatar" id="user-avatar">
+            <span id="user-initials">JD</span>
+          </div>
+          <div class="user-dropdown" id="user-dropdown">
+            <div class="user-info">
+              <div class="user-name" id="user-name">John Doe</div>
+              <div class="user-email" id="user-email">john@example.com</div>
+            </div>
+            <div class="dropdown-divider"></div>
+            <a href="#" id="profile-link" class="dropdown-item"><span class="dropdown-icon">👤</span> Mon Profil</a>
+            <a href="#" id="bookings-link" class="dropdown-item"><span class="dropdown-icon">📋</span> Mes Réservations</a>
+            <a href="#" id="boats-link" class="dropdown-item" style="display: none;"><span class="dropdown-icon">🛥️</span> Mes Bateaux</a>
+            <div class="dropdown-divider"></div>
+            <a href="#" id="logout-link" class="dropdown-item logout"><span class="dropdown-icon">🚪</span> Déconnexion</a>
+          </div>
+        </div>
+      </div>
+      
+      <div class="mobile-menu-toggle" id="mobile-menu-toggle">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Breadcrumb Navigation -->
+  <section class="breadcrumb-section" style="background: #f8fafc; padding: 16px 0; border-bottom: 1px solid #e2e8f0;">
+    <div class="container">
+      <nav class="breadcrumb" style="display: flex; align-items: center; gap: 8px; font-size: 0.9rem; color: #64748b;">
+        <a href="/" style="color: #3b82f6; text-decoration: none; font-weight: 500;">Accueil</a>
+        <span style="color: #94a3b8;">›</span>
+        <a href="/boats.html" style="color: #3b82f6; text-decoration: none; font-weight: 500;">Bateaux</a>
+        <span style="color: #94a3b8;">›</span>
+        <span id="breadcrumb-boat-name" style="color: #374151; font-weight: 600;">Chargement...</span>
+        <span style="color: #94a3b8;">›</span>
+        <span style="color: #374151; font-weight: 600;">Paiement</span>
+      </nav>
+    </div>
+  </section>
+
+  <!-- Hero Section -->
+  <section class="payment-hero">
+    <div class="container">
+      <h1>Récapitulatif de paiement</h1>
+      <p>Vérifiez les détails de votre réservation et procédez au paiement sécurisé</p>
+    </div>
+  </section>
+
+  <!-- Payment Page -->
+  <section class="payment-page">
+    <div class="container">
+      <div class="payment-grid">
+        <!-- Récapitulatif de la réservation -->
+        <div class="summary-card">
+          <h2 style="margin-bottom: 20px; color: #1e293b; font-size: 1.5rem; font-weight: 800;">Récapitulatif de votre réservation</h2>
+          
+          <!-- Image du bateau -->
+          <div class="boat-image">
+            <img id="boat-image" src="" alt="Bateau" style="display: none;">
+            <div id="no-image" style="display: flex; align-items: center; justify-content: center; height: 100%; background: #f8fafc; color: #64748b; font-weight: 600;">
+              Image du bateau
+            </div>
+          </div>
+
+          <!-- Détails du bateau -->
+          <div class="boat-title" id="boat-name">Chargement...</div>
+          <div class="boat-type" id="boat-type">Chargement...</div>
+          <div class="boat-location" id="boat-location">Chargement...</div>
+
+          <!-- Détails de la réservation -->
+          <div class="booking-details">
+            <h3 style="margin-bottom: 16px; color: #1e293b; font-weight: 700;">Détails de la réservation</h3>
+            <div class="detail-row">
+              <span class="detail-label">Date de départ</span>
+              <span class="detail-value" id="start-date">-</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Date de retour</span>
+              <span class="detail-value" id="end-date">-</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Nombre de passagers</span>
+              <span class="detail-value" id="passengers">-</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Durée</span>
+              <span class="detail-value" id="duration">-</span>
+            </div>
+          </div>
+
+          <!-- Calcul du prix -->
+          <div class="price-section">
+            <h3 style="margin-bottom: 16px; color: #1e293b; font-weight: 700;">Détail des prix</h3>
+            <div class="price-row">
+              <span class="price-label">Prix par jour</span>
+              <span class="price-value" id="daily-rate">-</span>
+            </div>
+            <div class="price-row">
+              <span class="price-label">Nombre de jours</span>
+              <span class="price-value" id="days-count">-</span>
+            </div>
+            <div class="price-row">
+              <span class="price-label">Sous-total</span>
+              <span class="price-value" id="subtotal">-</span>
+            </div>
+            <div class="price-row">
+              <span class="price-label">Frais de service</span>
+              <span class="price-value" id="service-fee">-</span>
+            </div>
+            <div class="price-row">
+              <span class="price-label">Total</span>
+              <span class="price-value" id="total-price">-</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section de paiement -->
+        <div class="payment-card">
+          <h2 style="margin-bottom: 20px; color: #1e293b; font-size: 1.5rem; font-weight: 800;">Paiement sécurisé</h2>
+          
+          <!-- Messages d'erreur/succès -->
+          <div id="error-message" class="error-message" style="display: none;"></div>
+          <div id="success-message" class="success-message" style="display: none;"></div>
+
+          <!-- Informations de sécurité -->
+          <div style="background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 12px; padding: 16px; margin-bottom: 24px;">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+              <span style="font-size: 1.2rem;">🔒</span>
+              <span style="font-weight: 700; color: #0369a1;">Paiement 100% sécurisé</span>
+            </div>
+            <p style="color: #0369a1; font-size: 0.9rem; margin: 0;">
+              Vos données sont protégées par Stripe, leader mondial des paiements en ligne.
+            </p>
+          </div>
+
+          <!-- Bouton de paiement -->
+          <button id="pay-button" class="btn-primary">
+            <span id="pay-button-text">Payer maintenant</span>
+            <span id="pay-button-amount" style="margin-left: 8px;"></span>
+          </button>
+
+          <!-- Informations supplémentaires -->
+          <div style="margin-top: 24px; padding-top: 24px; border-top: 1px solid #e2e8f0;">
+            <p style="color: #64748b; font-size: 0.9rem; text-align: center; margin: 0;">
+              En procédant au paiement, vous acceptez nos 
+              <a href="/conditions.html" style="color: #667eea; text-decoration: underline;">conditions générales</a> 
+              et notre 
+              <a href="/confidentialite.html" style="color: #667eea; text-decoration: underline;">politique de confidentialité</a>.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>SailingLoc</h3>
+          <p>Votre partenaire de confiance pour la location de bateaux de plaisance.</p>
+        </div>
+        <div class="footer-section">
+          <h4>Liens utiles</h4>
+          <ul>
+            <li><a href="/boats.html">Nos bateaux</a></li>
+            <li><a href="/experience.html">Expérience</a></li>
+            <li><a href="/contact.html">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h4>Support</h4>
+          <ul>
+            <li><a href="/conditions.html">Conditions générales</a></li>
+            <li><a href="/confidentialite.html">Confidentialité</a></li>
+            <li><a href="/mentions.html">Mentions légales</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2024 SailingLoc. Tous droits réservés.</p>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

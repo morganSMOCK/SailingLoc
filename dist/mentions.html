@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mentions légales – SailingLoc</title>
+  <meta name="description" content="Mentions légales de SailingLoc : éditeur du site, hébergeur, propriété intellectuelle, responsabilités, données personnelles, cookies, médiation et droit applicable.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Styles spécifiques à la page Mentions légales -->
+  <style>
+    .ml-layout{
+      display:grid; 
+      grid-template-columns: minmax(220px, 320px) 1fr; 
+      gap: var(--space-2xl, 2rem);
+      align-items:start;
+    }
+    .ml-toc{ position: sticky; top: 92px; align-self:start; }
+    .ml-toc .toc-card{
+      background:#fff; border:1px solid var(--gray-200); border-radius: var(--radius-2xl, 18px);
+      box-shadow: var(--shadow-lg); padding: 16px 16px 6px;
+    }
+    .ml-toc h3{ margin:0 0 6px; font-weight:900; font-size:1.05rem; letter-spacing:-.01em; color:var(--gray-900); }
+    .toc-list{ list-style:none; padding:4px 2px 10px; margin:0; display:grid; gap:8px; max-height:58vh; overflow:auto; }
+    .toc-list a{
+      display:block; text-decoration:none; font-weight:700; color:var(--gray-700);
+      padding:8px 10px; border-radius:12px; border:1px solid transparent; transition: var(--transition-fast, .15s ease); line-height:1.35;
+    }
+    .toc-list a:hover{ background: var(--gray-50); border-color: var(--gray-200); transform: translateX(2px); }
+    .toc-list a.is-active{ background: rgba(0,102,255,.06); border-color:#bcd3ff; color: var(--primary); }
+    .toc-actions{ display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
+    .btn-outline{
+      display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:10px 12px;
+      font-weight:800; font-size:.9rem; border-radius:14px; border:2px solid var(--gray-200); background:#fff; color:var(--gray-700);
+      cursor:pointer; transition: var(--transition-fast, .15s ease);
+    }
+    .btn-outline:hover{ border-color: var(--primary); color: var(--primary); transform: translateY(-1px); }
+    .badge{
+      display:inline-flex; align-items:center; gap:6px; padding:6px 10px; border-radius:999px; font-weight:800; font-size:.8rem;
+      border:1px solid #d8e3ff; background:#f7fbff; color:#203a5b;
+    }
+    .legal-meta{ display:flex; gap:10px; flex-wrap:wrap; margin-top:10px; }
+
+    .legal-grid{ display:grid; gap: var(--space-2xl, 2rem); }
+    .legal-section{
+      background:#fff; border:1px solid var(--gray-200); border-radius: var(--radius-2xl);
+      box-shadow: var(--shadow-lg); padding: clamp(16px, 2vw, 24px);
+    }
+    .legal-section .section-title{ display:flex; align-items:center; gap:10px; margin-bottom:8px; }
+    .anchor{ font:inherit; color:var(--gray-400); text-decoration:none; }
+    .legal-list{ margin: 8px 0 0 1.25rem; }
+    .grid-2{ display:grid; grid-template-columns: 1fr 1fr; gap:14px; }
+    .info-block{
+      background:#f8fafc; border:1px solid var(--gray-200); border-radius:14px; padding:12px 14px; font-weight:700; color:var(--gray-700);
+    }
+    .kpi-lite{ display:grid; grid-template-columns: repeat(auto-fit, minmax(160px,1fr)); gap:10px; margin-top:12px; }
+    .kpi-lite .kpi{ background:rgba(255,255,255,.6); border:1px solid var(--gray-200); }
+    @media (max-width:980px){ .ml-layout{ grid-template-columns: 1fr; } .ml-toc{ position: static; } }
+  </style>
+  <script type="module" crossorigin src="/assets/AuthService-BR8AMDic.js"></script>
+  <script type="module" src="/assets/main.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/style-PcnroYTo.css">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav id="navbar" class="navbar">
+    <div class="nav-container">
+      <div class="nav-brand" style="display:flex; align-items:center; gap:10px;">
+        <img src="/assets/sailingloc_logo_mark_no_text_512-CzIWSV09.png" alt="Logo SailingLoc" style="height:48px;vertical-align:middle;">
+        <h2 style="
+          font-size:2.2rem; font-weight:900;
+          background: linear-gradient(90deg, #2f7fe0 0%, #35c1a0 100%);
+          -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+          letter-spacing:-1px; margin:0;">
+          SailingLoc
+        </h2>
+      </div>
+
+      <div class="nav-menu" id="nav-menu">
+        <a href="index.html" class="nav-link" data-i18n="nav.home">Accueil</a>
+        <a href="boats.html" class="nav-link" data-i18n="nav.boats">Bateaux</a>
+        <a href="experience.html" class="nav-link" data-i18n="nav.experience">Experience</a>
+        <a href="contact.html" class="nav-link" data-i18n="nav.contact">Contact</a>
+      </div>
+
+      <div class="nav-auth">
+        <select id="langSwitcher" aria-label="Language" style="margin-right:12px">
+          <option value="fr" selected>FR</option>
+          <option value="en">EN</option>
+        </select>
+        <button id="login-btn" class="btn-secondary" data-i18n="auth.login">Connexion</button>
+        <button id="register-btn" class="btn-primary" data-i18n="auth.register">Inscription</button>
+
+        <!-- Menu utilisateur (caché par défaut) -->
+        <div id="user-menu" class="user-menu" style="display:none;">
+          <div class="user-avatar" id="user-avatar"><span id="user-initials">JD</span></div>
+          <div class="user-dropdown" id="user-dropdown">
+            <div class="user-info">
+              <div class="user-name" id="user-name">John Doe</div>
+              <div class="user-email" id="user-email">john@example.com</div>
+            </div>
+            <div class="dropdown-divider"></div>
+            <a href="#" id="profile-link" class="dropdown-item"><span class="dropdown-icon">👤</span>Mon Profil</a>
+            <a href="#" id="bookings-link" class="dropdown-item"><span class="dropdown-icon">📋</span>Mes Réservations</a>
+            <a href="#" id="boats-link" class="dropdown-item" style="display:none;"><span class="dropdown-icon">🛥️</span>Mes Bateaux</a>
+            <div class="dropdown-divider"></div>
+            <a href="#" id="logout-link" class="dropdown-item logout"><span class="dropdown-icon">🚪</span>Déconnexion</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="mobile-menu-toggle" id="mobile-menu-toggle"><span></span><span></span><span></span></div>
+    </div>
+  </nav>
+
+  <!-- Fil d’Ariane -->
+  <nav class="breadcrumb" aria-label="Breadcrumb" style="margin-top:78px">
+    <div class="container">
+      <a href="index.html">Accueil</a> &nbsp;›&nbsp; <span>Mentions légales</span>
+    </div>
+  </nav>
+
+  <!-- Héro légal -->
+  <section class="page-header">
+    <div class="container">
+      <h1>Mentions légales</h1>
+      <p>Informations relatives à l’éditeur du site, à l’hébergeur, aux droits et responsabilités liés à l’utilisation de SailingLoc.</p>
+      <div class="kpis kpi-lite">
+        <div class="kpi"><span>14 sept. 2025</span><small>Dernière mise à jour</small></div>
+        <div class="kpi"><span>À compléter</span><small>Éditeur</small></div>
+        <div class="kpi"><span>À compléter</span><small>Hébergeur</small></div>
+      </div>
+    </div>
+  </section>
+
+  <main class="main-content">
+    <div class="container ml-layout">
+      <!-- Sommaire collant -->
+      <aside class="ml-toc">
+        <div class="toc-card">
+          <h3>Sommaire</h3>
+          <ul class="toc-list" id="toc-ml">
+            <li><a href="#editeur">1. Éditeur du site</a></li>
+            <li><a href="#hebergeur">2. Hébergeur</a></li>
+            <li><a href="#contact">3. Contact</a></li>
+            <li><a href="#propriete">4. Propriété intellectuelle</a></li>
+            <li><a href="#conditions">5. Conditions d’utilisation</a></li>
+            <li><a href="#responsabilites">6. Responsabilités</a></li>
+            <li><a href="#donnees">7. Données personnelles</a></li>
+            <li><a href="#cookies">8. Cookies</a></li>
+            <li><a href="#liens">9. Liens hypertextes</a></li>
+            <li><a href="#accessibilite">10. Accessibilité</a></li>
+            <li><a href="#mediation">11. Médiation & RLL</a></li>
+            <li><a href="#droit">12. Droit applicable</a></li>
+            <li><a href="#credits">13. Crédits & sources</a></li>
+            <li><a href="#maj">14. Mise à jour</a></li>
+          </ul>
+          <div class="toc-actions">
+            <button class="btn-outline" onclick="window.print()">🖨️ Imprimer / PDF</button>
+            <a href="#top" class="btn-outline">↑ Haut de page</a>
+          </div>
+          <div class="legal-meta">
+            <span class="badge">Version : 1.0</span>
+            <span class="badge">Langue : FR</span>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Contenu -->
+      <div class="legal-grid">
+        <section id="editeur" class="legal-section">
+          <h2 class="section-title">1. Éditeur du site <a class="anchor" href="#editeur">#</a></h2>
+          <div class="grid-2">
+            <div class="info-block">
+              <p><strong>Dénomination :</strong> À compléter (ex. SailingLoc SAS)</p>
+              <p><strong>Forme :</strong> À compléter (ex. SAS au capital de … €)</p>
+              <p><strong>Siège social :</strong> À compléter (adresse complète)</p>
+              <p><strong>Immatriculation :</strong> À compléter (RCS / SIREN / TVA intracom)</p>
+            </div>
+            <div class="info-block">
+              <p><strong>Directeur de la publication :</strong> À compléter (Nom, fonction)</p>
+              <p><strong>Responsable de la rédaction :</strong> À compléter (si différent)</p>
+              <p><strong>Contact juridique :</strong> À compléter (email dédié si possible)</p>
+              <p><strong>Activité :</strong> Plateforme d’intermédiation entre propriétaires et locataires de bateaux.</p>
+            </div>
+          </div>
+        </section>
+
+        <section id="hebergeur" class="legal-section">
+          <h2 class="section-title">2. Hébergeur <a class="anchor" href="#hebergeur">#</a></h2>
+          <div class="grid-2">
+            <div class="info-block">
+              <p><strong>Nom :</strong> À compléter (ex. OVHcloud / Scaleway / AWS / GCP / Azure)</p>
+              <p><strong>Adresse :</strong> À compléter (adresse du siège/hébergement)</p>
+            </div>
+            <div class="info-block">
+              <p><strong>Téléphone :</strong> À compléter</p>
+              <p><strong>Site :</strong> À compléter</p>
+            </div>
+          </div>
+        </section>
+
+        <section id="contact" class="legal-section">
+          <h2 class="section-title">3. Contact <a class="anchor" href="#contact">#</a></h2>
+          <p>Pour toute question concernant le site ou son contenu : via la <a href="contact.html">page Contact</a> (support produit) ou par email à <strong>À compléter</strong>.</p>
+        </section>
+
+        <section id="propriete" class="legal-section">
+          <h2 class="section-title">4. Propriété intellectuelle <a class="anchor" href="#propriete">#</a></h2>
+          <p>L’ensemble des éléments du site (textes, graphismes, logos, icônes, médias, architecture, code) est protégé par les lois relatives à la propriété intellectuelle. Toute reproduction, représentation, modification, publication, adaptation de tout ou partie des éléments du site, sur quelque support que ce soit, est interdite sans autorisation écrite préalable.</p>
+        </section>
+
+        <section id="conditions" class="legal-section">
+          <h2 class="section-title">5. Conditions d’utilisation <a class="anchor" href="#conditions">#</a></h2>
+          <p>L’utilisation du site implique l’acceptation pleine et entière des <a href="conditions.html">Conditions Générales d’Utilisation</a>. Ces conditions peuvent être modifiées ou complétées à tout moment.</p>
+        </section>
+
+        <section id="responsabilites" class="legal-section">
+          <h2 class="section-title">6. Responsabilités <a class="anchor" href="#responsabilites">#</a></h2>
+          <ul class="legal-list">
+            <li>Malgré les soins apportés à la publication, des inexactitudes ou omissions peuvent subsister ; merci de les signaler.</li>
+            <li>SailingLoc n’est pas responsable des dommages directs ou indirects liés à l’utilisation du site, ni des contenus externes accessibles via des liens sortants.</li>
+            <li>Le site peut être temporairement indisponible pour maintenance, mise à jour ou cas de force majeure.</li>
+          </ul>
+        </section>
+
+        <section id="donnees" class="legal-section">
+          <h2 class="section-title">7. Données personnelles <a class="anchor" href="#donnees">#</a></h2>
+          <p>Le traitement des données est décrit dans la <a href="confidentialite.html">Politique de confidentialité</a>. Pour exercer vos droits (accès, rectification, opposition, effacement, limitation, portabilité), contactez <strong>À compléter (DPO / Référent)</strong> à <strong>À compléter (email)</strong>.</p>
+        </section>
+
+        <section id="cookies" class="legal-section">
+          <h2 class="section-title">8. Cookies <a class="anchor" href="#cookies">#</a></h2>
+          <p>Les cookies/traceurs utilisés, leurs finalités et vos choix (consentement, retrait) sont détaillés dans la <a href="confidentialite.html">Politique de confidentialité / Cookies</a> et la bannière de consentement affichée lors de votre première visite.</p>
+        </section>
+
+        <section id="liens" class="legal-section">
+          <h2 class="section-title">9. Liens hypertextes <a class="anchor" href="#liens">#</a></h2>
+          <p>La mise en place de liens vers le site est autorisée sous réserve d’absence de confusion sur l’origine des services et de ne pas porter atteinte à l’image de SailingLoc. SailingLoc décline toute responsabilité pour les contenus des sites tiers pointés.</p>
+        </section>
+
+        <section id="accessibilite" class="legal-section">
+          <h2 class="section-title">10. Accessibilité <a class="anchor" href="#accessibilite">#</a></h2>
+          <p>SailingLoc s’efforce de rendre ses contenus accessibles au plus grand nombre. Pour toute difficulté d’accès, merci de nous écrire via la <a href="contact.html">page Contact</a>.</p>
+        </section>
+
+        <section id="mediation" class="legal-section">
+          <h2 class="section-title">11. Médiation & RLL <a class="anchor" href="#mediation">#</a></h2>
+          <p>En cas de litige de consommation, après démarche préalable écrite auprès de notre service client, vous pouvez saisir un médiateur de la consommation : <strong>À compléter (organisme de médiation, coordonnées)</strong>. Plateforme européenne de Règlement en Ligne des Litiges (RLL) : <em>À compléter (URL)</em>.</p>
+        </section>
+
+        <section id="droit" class="legal-section">
+          <h2 class="section-title">12. Droit applicable <a class="anchor" href="#droit">#</a></h2>
+          <p>Le présent site est soumis au droit français. Sous réserve de dispositions d’ordre public, tout litige relève des juridictions françaises compétentes.</p>
+        </section>
+
+        <section id="credits" class="legal-section">
+          <h2 class="section-title">13. Crédits & sources <a class="anchor" href="#credits">#</a></h2>
+          <ul class="legal-list">
+            <li>Identité visuelle & UI : © SailingLoc.</li>
+            <li>Photographies d’illustration : Pexels/Unsplash (réutilisation selon leurs licences), visuels propriétaires.</li>
+            <li>Icônes/emoji : systèmes natifs ou packs libres (ex. Twemoji / Lucide).</li>
+          </ul>
+        </section>
+
+        <section id="maj" class="legal-section">
+          <h2 class="section-title">14. Mise à jour <a class="anchor" href="#maj">#</a></h2>
+          <div class="grid-2">
+            <div class="info-block"><strong>Version :</strong> 1.0</div>
+            <div class="info-block"><strong>Date :</strong> 14/09/2025</div>
+          </div>
+          <p style="margin-top:8px;color:#6b7280;"><em>Ce modèle est fourni à titre informatif et ne constitue pas un conseil juridique. Faites-le relire par un professionnel.</em></p>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer (fourni) -->
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>⛵ SailingLoc</h3>
+          <p>Votre partenaire de confiance pour la location de bateaux de luxe</p>
+        </div>
+        
+        <div class="footer-section">
+          <h4>Services</h4>
+          <ul>
+            <li><a href="boats.html">Location de bateaux</a></li>
+            <li><a href="experience.html">Experience premium</a></li>
+            <li><a href="contact.html">Support client</a></li>
+          </ul>
+        </div>
+        
+       <div class="footer-section">
+        <h4>Légal</h4>
+        <ul>
+          <li><a href="conditions.html">Conditions générales</a></li>
+          <li><a href="confidentialite.html">Politique de confidentialité</a></li>
+          <li><a href="mentions.html">Mentions légales</a></li>
+        </ul>
+      </div>
+      </div><!-- fermeture pour .footer-content -->
+
+      <div class="footer-bottom">
+        <p>&copy; 2025 SailingLoc. Tous droits réservés.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Surbrillance auto du sommaire (mentions légales)
+    (function(){
+      const links = Array.from(document.querySelectorAll('#toc-ml a'));
+      const map = new Map(links.map(a => [a.getAttribute('href').slice(1), a]));
+      const obs = new IntersectionObserver((entries)=>{
+        entries.forEach(e=>{
+          if(e.isIntersecting){
+            const id = e.target.id;
+            links.forEach(l=>l.classList.remove('is-active'));
+            const link = map.get(id);
+            if(link) link.classList.add('is-active');
+          }
+        });
+      }, { rootMargin: "-40% 0px -50% 0px", threshold: 0.01 });
+
+      document.querySelectorAll('section[id]').forEach(sec=>obs.observe(sec));
+    })();
+  </script>
+</body>
+</html>
+

@@ -1,3 +1,5 @@
+import { getApiBaseUrl } from './utils/apiConfig.js';
+
 // Récupération des paramètres URL
 const urlParams = new URLSearchParams(window.location.search);
 const sessionId = urlParams.get('session_id');
@@ -62,10 +64,10 @@ async function loadBookingData() {
     
     if (sessionId) {
       // Vérifier la session Stripe
-      response = await fetch(`/api/payments/verify-session/${sessionId}`);
+      response = await fetch(`${getApiBaseUrl()}/payments/verify-session/${sessionId}`);
     } else if (bookingId) {
       // Charger directement la réservation
-      response = await fetch(`/api/bookings/${bookingId}`);
+      response = await fetch(`${getApiBaseUrl()}/bookings/${bookingId}`);
     }
     
     if (!response.ok) {
@@ -88,7 +90,7 @@ async function loadBookingData() {
 // Charger les données du bateau
 async function loadBoatData(boatId) {
   try {
-    const response = await fetch(`/api/boats/${boatId}`);
+    const response = await fetch(`${getApiBaseUrl()}/boats/${boatId}`);
     if (!response.ok) {
       throw new Error(`Erreur HTTP: ${response.status}`);
     }

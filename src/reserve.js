@@ -1,4 +1,6 @@
-const API = (import.meta?.env?.VITE_API_URL) || '/api';
+import { getApiBaseUrl } from './utils/apiConfig.js';
+
+const API = getApiBaseUrl();
 
 const params = new URLSearchParams(location.search);
 const boatId = params.get('id');

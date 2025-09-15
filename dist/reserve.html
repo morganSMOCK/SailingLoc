@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Réserver — SailingLoc</title>
+  <meta name="description" content="Réservez votre bateau SailingLoc : calendrier de disponibilité, prix et paiement sécurisé.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ------- Styles spécifiques réservation améliorés ------- */
+    .booking-hero{
+      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+      color: #fff;
+      padding: clamp(40px, 8vw, 80px) 0;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .booking-hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.05"/><circle cx="10" cy="60" r="0.5" fill="white" opacity="0.05"/><circle cx="90" cy="40" r="0.5" fill="white" opacity="0.05"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+      opacity: 0.3;
+    }
+    .booking-hero h1{
+      font-family: var(--font-display);
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      margin-bottom: 16px;
+      position: relative;
+      z-index: 1;
+    }
+    .booking-hero p{
+      opacity: 0.95;
+      font-size: 1.2rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .booking-page{
+      padding: clamp(30px, 5vw, 60px) 0;
+      background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+    }
+    .booking-grid{
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: clamp(20px, 4vw, 40px);
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    @media (max-width: 1024px){
+      .booking-grid{grid-template-columns: 1fr; gap: 30px;}
+    }
+
+    .booking-widget, .booking-summary .summary-card{
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 24px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      padding: clamp(24px, 3vw, 32px);
+      transition: all 0.3s ease;
+    }
+    .booking-widget:hover, .booking-summary .summary-card:hover{
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      transform: translateY(-2px);
+    }
+
+    .widget-section + .widget-section{
+      margin-top: 24px;
+      padding-top: 24px;
+      border-top: 1px solid #f1f5f9;
+    }
+
+    .calendar-header{
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .calendar-nav{
+      display: flex;
+      gap: 8px;
+    }
+    .calendar-nav button{
+      border: 1px solid #e2e8f0;
+      background: #fff;
+      padding: 10px 14px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-weight: 600;
+    }
+    .calendar-nav button:hover{
+      background: #f8fafc;
+      border-color: #cbd5e1;
+    }
+    #calendar-title{
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      font-size: 1.25rem;
+      color: #1e293b;
+    }
+
+    .calendar{
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .cal-head{
+      font-size: 0.875rem;
+      color: #64748b;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 8px;
+      padding: 8px 0;
+    }
+    .cal-cell{
+      aspect-ratio: 1;
+      border: 2px solid #f1f5f9;
+      border-radius: 16px;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-weight: 700;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+    .cal-cell:hover:not(.disabled):not(.empty){
+      background: #f8fafc;
+      border-color: #e2e8f0;
+      transform: scale(1.05);
+    }
+    .cal-cell.empty{visibility: hidden}
+    .cal-cell.disabled{
+      color: #94a3b8;
+      background: #f8fafc;
+      border-style: dashed;
+      cursor: not-allowed;
+    }
+    .cal-cell.selected{
+      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+      color: #fff;
+      border-color: transparent;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+    }
+    .cal-cell.between{
+      background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+      border-color: #93c5fd;
+      color: #1d4ed8;
+    }
+
+    .calendar-legend{
+      margin-top: 16px;
+      font-size: 0.9rem;
+      color: #64748b;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .badge{
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border-radius: 6px;
+      margin: 0 8px -3px 0;
+      border: 2px solid #e2e8f0;
+    }
+    .badge.free{background: #fff; border-color: #e2e8f0;}
+    .badge.busy{background: #f1f5f9; border-color: #cbd5e1;}
+    .badge.selected{background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); border-color: transparent;}
+
+    .fields-row{
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 16px;
+    }
+    @media (max-width:720px){.fields-row{grid-template-columns:1fr 1fr}}
+    
+    .field label{
+      font-weight: 800;
+      color: #374151;
+      font-size: 0.9rem;
+      margin-bottom: 8px;
+      display: block;
+    }
+    .field input, .field select{
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid #e5e7eb;
+      border-radius: 16px;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: all 0.2s ease;
+      background: #fff;
+    }
+    .field input:focus, .field select:focus{
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+      transform: translateY(-1px);
+    }
+
+    /* Boutons améliorés */
+    .btn-primary{
+      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+      color: #fff;
+      border: none;
+      padding: 16px 32px;
+      border-radius: 16px;
+      font-weight: 700;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-primary:hover{
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(59, 130, 246, 0.6);
+    }
+    .btn-primary:active{
+      transform: translateY(0);
+    }
+    .btn-primary:disabled{
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Récapitulatif amélioré */
+    .booking-summary{
+      position: sticky;
+      top: 20px;
+    }
+    .summary-card{
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 24px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      padding: 32px;
+      transition: all 0.3s ease;
+    }
+    .summary-card:hover{
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      transform: translateY(-2px);
+    }
+
+    .boat-image{
+      width: 100%;
+      height: 200px;
+      border-radius: 16px;
+      overflow: hidden;
+      margin-bottom: 20px;
+      position: relative;
+    }
+    .boat-image img{
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+    .boat-image:hover img{
+      transform: scale(1.05);
+    }
+
+    .boat-title{
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #1e293b;
+      margin-bottom: 8px;
+    }
+    .boat-type{
+      display: inline-block;
+      background: linear-gradient(135deg, #e0e7ff 0%, #f0f4ff 100%);
+      color: #4f46e5;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.875rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+    .boat-location{
+      color: #64748b;
+      font-size: 0.95rem;
+      margin-bottom: 16px;
+    }
+
+    .price-section{
+      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+      border-radius: 16px;
+      padding: 20px;
+      margin: 20px 0;
+    }
+    .price-row{
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .price-row:last-child{
+      margin-bottom: 0;
+      padding-top: 12px;
+      border-top: 2px solid #e2e8f0;
+      font-weight: 800;
+      font-size: 1.1rem;
+    }
+    .price-label{
+      color: #64748b;
+      font-weight: 600;
+    }
+    .price-value{
+      color: #1e293b;
+      font-weight: 700;
+    }
+
+    /* Messages d'erreur améliorés */
+    .error-message{
+      background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+      border: 2px solid #fecaca;
+      color: #dc2626;
+      padding: 16px 20px;
+      border-radius: 16px;
+      margin: 16px 0;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .error-message::before{
+      content: '⚠️';
+      font-size: 1.2rem;
+    }
+
+    /* Loading state */
+    .loading{
+      opacity: 0.6;
+      pointer-events: none;
+    }
+    .loading::after{
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 20px;
+      height: 20px;
+      margin: -10px 0 0 -10px;
+      border: 2px solid #f3f3f3;
+      border-top: 2px solid #667eea;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin{
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .price-row{display:flex;align-items:center;justify-content:space-between;margin-top:8px;font-weight:800}
+    .price-row .total{font-size:1.1rem}
+
+    .booking-submit{margin-top:12px;width:100%}
+    .form-error{margin-top:10px;color:#b91c1c;background:#fee2e2;border:1px solid #fecaca;padding:10px;border-radius:12px;font-weight:700}
+
+    .summary-image{width:100%;height:200px;object-fit:cover;border-radius:14px;border:1px solid var(--gray-200);margin-bottom:10px}
+    .summary-card h2{font-size:1.35rem;font-weight:900;margin:6px 0}
+    .tag{display:inline-flex;padding:4px 8px;border-radius:999px;background:#eef3ff;color:#1e3a8a;border:1px solid #cfe0ff;font-size:.8rem;font-weight:800;margin-right:6px}
+    .meta{color:var(--gray-600);font-weight:600;margin:8px 0}
+    .rate{font-weight:900;font-size:1.1rem}
+    .notice.error{background:#fff1f1;border:1px solid #ffd4d4;color:#7a1f1f;border-radius:14px;padding:14px;margin:12px 0;font-weight:800}
+  </style>
+  <script type="module" crossorigin src="/assets/reserve-B8ghPo8H.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/AuthService-BR8AMDic.js">
+  <link rel="modulepreload" crossorigin href="/assets/init-CvdFLqyy.js">
+  <link rel="modulepreload" crossorigin href="/assets/apiConfig-Hw5SgeDb.js">
+  <link rel="stylesheet" crossorigin href="/assets/style-PcnroYTo.css">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav id="navbar" class="navbar">
+    <div class="nav-container">
+      <div class="nav-brand" style="display: flex; align-items: center; gap: 10px;">
+        <img src="/assets/sailingloc_logo_mark_no_text_512-CzIWSV09.png" alt="Logo SailingLoc" style="height:48px;vertical-align:middle;">
+        <h2 style="
+          font-size:2.2rem;
+          font-weight:900;
+          background: linear-gradient(90deg, #2f7fe0 0%, #35c1a0 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+          letter-spacing: -1px;
+          margin: 0;
+        ">
+          SailingLoc
+        </h2>
+      </div>
+      
+      <div class="nav-menu" id="nav-menu">
+        <a href="index.html" class="nav-link">Accueil</a>
+        <a href="boats.html" class="nav-link">Bateaux</a>
+        <a href="experience.html" class="nav-link">Experience</a>
+        <a href="contact.html" class="nav-link">Contact</a>
+      </div>
+      
+      <div class="nav-auth">
+        <button id="login-btn" class="btn-secondary">Connexion</button>
+        <button id="register-btn" class="btn-primary">Inscription</button>
+        
+        <!-- Menu utilisateur (caché par défaut) -->
+        <div id="user-menu" class="user-menu" style="display: none;">
+          <div class="user-avatar" id="user-avatar">
+            <span id="user-initials">JD</span>
+          </div>
+          <div class="user-dropdown" id="user-dropdown">
+            <div class="user-info">
+              <div class="user-name" id="user-name">John Doe</div>
+              <div class="user-email" id="user-email">john@example.com</div>
+            </div>
+            <div class="dropdown-divider"></div>
+            <a href="#" id="profile-link" class="dropdown-item"><span class="dropdown-icon">👤</span> Mon Profil</a>
+            <a href="#" id="bookings-link" class="dropdown-item"><span class="dropdown-icon">📋</span> Mes Réservations</a>
+            <a href="#" id="boats-link" class="dropdown-item" style="display: none;"><span class="dropdown-icon">🛥️</span> Mes Bateaux</a>
+            <div class="dropdown-divider"></div>
+            <a href="#" id="logout-link" class="dropdown-item logout"><span class="dropdown-icon">🚪</span> Déconnexion</a>
+          </div>
+        </div>
+      </div>
+      
+      <div class="mobile-menu-toggle" id="mobile-menu-toggle">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Breadcrumb Navigation -->
+  <section class="breadcrumb-section" style="background: #f8fafc; padding: 16px 0; border-bottom: 1px solid #e2e8f0;">
+    <div class="container">
+      <nav class="breadcrumb" style="display: flex; align-items: center; gap: 8px; font-size: 0.9rem; color: #64748b;">
+        <a href="/" style="color: #3b82f6; text-decoration: none; font-weight: 500;">Accueil</a>
+        <span style="color: #94a3b8;">›</span>
+        <a href="/boats.html" style="color: #3b82f6; text-decoration: none; font-weight: 500;">Bateaux</a>
+        <span style="color: #94a3b8;">›</span>
+        <span id="breadcrumb-boat-name" style="color: #374151; font-weight: 600;">Chargement...</span>
+      </nav>
+    </div>
+  </section>
+
+  <section class="booking-hero">
+    <div class="container">
+      <h1>Réserver ce bateau</h1>
+      <p>Choisissez vos dates, vérifiez la disponibilité et payez en ligne.</p>
+    </div>
+  </section>
+
+  <main class="container booking-page">
+    <div id="not-found" class="notice error" style="display:none;">Bateau introuvable.</div>
+
+    <div class="booking-grid">
+      <!-- Colonne gauche : calendrier + formulaire -->
+      <section class="booking-widget">
+        <div class="widget-section">
+          <div class="calendar-header">
+            <div class="calendar-nav">
+              <button id="prev-month" aria-label="Mois précédent">‹</button>
+            </div>
+            <div id="calendar-title">Mois</div>
+            <div class="calendar-nav">
+              <button id="next-month" aria-label="Mois suivant">›</button>
+            </div>
+          </div>
+          <!-- entête jours -->
+          <div class="calendar">
+            <div class="cal-head">L</div><div class="cal-head">M</div><div class="cal-head">M</div>
+            <div class="cal-head">J</div><div class="cal-head">V</div><div class="cal-head">S</div><div class="cal-head">D</div>
+          </div>
+          <div id="calendar" class="calendar"></div>
+          <p class="calendar-legend"><span class="badge free"></span>Disponible <span class="badge busy"></span>Indisponible <span class="badge selected"></span>Sélection</p>
+        </div>
+
+        <div class="widget-section">
+          <div class="fields-row">
+            <div class="field">
+              <label>Départ</label>
+              <input type="date" id="start-date">
+            </div>
+            <div class="field">
+              <label>Retour</label>
+              <input type="date" id="end-date">
+            </div>
+            <div class="field">
+              <label>Passagers</label>
+              <select id="guests"></select>
+            </div>
+          </div>
+
+          <div class="price-row">
+            <div><span id="nights">0</span> nuit(s) × <span id="rate">0</span> €</div>
+            <div class="total">Total : <strong id="total">0 €</strong></div>
+          </div>
+
+          <button class="btn-primary booking-submit" id="checkout-btn" disabled>Continuer vers paiement</button>
+          <div id="form-error" class="form-error" style="display:none"></div>
+        </div>
+      </section>
+
+      <!-- Colonne droite : résumé bateau -->
+      <aside class="booking-summary">
+        <div class="summary-card">
+          <img id="boat-image" class="summary-image" src="" alt="">
+          <h2 id="boat-name">—</h2>
+          <div><span id="boat-type" class="tag"></span> <span id="boat-category" class="tag"></span></div>
+          <div class="meta"><span id="boat-port">—</span> • <span id="boat-capacity">—</span></div>
+          <div class="rate"><span id="sidebar-rate">0€</span> / jour</div>
+          <ul class="summary-specs" id="summary-specs" style="margin-top:10px;color:var(--gray-700);font-weight:600"></ul>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <!-- Footer (ton snippet) -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>⛵ SailingLoc</h3>
+          <p>Votre partenaire de confiance pour la location de bateaux de luxe</p>
+        </div>
+        <div class="footer-section">
+          <h4>Services</h4>
+          <ul>
+            <li><a href="boats.html">Location de bateaux</a></li>
+            <li><a href="experience.html">Experience premium</a></li>
+            <li><a href="contact.html">Support client</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h4>Légal</h4>
+          <ul>
+            <li><a href="conditions.html">Conditions générales</a></li>
+            <li><a href="confidentialite.html">Politique de confidentialité</a></li>
+            <li><a href="mentions.html">Mentions légales</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2025 SailingLoc. Tous droits réservés.</p>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

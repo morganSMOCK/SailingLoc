@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Confirmation de réservation — SailingLoc</title>
+  <meta name="description" content="Votre réservation a été confirmée ! Merci de votre confiance.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* Styles spécifiques pour la page de confirmation */
+    .confirmation-hero{
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: #fff;
+      padding: clamp(40px, 8vw, 80px) 0;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .confirmation-hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.05"/><circle cx="10" cy="60" r="0.5" fill="white" opacity="0.05"/><circle cx="90" cy="40" r="0.5" fill="white" opacity="0.05"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+      opacity: 0.3;
+    }
+    .confirmation-hero h1{
+      font-family: var(--font-display);
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      margin-bottom: 16px;
+      position: relative;
+      z-index: 1;
+    }
+    .confirmation-hero p{
+      opacity: 0.95;
+      font-size: 1.2rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .confirmation-page{
+      padding: clamp(30px, 5vw, 60px) 0;
+      background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+    }
+    .confirmation-grid{
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(20px, 4vw, 40px);
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    @media (max-width: 1024px){
+      .confirmation-grid{grid-template-columns: 1fr; gap: 30px;}
+    }
+
+    .confirmation-card, .summary-card{
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 24px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      padding: clamp(24px, 3vw, 32px);
+      transition: all 0.3s ease;
+    }
+    .confirmation-card:hover, .summary-card:hover{
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      transform: translateY(-2px);
+    }
+
+    .success-icon{
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+      font-size: 2rem;
+      color: #fff;
+    }
+
+    .booking-number{
+      background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+      border: 2px solid #bae6fd;
+      border-radius: 16px;
+      padding: 16px 20px;
+      margin: 20px 0;
+      text-align: center;
+    }
+    .booking-number-label{
+      color: #0369a1;
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .booking-number-value{
+      color: #0c4a6e;
+      font-size: 1.5rem;
+      font-weight: 800;
+      font-family: 'Courier New', monospace;
+    }
+
+    .boat-image{
+      width: 100%;
+      height: 200px;
+      border-radius: 16px;
+      overflow: hidden;
+      margin-bottom: 20px;
+      position: relative;
+    }
+    .boat-image img{
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+    .boat-image:hover img{
+      transform: scale(1.05);
+    }
+
+    .boat-title{
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #1e293b;
+      margin-bottom: 8px;
+    }
+    .boat-type{
+      display: inline-block;
+      background: linear-gradient(135deg, #e0e7ff 0%, #f0f4ff 100%);
+      color: #4f46e5;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.875rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+    .boat-location{
+      color: #64748b;
+      font-size: 0.95rem;
+      margin-bottom: 16px;
+    }
+
+    .booking-details{
+      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+      border-radius: 16px;
+      padding: 20px;
+      margin: 20px 0;
+    }
+    .detail-row{
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .detail-row:last-child{
+      margin-bottom: 0;
+    }
+    .detail-label{
+      color: #64748b;
+      font-weight: 600;
+    }
+    .detail-value{
+      color: #1e293b;
+      font-weight: 700;
+    }
+
+    .price-section{
+      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+      border-radius: 16px;
+      padding: 20px;
+      margin: 20px 0;
+    }
+    .price-row{
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .price-row:last-child{
+      margin-bottom: 0;
+      padding-top: 12px;
+      border-top: 2px solid #e2e8f0;
+      font-weight: 800;
+      font-size: 1.1rem;
+    }
+    .price-label{
+      color: #64748b;
+      font-weight: 600;
+    }
+    .price-value{
+      color: #1e293b;
+      font-weight: 700;
+    }
+
+    .btn-primary{
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      border: none;
+      padding: 16px 32px;
+      border-radius: 16px;
+      font-weight: 700;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+      position: relative;
+      overflow: hidden;
+      text-decoration: none;
+      display: inline-block;
+      text-align: center;
+    }
+    .btn-primary:hover{
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+    }
+    .btn-primary:active{
+      transform: translateY(0);
+    }
+
+    .btn-secondary{
+      background: #fff;
+      color: #374151;
+      border: 2px solid #e5e7eb;
+      padding: 16px 32px;
+      border-radius: 16px;
+      font-weight: 700;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+      text-align: center;
+    }
+    .btn-secondary:hover{
+      background: #f9fafb;
+      border-color: #d1d5db;
+      transform: translateY(-1px);
+    }
+
+    .action-buttons{
+      display: flex;
+      gap: 16px;
+      margin-top: 24px;
+    }
+    @media (max-width: 640px){
+      .action-buttons{
+        flex-direction: column;
+      }
+    }
+
+    .email-notice{
+      background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+      border: 2px solid #bae6fd;
+      border-radius: 16px;
+      padding: 20px;
+      margin: 24px 0;
+      text-align: center;
+    }
+    .email-notice-icon{
+      font-size: 2rem;
+      margin-bottom: 12px;
+    }
+    .email-notice-title{
+      color: #0369a1;
+      font-weight: 700;
+      font-size: 1.1rem;
+      margin-bottom: 8px;
+    }
+    .email-notice-text{
+      color: #0c4a6e;
+      font-size: 0.95rem;
+      margin: 0;
+    }
+
+    .error-message{
+      background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+      border: 2px solid #fecaca;
+      color: #dc2626;
+      padding: 16px 20px;
+      border-radius: 16px;
+      margin: 16px 0;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .error-message::before{
+      content: '⚠️';
+      font-size: 1.2rem;
+    }
+  </style>
+  <script type="module" crossorigin src="/assets/booking-confirmation-DxUSopCc.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/AuthService-BR8AMDic.js">
+  <link rel="modulepreload" crossorigin href="/assets/init-CvdFLqyy.js">
+  <link rel="modulepreload" crossorigin href="/assets/apiConfig-Hw5SgeDb.js">
+  <link rel="stylesheet" crossorigin href="/assets/style-PcnroYTo.css">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav id="navbar" class="navbar">
+    <div class="nav-container">
+      <div class="nav-brand" style="display: flex; align-items: center; gap: 10px;">
+        <img src="/assets/sailingloc_logo_mark_no_text_512-CzIWSV09.png" alt="Logo SailingLoc" style="height:48px;vertical-align:middle;">
+        <h2 style="
+          font-size:2.2rem;
+          font-weight:900;
+          background: linear-gradient(90deg, #2f7fe0 0%, #35c1a0 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+          letter-spacing: -1px;
+          margin: 0;
+        ">
+          SailingLoc
+        </h2>
+      </div>
+      
+      <div class="nav-menu" id="nav-menu">
+        <a href="index.html" class="nav-link">Accueil</a>
+        <a href="boats.html" class="nav-link">Bateaux</a>
+        <a href="experience.html" class="nav-link">Experience</a>
+        <a href="contact.html" class="nav-link">Contact</a>
+      </div>
+      
+      <div class="nav-auth">
+        <button id="login-btn" class="btn-secondary">Connexion</button>
+        <button id="register-btn" class="btn-primary">Inscription</button>
+        
+        <!-- Menu utilisateur (caché par défaut) -->
+        <div id="user-menu" class="user-menu" style="display: none;">
+          <div class="user-avatar" id="user-avatar">
+            <span id="user-initials">JD</span>
+          </div>
+          <div class="user-dropdown" id="user-dropdown">
+            <div class="user-info">
+              <div class="user-name" id="user-name">John Doe</div>
+              <div class="user-email" id="user-email">john@example.com</div>
+            </div>
+            <div class="dropdown-divider"></div>
+            <a href="#" id="profile-link" class="dropdown-item"><span class="dropdown-icon">👤</span> Mon Profil</a>
+            <a href="#" id="bookings-link" class="dropdown-item"><span class="dropdown-icon">📋</span> Mes Réservations</a>
+            <a href="#" id="boats-link" class="dropdown-item" style="display: none;"><span class="dropdown-icon">🛥️</span> Mes Bateaux</a>
+            <div class="dropdown-divider"></div>
+            <a href="#" id="logout-link" class="dropdown-item logout"><span class="dropdown-icon">🚪</span> Déconnexion</a>
+          </div>
+        </div>
+      </div>
+      
+      <div class="mobile-menu-toggle" id="mobile-menu-toggle">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Breadcrumb Navigation -->
+  <section class="breadcrumb-section" style="background: #f8fafc; padding: 16px 0; border-bottom: 1px solid #e2e8f0;">
+    <div class="container">
+      <nav class="breadcrumb" style="display: flex; align-items: center; gap: 8px; font-size: 0.9rem; color: #64748b;">
+        <a href="/" style="color: #3b82f6; text-decoration: none; font-weight: 500;">Accueil</a>
+        <span style="color: #94a3b8;">›</span>
+        <a href="/boats.html" style="color: #3b82f6; text-decoration: none; font-weight: 500;">Bateaux</a>
+        <span style="color: #94a3b8;">›</span>
+        <span id="breadcrumb-boat-name" style="color: #374151; font-weight: 600;">Chargement...</span>
+        <span style="color: #94a3b8;">›</span>
+        <span style="color: #374151; font-weight: 600;">Confirmation</span>
+      </nav>
+    </div>
+  </section>
+
+  <!-- Hero Section -->
+  <section class="confirmation-hero">
+    <div class="container">
+      <h1>Réservation confirmée !</h1>
+      <p>Merci de votre confiance, votre réservation a été enregistrée avec succès</p>
+    </div>
+  </section>
+
+  <!-- Confirmation Page -->
+  <section class="confirmation-page">
+    <div class="container">
+      <div class="confirmation-grid">
+        <!-- Confirmation principale -->
+        <div class="confirmation-card">
+          <div class="success-icon">✅</div>
+          <h2 style="text-align: center; margin-bottom: 20px; color: #1e293b; font-size: 1.8rem; font-weight: 800;">
+            Félicitations !
+          </h2>
+          <p style="text-align: center; color: #64748b; margin-bottom: 24px; font-size: 1.1rem;">
+            Votre réservation a été confirmée et vous recevrez un email de confirmation dans quelques minutes.
+          </p>
+
+          <!-- Numéro de réservation -->
+          <div class="booking-number">
+            <div class="booking-number-label">Numéro de réservation</div>
+            <div class="booking-number-value" id="booking-number">Chargement...</div>
+          </div>
+
+          <!-- Notice email -->
+          <div class="email-notice">
+            <div class="email-notice-icon">📧</div>
+            <div class="email-notice-title">Email de confirmation envoyé</div>
+            <p class="email-notice-text">
+              Nous avons envoyé un email de confirmation avec tous les détails de votre réservation à l'adresse fournie.
+            </p>
+          </div>
+
+          <!-- Messages d'erreur -->
+          <div id="error-message" class="error-message" style="display: none;"></div>
+
+          <!-- Boutons d'action -->
+          <div class="action-buttons">
+            <a href="/my-bookings.html" class="btn-primary">Voir mes réservations</a>
+            <a href="/boats.html" class="btn-secondary">Réserver un autre bateau</a>
+          </div>
+        </div>
+
+        <!-- Récapitulatif de la réservation -->
+        <div class="summary-card">
+          <h2 style="margin-bottom: 20px; color: #1e293b; font-size: 1.5rem; font-weight: 800;">Récapitulatif de votre réservation</h2>
+          
+          <!-- Image du bateau -->
+          <div class="boat-image">
+            <img id="boat-image" src="" alt="Bateau" style="display: none;">
+            <div id="no-image" style="display: flex; align-items: center; justify-content: center; height: 100%; background: #f8fafc; color: #64748b; font-weight: 600;">
+              Image du bateau
+            </div>
+          </div>
+
+          <!-- Détails du bateau -->
+          <div class="boat-title" id="boat-name">Chargement...</div>
+          <div class="boat-type" id="boat-type">Chargement...</div>
+          <div class="boat-location" id="boat-location">Chargement...</div>
+
+          <!-- Détails de la réservation -->
+          <div class="booking-details">
+            <h3 style="margin-bottom: 16px; color: #1e293b; font-weight: 700;">Détails de la réservation</h3>
+            <div class="detail-row">
+              <span class="detail-label">Date de départ</span>
+              <span class="detail-value" id="start-date">-</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Date de retour</span>
+              <span class="detail-value" id="end-date">-</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Nombre de passagers</span>
+              <span class="detail-value" id="passengers">-</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Durée</span>
+              <span class="detail-value" id="duration">-</span>
+            </div>
+          </div>
+
+          <!-- Calcul du prix -->
+          <div class="price-section">
+            <h3 style="margin-bottom: 16px; color: #1e293b; font-weight: 700;">Détail des prix</h3>
+            <div class="price-row">
+              <span class="price-label">Prix par jour</span>
+              <span class="price-value" id="daily-rate">-</span>
+            </div>
+            <div class="price-row">
+              <span class="price-label">Nombre de jours</span>
+              <span class="price-value" id="days-count">-</span>
+            </div>
+            <div class="price-row">
+              <span class="price-label">Sous-total</span>
+              <span class="price-value" id="subtotal">-</span>
+            </div>
+            <div class="price-row">
+              <span class="price-label">Frais de service</span>
+              <span class="price-value" id="service-fee">-</span>
+            </div>
+            <div class="price-row">
+              <span class="price-label">Total payé</span>
+              <span class="price-value" id="total-price">-</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>SailingLoc</h3>
+          <p>Votre partenaire de confiance pour la location de bateaux de plaisance.</p>
+        </div>
+        <div class="footer-section">
+          <h4>Liens utiles</h4>
+          <ul>
+            <li><a href="/boats.html">Nos bateaux</a></li>
+            <li><a href="/experience.html">Expérience</a></li>
+            <li><a href="/contact.html">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h4>Support</h4>
+          <ul>
+            <li><a href="/conditions.html">Conditions générales</a></li>
+            <li><a href="/confidentialite.html">Confidentialité</a></li>
+            <li><a href="/mentions.html">Mentions légales</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2024 SailingLoc. Tous droits réservés.</p>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
