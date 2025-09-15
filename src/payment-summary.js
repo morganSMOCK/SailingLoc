@@ -1,4 +1,5 @@
 import { stripeService } from './services/StripeService.js';
+import { getApiBaseUrl } from './utils/apiConfig.js';
 
 // Récupération des paramètres URL
 const urlParams = new URLSearchParams(window.location.search);
@@ -71,7 +72,7 @@ async function initializePage() {
 // Charger les données du bateau
 async function loadBoatData() {
   try {
-    const response = await fetch(`/api/boats/${boatId}`);
+    const response = await fetch(`${getApiBaseUrl()}/boats/${boatId}`);
     if (!response.ok) {
       throw new Error(`Erreur HTTP: ${response.status}`);
     }

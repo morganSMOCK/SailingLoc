@@ -6,7 +6,17 @@ export class BoatService {
   constructor() {
     // URL de base de l'API (auto-détection env)
     const envBase = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_BASE) ? import.meta.env.VITE_API_BASE : '';
-    this.baseURL = envBase || '/api'; // Utilise le proxy Vite vers Render
+    
+    // En production, utiliser l'URL complète de Render
+    // En développement, utiliser le proxy Vite
+    if (envBase) {
+      this.baseURL = envBase;
+    } else if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      this.baseURL = '/api'; // Proxy Vite en développement
+    } else {
+      this.baseURL = 'https://sailingloc.onrender.com/api'; // URL complète en production
+    }
+    
     this.boatsEndpoint = `${this.baseURL}/boats`;
   }
 

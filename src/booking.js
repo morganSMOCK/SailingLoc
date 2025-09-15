@@ -6,6 +6,7 @@
 import { BookingService } from './services/BookingService.js';
 import { AuthService } from './services/AuthService.js';
 import { UIManager } from './utils/UIManager.js';
+import { getApiBaseUrl } from './utils/apiConfig.js';
 
 class BookingManager {
   constructor() {
@@ -69,7 +70,7 @@ class BookingManager {
       }
 
       // Charger les données du bateau
-      const response = await fetch(`/api/boats/${boatId}`);
+      const response = await fetch(`${getApiBaseUrl()}/boats/${boatId}`);
       if (!response.ok) {
         throw new Error('Bateau non trouvé');
       }
