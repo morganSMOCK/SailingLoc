@@ -1,0 +1,1 @@
+import"./modulepreload-polyfill-B5Qt9EMX.js";/* empty css              */import"./main-C2sVG-ok.js";document.addEventListener("DOMContentLoaded",()=>{setTimeout(()=>{window.app?(console.log("✅ Application trouvée, initialisation de la gestion des bateaux"),window.app.initBoatManagement()):console.error("❌ Application non trouvée")},100)});
