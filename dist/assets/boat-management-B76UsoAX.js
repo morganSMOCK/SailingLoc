@@ -1,1 +1,0 @@
-import"./AuthService-hkblqokD.js";/* empty css              */import"./main-D1Bj_nyQ.js";document.addEventListener("DOMContentLoaded",()=>{setTimeout(()=>{window.app?(console.log("✅ Application trouvée, initialisation de la gestion des bateaux"),window.app.initBoatManagement()):console.error("❌ Application non trouvée")},100)});
