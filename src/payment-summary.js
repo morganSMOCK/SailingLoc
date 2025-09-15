@@ -1,8 +1,11 @@
-import { stripeService } from './services/StripeService.js';
+import { StripeService } from './services/StripeService.js';
 import { AppStateService } from './services/AppStateService.js';
 
 // Créer une instance d'AppStateService
 const appState = new AppStateService();
+
+// Créer une instance de StripeService avec l'AppStateService
+const stripeService = new StripeService(appState);
 
 // Récupération des paramètres URL
 const urlParams = new URLSearchParams(window.location.search);
@@ -72,6 +75,8 @@ async function initializePage() {
   }
   
   console.log('✅ Utilisateur authentifié, continuation du processus de paiement');
+  console.log('🔑 Token disponible:', appState.getAuthToken() ? 'Oui' : 'Non');
+  console.log('👤 Utilisateur actuel:', appState.currentUser?.firstName || 'Non défini');
 
   // Vérifier les paramètres requis
   if (!boatId || !startDate || !endDate || !passengers) {

@@ -1,14 +1,18 @@
 // Service Stripe pour la gestion des paiements
 export class StripeService {
-  constructor() {
+  constructor(appStateService = null) {
     this.stripe = null;
     this.elements = null;
     this.paymentElement = null;
     this.isInitialized = false;
+    this.appStateService = appStateService;
   }
 
   // Récupérer le token d'authentification
   getAuthToken() {
+    if (this.appStateService) {
+      return this.appStateService.getAuthToken();
+    }
     return localStorage.getItem('authToken');
   }
 
@@ -46,6 +50,9 @@ export class StripeService {
     try {
       // Vérifier l'authentification avant l'appel
       const token = this.getAuthToken();
+      console.log('🔑 Token récupéré:', token ? 'Présent' : 'Absent');
+      console.log('🔑 Token complet:', token);
+      
       if (!token) {
         throw new Error('Vous devez être connecté pour effectuer un paiement');
       }
