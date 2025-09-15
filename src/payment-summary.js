@@ -134,15 +134,17 @@ function calculateBookingDetails() {
     boatName: boat.name,
     startDate: startDate,
     endDate: endDate,
+    totalPrice: total, // Le backend attend 'totalPrice' et non 'total'
+    customerEmail: appState.currentUser?.email,
+    customerName: `${appState.currentUser?.firstName} ${appState.currentUser?.lastName}`,
+    // Données supplémentaires pour le frontend
     passengers: parseInt(passengers),
     days: days,
     dailyRate: dailyRate,
     subtotal: subtotal,
     serviceFee: serviceFee,
     total: total,
-    currency: boat.pricing.currency || 'EUR',
-    customerEmail: appState.currentUser?.email,
-    customerName: `${appState.currentUser?.firstName} ${appState.currentUser?.lastName}`
+    currency: boat.pricing.currency || 'EUR'
   };
   
   console.log('✅ Détails de la réservation calculés:', bookingData);
@@ -151,7 +153,7 @@ function calculateBookingDetails() {
   console.log('🔍 boatName:', bookingData.boatName ? '✅' : '❌');
   console.log('🔍 startDate:', bookingData.startDate ? '✅' : '❌');
   console.log('🔍 endDate:', bookingData.endDate ? '✅' : '❌');
-  console.log('🔍 total:', bookingData.total ? '✅' : '❌');
+  console.log('🔍 totalPrice:', bookingData.totalPrice ? '✅' : '❌');
   console.log('🔍 customerEmail:', bookingData.customerEmail ? '✅' : '❌');
   console.log('🔍 customerName:', bookingData.customerName ? '✅' : '❌');
 }
