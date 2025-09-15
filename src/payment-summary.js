@@ -103,7 +103,7 @@ async function initializePage() {
 // Charger les données du bateau
 async function loadBoatData() {
   try {
-    const response = await fetch(`/api/boats/${boatId}`);
+    const response = await fetch(`https://sailingloc.onrender.com/api/boats/${boatId}`);
     if (!response.ok) {
       throw new Error(`Erreur HTTP: ${response.status}`);
     }

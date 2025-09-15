@@ -42,7 +42,7 @@ async function init(){
 
   try {
     console.log('🚤 Chargement du bateau depuis l\'API Render...');
-    const response = await fetch(`/api/boats/${id}`, {
+    const response = await fetch(`https://sailingloc.onrender.com/api/boats/${id}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json'

@@ -110,7 +110,7 @@ export class StripeService {
   // Vérifier le statut d'une session
   async verifySession(sessionId) {
     try {
-      const response = await fetch(`/api/payments/verify-session/${sessionId}`, {
+      const response = await fetch(`https://sailingloc.onrender.com/api/payments/verify-session/${sessionId}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

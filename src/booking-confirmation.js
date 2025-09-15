@@ -62,10 +62,10 @@ async function loadBookingData() {
     
     if (sessionId) {
       // Vérifier la session Stripe
-      response = await fetch(`/api/payments/verify-session/${sessionId}`);
+      response = await fetch(`https://sailingloc.onrender.com/api/payments/verify-session/${sessionId}`);
     } else if (bookingId) {
       // Charger directement la réservation
-      response = await fetch(`/api/bookings/${bookingId}`);
+      response = await fetch(`https://sailingloc.onrender.com/api/bookings/${bookingId}`);
     }
     
     if (!response.ok) {
@@ -88,7 +88,7 @@ async function loadBookingData() {
 // Charger les données du bateau
 async function loadBoatData(boatId) {
   try {
-    const response = await fetch(`/api/boats/${boatId}`);
+    const response = await fetch(`https://sailingloc.onrender.com/api/boats/${boatId}`);
     if (!response.ok) {
       throw new Error(`Erreur HTTP: ${response.status}`);
     }
