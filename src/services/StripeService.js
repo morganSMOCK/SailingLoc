@@ -5,6 +5,19 @@ export class StripeService {
     this.elements = null;
     this.paymentElement = null;
     this.isInitialized = false;
+    
+    // URL de base de l'API (auto-détection env)
+    const envBase = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_BASE) ? import.meta.env.VITE_API_BASE : '';
+    
+    // En production, utiliser l'URL complète de Render
+    // En développement, utiliser le proxy Vite
+    if (envBase) {
+      this.baseURL = envBase;
+    } else if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      this.baseURL = '/api'; // Proxy Vite en développement
+    } else {
+      this.baseURL = 'https://sailingloc.onrender.com/api'; // URL complète en production
+    }
   }
 
   // Initialiser Stripe
@@ -39,7 +52,7 @@ export class StripeService {
   // Créer une session de paiement
   async createPaymentSession(bookingData) {
     try {
-      const response = await fetch('https://sailingloc.onrender.com/api/payments/create-session', {
+      const response = await fetch(`${this.baseURL}/payments/create-session`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -78,7 +91,7 @@ export class StripeService {
   // Vérifier le statut d'une session
   async verifySession(sessionId) {
     try {
-      const response = await fetch(`/api/payments/verify-session/${sessionId}`, {
+      const response = await fetch(`${this.baseURL}/payments/verify-session/${sessionId}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

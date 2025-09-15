@@ -1,6 +1,8 @@
 // src/boat.js
 // NOTE: Cursor doit brancher les appels API ici.
 
+import { getApiBaseUrl } from './utils/apiConfig.js';
+
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 const params = new URLSearchParams(location.search);
@@ -42,7 +44,7 @@ async function init(){
 
   try {
     console.log('🚤 Chargement du bateau depuis l\'API Render...');
-    const response = await fetch(`/api/boats/${id}`, {
+    const response = await fetch(`${getApiBaseUrl()}/boats/${id}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json'
