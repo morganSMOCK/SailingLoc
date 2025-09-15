@@ -38,6 +38,24 @@ export class AppStateService {
   }
 
   /**
+   * Attendre que l'AppStateService soit initialisé
+   */
+  async waitForInitialization() {
+    if (this.isInitialized) return;
+    
+    return new Promise((resolve) => {
+      const checkInitialization = () => {
+        if (this.isInitialized) {
+          resolve();
+        } else {
+          setTimeout(checkInitialization, 50);
+        }
+      };
+      checkInitialization();
+    });
+  }
+
+  /**
    * Charger les données de l'utilisateur actuel
    */
   async loadCurrentUser() {
