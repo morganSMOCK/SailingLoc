@@ -1,5 +1,66 @@
 /* Design ultra-moderne SailingLoc avec photos spectaculaires */
 
+/* Placeholder pour les images manquantes */
+.boat-card-placeholder {
+  width: 100%;
+  height: 200px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed #dee2e6;
+  color: #6c757d;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.placeholder-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.placeholder-icon {
+  font-size: 24px;
+  opacity: 0.6;
+}
+
+.placeholder-text {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ===== ERREURS D'IMAGES ===== */
+.boat-image-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  background: #f8fafc;
+  border: 2px dashed #cbd5e1;
+  border-radius: 12px;
+  color: #64748b;
+  text-align: center;
+  padding: 20px;
+}
+
+.boat-image-error .error-icon {
+  font-size: 2rem;
+  margin-bottom: 8px;
+  opacity: 0.6;
+}
+
+.boat-image-error .error-text {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin: 0;
+}
+
 /* Variables CSS avancées */
 :root {
   /* Palette de couleurs premium */
@@ -2035,9 +2096,20 @@ textarea:focus-visible {
   outline-offset: 2px;
 }
 
+/* Compenser le header fixe */
+body {
+  padding-top: 80px;
+}
+
+@media (max-width: 768px) {
+  body {
+    padding-top: 70px;
+  }
+}
+
 /* Print styles */
 @media print {
-  .navbar, .modal, .notifications-container {
+  .navbar, .header, .modal, .notifications-container {
     display: none !important;
   }
   

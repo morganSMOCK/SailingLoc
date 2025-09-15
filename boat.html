@@ -9,10 +9,733 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    /* ===== STYLES SPÉCIFIQUES BOAT.HTML ===== */
+    
+    /* Hero Section */
+    .boat-hero {
+      background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+      padding: 40px 0 60px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .breadcrumb-nav {
+      margin-bottom: 32px;
+    }
+
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.9rem;
+      color: #64748b;
+    }
+
+    .breadcrumb-link {
+      color: #3b82f6;
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.2s ease;
+    }
+
+    .breadcrumb-link:hover {
+      color: #1d4ed8;
+    }
+
+    .breadcrumb-separator {
+      color: #94a3b8;
+    }
+
+    .breadcrumb-current {
+      color: #374151;
+      font-weight: 600;
+    }
+
+    .boat-hero-content {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 40px;
+      align-items: start;
+    }
+
+    .boat-hero-info {
+      flex: 1;
+    }
+
+    .boat-badges {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .boat-badge {
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .boat-badge-primary {
+      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+      color: white;
+    }
+
+    .boat-badge-secondary {
+      background: #f1f5f9;
+      color: #475569;
+      border: 1px solid #e2e8f0;
+    }
+
+    .boat-badge-success {
+      background: #dcfce7;
+      color: #166534;
+      border: 1px solid #bbf7d0;
+    }
+
+    .boat-title {
+      font-size: 2.5rem;
+      font-weight: 900;
+      color: #1e293b;
+      margin: 0 0 16px 0;
+      line-height: 1.2;
+    }
+
+    .boat-location {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 20px;
+      color: #64748b;
+      font-size: 1.1rem;
+    }
+
+    .location-icon {
+      font-size: 1.2rem;
+    }
+
+    .boat-rating {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .rating-stars {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .stars {
+      color: #fbbf24;
+      font-size: 1.2rem;
+    }
+
+    .rating-value {
+      font-weight: 700;
+      color: #1e293b;
+      font-size: 1.1rem;
+    }
+
+    .rating-text {
+      color: #64748b;
+      font-size: 0.95rem;
+    }
+
+    .boat-hero-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      min-width: 300px;
+    }
+
+    .price-card {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    .price-main {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .price-amount {
+      font-size: 2rem;
+      font-weight: 900;
+      color: #1e293b;
+    }
+
+    .price-period {
+      color: #64748b;
+      font-size: 1rem;
+    }
+
+    .price-details {
+      color: #64748b;
+      font-size: 0.9rem;
+    }
+
+    .btn-book {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+      color: white;
+      padding: 16px 24px;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 1.1rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+    }
+
+    .btn-book:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(59, 130, 246, 0.6);
+    }
+
+    .btn-icon {
+      font-size: 1.2rem;
+      transition: transform 0.2s ease;
+    }
+
+    .btn-book:hover .btn-icon {
+      transform: translateX(4px);
+    }
+
+    /* Gallery Section */
+    .boat-gallery-section {
+      padding: 40px 0;
+      background: white;
+    }
+
+    .gallery-container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .main-gallery {
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    .main-image-container {
+      position: relative;
+      width: 100%;
+      height: 500px;
+      border-radius: 16px;
+      overflow: hidden;
+      background: #f8fafc;
+    }
+
+    .main-image-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .image-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      color: #94a3b8;
+    }
+
+    .placeholder-icon {
+      font-size: 3rem;
+      margin-bottom: 16px;
+    }
+
+    .placeholder-text {
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    .image-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, transparent 30%, transparent 70%, rgba(0,0,0,0.1) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .main-image-container:hover .image-overlay {
+      opacity: 1;
+    }
+
+    .gallery-btn {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.9);
+      border: none;
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #374151;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .gallery-btn:hover {
+      background: white;
+      transform: scale(1.1);
+    }
+
+    .image-counter {
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .thumbnails-container {
+      overflow-x: auto;
+      padding: 10px 0;
+    }
+
+    .thumbnails-scroll {
+      display: flex;
+      gap: 12px;
+      min-width: max-content;
+    }
+
+    .thumbnail {
+      width: 80px;
+      height: 80px;
+      border-radius: 8px;
+      overflow: hidden;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: all 0.2s ease;
+    }
+
+    .thumbnail:hover,
+    .thumbnail.active {
+      border-color: #3b82f6;
+      transform: scale(1.05);
+    }
+
+    .thumbnail img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .image-error {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      background: #f8fafc;
+      border: 2px dashed #cbd5e1;
+      border-radius: 8px;
+      color: #64748b;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .error-icon {
+      font-size: 2rem;
+      margin-bottom: 8px;
+    }
+
+    .error-text {
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .error-url {
+      font-size: 0.8rem;
+      color: #94a3b8;
+      word-break: break-all;
+    }
+
+    /* Main Content */
+    .boat-main-content {
+      padding: 60px 0;
+      background: #f8fafc;
+    }
+
+    .content-layout {
+      display: grid;
+      grid-template-columns: 1fr 400px;
+      gap: 60px;
+    }
+
+    .boat-info-section {
+      background: white;
+      border-radius: 16px;
+      padding: 40px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    .section-title {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: #1e293b;
+      margin: 0 0 24px 0;
+    }
+
+    .section-subtitle {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #374151;
+      margin: 32px 0 20px 0;
+    }
+
+    .boat-description {
+      font-size: 1.1rem;
+      line-height: 1.7;
+      color: #4b5563;
+      margin-bottom: 32px;
+    }
+
+    .boat-highlights {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+
+    .highlight-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 20px;
+      background: #f8fafc;
+      border-radius: 12px;
+      border: 1px solid #e2e8f0;
+    }
+
+    .highlight-icon {
+      font-size: 2rem;
+    }
+
+    .highlight-content {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .highlight-label {
+      font-size: 0.9rem;
+      color: #64748b;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .highlight-value {
+      font-size: 1.1rem;
+      color: #1e293b;
+      font-weight: 700;
+    }
+
+    .specs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 16px;
+    }
+
+    .spec-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 20px;
+      background: #f8fafc;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+    }
+
+    .spec-label {
+      font-weight: 600;
+      color: #374151;
+    }
+
+    .spec-value {
+      color: #64748b;
+    }
+
+    .amenities-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+    }
+
+    .amenity-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      background: #f0f9ff;
+      border-radius: 8px;
+      border: 1px solid #bae6fd;
+    }
+
+    .amenity-icon {
+      font-size: 1.2rem;
+    }
+
+    .amenity-text {
+      font-weight: 600;
+      color: #0369a1;
+    }
+
+    /* Booking Panel */
+    .booking-panel {
+      position: sticky;
+      top: 100px;
+    }
+
+    .booking-card {
+      background: white;
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+      border: 1px solid #e2e8f0;
+    }
+
+    .booking-header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .booking-title {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: #1e293b;
+      margin: 0 0 16px 0;
+    }
+
+    .price-display {
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .booking-details {
+      margin-bottom: 24px;
+    }
+
+    .detail-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .detail-item:last-child {
+      border-bottom: none;
+    }
+
+    .detail-label {
+      font-weight: 600;
+      color: #64748b;
+    }
+
+    .detail-value {
+      font-weight: 700;
+      color: #1e293b;
+    }
+
+    .status-available {
+      color: #059669;
+    }
+
+    .btn-reserve {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      width: 100%;
+      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+      color: white;
+      padding: 16px 24px;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 1.1rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+      margin-bottom: 20px;
+    }
+
+    .btn-reserve:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(59, 130, 246, 0.6);
+    }
+
+    .booking-help {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px;
+      background: #f0f9ff;
+      border-radius: 8px;
+      border: 1px solid #bae6fd;
+    }
+
+    .help-icon {
+      font-size: 1.2rem;
+    }
+
+    .help-text {
+      margin: 0;
+      color: #0369a1;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    /* Reviews Section */
+    .reviews-section {
+      padding: 60px 0;
+      background: white;
+    }
+
+    .reviews-container {
+      display: grid;
+      gap: 24px;
+    }
+
+    .review-item {
+      background: #f8fafc;
+      border-radius: 12px;
+      padding: 24px;
+      border: 1px solid #e2e8f0;
+    }
+
+    .review-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .review-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+    }
+
+    .review-info h4 {
+      margin: 0 0 4px 0;
+      font-weight: 700;
+      color: #1e293b;
+    }
+
+    .review-rating {
+      color: #fbbf24;
+      font-size: 1.1rem;
+    }
+
+    .review-text {
+      color: #4b5563;
+      line-height: 1.6;
+    }
+
+    /* Error Section */
+    .error-section {
+      padding: 80px 0;
+      background: #f8fafc;
+    }
+
+    .error-content {
+      text-align: center;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    .error-icon {
+      font-size: 4rem;
+      margin-bottom: 24px;
+    }
+
+    .error-title {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #1e293b;
+      margin: 0 0 16px 0;
+    }
+
+    .error-message {
+      color: #64748b;
+      font-size: 1.1rem;
+      margin-bottom: 32px;
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .content-layout {
+        grid-template-columns: 1fr;
+        gap: 40px;
+      }
+
+      .booking-panel {
+        position: static;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .boat-hero-content {
+        grid-template-columns: 1fr;
+        gap: 32px;
+      }
+
+      .boat-hero-actions {
+        min-width: auto;
+      }
+
+      .boat-title {
+        font-size: 2rem;
+      }
+
+      .main-image-container {
+        height: 300px;
+      }
+
+      .boat-info-section {
+        padding: 24px;
+      }
+
+      .booking-card {
+        padding: 24px;
+      }
+    }
+  </style>
 </head>
 <body>
 
-  <!-- Navigation (ton header collé tel quel) -->
+  <!-- Navigation -->
   <nav id="navbar" class="navbar">
     <div class="nav-container">
       <div class="nav-brand" style="display: flex; align-items: center; gap: 10px;">
@@ -33,7 +756,7 @@
       
       <div class="nav-menu" id="nav-menu">
         <a href="index.html" class="nav-link">Accueil</a>
-        <a href="boats.html" class="nav-link">Bateaux</a>
+        <a href="boats.html" class="nav-link active">Bateaux</a>
         <a href="experience.html" class="nav-link">Experience</a>
         <a href="contact.html" class="nav-link">Contact</a>
       </div>
@@ -41,6 +764,8 @@
       <div class="nav-auth">
         <button id="login-btn" class="btn-secondary">Connexion</button>
         <button id="register-btn" class="btn-primary">Inscription</button>
+        
+        <!-- Menu utilisateur (caché par défaut) -->
         <div id="user-menu" class="user-menu" style="display: none;">
           <div class="user-avatar" id="user-avatar">
             <span id="user-initials">JD</span>
@@ -59,7 +784,7 @@
           </div>
         </div>
       </div>
-
+      
       <div class="mobile-menu-toggle" id="mobile-menu-toggle">
         <span></span><span></span><span></span>
       </div>
@@ -67,108 +792,201 @@
   </nav>
 
   <!-- Hero détail -->
-  <header class="boat-hero">
+  <section class="boat-hero">
     <div class="container">
-      <nav class="breadcrumb">
-        <a href="index.html">Accueil</a> › <a href="boats.html">Bateaux</a> › <span id="crumb-boat">Chargement…</span>
+      <!-- Breadcrumb Navigation -->
+      <nav class="breadcrumb-nav">
+        <div class="breadcrumb">
+          <a href="index.html" class="breadcrumb-link">Accueil</a>
+          <span class="breadcrumb-separator">›</span>
+          <a href="boats.html" class="breadcrumb-link">Bateaux</a>
+          <span class="breadcrumb-separator">›</span>
+          <span id="crumb-boat" class="breadcrumb-current">Chargement…</span>
+        </div>
       </nav>
 
-      <div class="boat-hero-head">
-        <div>
-          <h1 id="boat-name" class="boat-hero-title">Chargement…</h1>
-          <div class="boat-hero-meta">
-            <span id="boat-type" class="chip">—</span>
-            <span id="boat-category" class="chip chip-soft">—</span>
-            <span id="boat-status" class="chip chip-success">—</span>
+      <!-- Hero Content -->
+      <div class="boat-hero-content">
+        <div class="boat-hero-info">
+          <div class="boat-badges">
+            <span id="boat-type" class="boat-badge boat-badge-primary">—</span>
+            <span id="boat-category" class="boat-badge boat-badge-secondary">—</span>
+            <span id="boat-status" class="boat-badge boat-badge-success">—</span>
           </div>
-        </div>
-        <div class="boat-hero-rating" id="rating-wrap" aria-live="polite">
-          <div class="stars" id="rating-stars" aria-hidden="true">★★★★★</div>
-          <div class="rating-text"><strong id="rating-value">4.8</strong> (<span id="rating-count">0</span> avis)</div>
-        </div>
-      </div>
+          
+          <h1 id="boat-name" class="boat-title">Chargement…</h1>
+          
+          <div class="boat-location">
+            <span class="location-icon">📍</span>
+            <span id="boat-location">—</span>
+          </div>
 
-      <div class="boat-hero-location">
-        <span id="boat-location">—</span>
-      </div>
-    </div>
-  </header>
-
-  <!-- Détail -->
-  <main class="boat-detail">
-    <div class="container">
-      <div class="boat-detail-grid">
-        <!-- Galerie -->
-        <section id="boat-gallery" class="image-gallery" aria-label="Galerie d'images">
-          <div class="main-image" id="main-image">
-            <div class="image-placeholder">
-              <i>🖼️</i>
-              <p>Aucune image</p>
+          <div class="boat-rating" id="rating-wrap">
+            <div class="rating-stars">
+              <div class="stars" id="rating-stars">★★★★★</div>
+              <span class="rating-value" id="rating-value">4.8</span>
+            </div>
+            <div class="rating-text">
+              <span id="rating-count">0</span> avis
             </div>
           </div>
-          <div class="thumbnail-grid" id="thumbs"></div>
-        </section>
+        </div>
 
-        <!-- Panneau latéral -->
-        <aside class="boat-info">
-          <h2 class="boat-title" id="side-name">—</h2>
-          <div class="boat-meta-badges" id="side-badges"></div>
-
-          <div class="price-section">
-            <div class="price">
+        <div class="boat-hero-actions">
+          <div class="price-card">
+            <div class="price-main">
               <span class="price-amount" id="price-amount">—</span>
               <span class="price-period">€/jour</span>
             </div>
             <div class="price-details" id="price-details">Caution : — €</div>
           </div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
 
-          <div class="quick-specs" id="quick-specs">
-            <!-- Ex: 8 pers • 12 m × 4 m • Diesel -->
+  <!-- Galerie principale -->
+  <section class="boat-gallery-section">
+    <div class="container">
+      <div class="gallery-container">
+        <!-- Image principale -->
+        <div class="main-gallery">
+          <div class="main-image-container" id="main-image">
+            <div class="image-placeholder">
+              <div class="placeholder-icon">🖼️</div>
+              <p class="placeholder-text">Aucune image disponible</p>
+            </div>
+            <div class="image-overlay">
+              <button class="gallery-btn gallery-btn-prev" id="prev-image">‹</button>
+              <button class="gallery-btn gallery-btn-next" id="next-image">›</button>
+              <div class="image-counter">
+                <span id="current-image">1</span> / <span id="total-images">1</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Miniatures -->
+        <div class="thumbnails-container">
+          <div class="thumbnails-scroll" id="thumbs">
+            <!-- Générées en JS -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contenu principal -->
+  <main class="boat-main-content">
+    <div class="container">
+      <div class="content-layout">
+        <!-- Informations principales -->
+        <section class="boat-info-section">
+          <div class="boat-overview">
+            <h2 class="section-title">À propos de ce bateau</h2>
+            <p class="boat-description" id="boat-description">—</p>
+            
+            <div class="boat-highlights">
+              <div class="highlight-item">
+                <div class="highlight-icon">👥</div>
+                <div class="highlight-content">
+                  <span class="highlight-label">Capacité</span>
+                  <span class="highlight-value" id="boat-capacity">—</span>
+                </div>
+              </div>
+              <div class="highlight-item">
+                <div class="highlight-icon">📏</div>
+                <div class="highlight-content">
+                  <span class="highlight-label">Dimensions</span>
+                  <span class="highlight-value" id="boat-dimensions">—</span>
+                </div>
+              </div>
+              <div class="highlight-item">
+                <div class="highlight-icon">⚙️</div>
+                <div class="highlight-content">
+                  <span class="highlight-label">Motorisation</span>
+                  <span class="highlight-value" id="boat-engine">—</span>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <a href="contact.html" class="btn-primary book-button" id="cta-contact">
-            Demander cette location
-          </a>
+          <!-- Caractéristiques détaillées -->
+          <div class="specs-section">
+            <h3 class="section-subtitle">Caractéristiques techniques</h3>
+            <div class="specs-grid" id="specs-grid">
+              <!-- Rempli en JS -->
+            </div>
+          </div>
 
-          <div class="contact-owner">
-            <small>Une question ? Notre équipe est disponible pour vous aider.</small>
+          <!-- Équipements -->
+          <div class="amenities-section">
+            <h3 class="section-subtitle">Équipements inclus</h3>
+            <div class="amenities-grid" id="amenities-grid">
+              <!-- Rempli en JS -->
+            </div>
+          </div>
+        </section>
+
+        <!-- Panneau de réservation -->
+        <aside class="booking-panel">
+          <div class="booking-card">
+            <div class="booking-header">
+              <h3 class="booking-title">Réserver ce bateau</h3>
+              <div class="price-display">
+                <span class="price-amount" id="booking-price">—</span>
+                <span class="price-period">€/jour</span>
+              </div>
+            </div>
+
+            <div class="booking-details">
+              <div class="detail-item">
+                <span class="detail-label">Caution</span>
+                <span class="detail-value" id="booking-deposit">— €</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Statut</span>
+                <span class="detail-value status-available" id="booking-status">Disponible</span>
+              </div>
+            </div>
+
+            <a href="#" class="btn-reserve" id="cta-contact">
+              <span class="btn-text">Demander cette location</span>
+              <span class="btn-icon">→</span>
+            </a>
+
+            <div class="booking-help">
+              <div class="help-icon">💬</div>
+              <p class="help-text">Une question ? Notre équipe est disponible pour vous aider.</p>
+            </div>
           </div>
         </aside>
       </div>
-
-      <!-- Caractéristiques -->
-      <section class="details-section">
-        <h3 class="section-title">Caractéristiques</h3>
-        <div class="specs-grid" id="specs-grid">
-          <!-- rempli en JS -->
-        </div>
-
-        <h3 class="section-title">Description</h3>
-        <p class="description" id="boat-description">—</p>
-
-        <h3 class="section-title">Équipements</h3>
-        <div class="amenities-grid" id="amenities-grid">
-          <!-- rempli en JS -->
-        </div>
-      </section>
-
-      <!-- Avis -->
-      <section class="reviews-section" id="reviews-section" hidden>
-        <h3 class="section-title">Avis</h3>
-        <div id="reviews-list">
-          <!-- rempli en JS -->
-        </div>
-      </section>
-
-      <!-- État 404 -->
-      <section id="boat-not-found" class="error" style="display:none;">
-        <strong>Bateau introuvable.</strong>
-        <div style="margin-top:8px;">
-          <a href="boats.html" class="btn-secondary">Retour aux bateaux</a>
-        </div>
-      </section>
     </div>
   </main>
+
+  <!-- Avis -->
+  <section class="reviews-section" id="reviews-section" style="display: none;">
+    <div class="container">
+      <h3 class="section-title">Avis clients</h3>
+      <div class="reviews-container" id="reviews-list">
+        <!-- Rempli en JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- État 404 -->
+  <section id="boat-not-found" class="error-section" style="display:none;">
+    <div class="container">
+      <div class="error-content">
+        <div class="error-icon">🚫</div>
+        <h2 class="error-title">Bateau introuvable</h2>
+        <p class="error-message">Le bateau que vous recherchez n'existe pas ou a été supprimé.</p>
+        <a href="boats.html" class="btn-secondary">Retour aux bateaux</a>
+      </div>
+    </div>
+  </section>
 
   <!-- Footer (ton snippet) -->
   <footer class="footer">
@@ -204,6 +1022,7 @@
     </div>
   </footer>
 
+  <script type="module" src="/src/init.js"></script>
   <script type="module" src="/src/boat.js"></script>
 </body>
 </html>

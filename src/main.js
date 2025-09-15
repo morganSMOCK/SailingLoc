@@ -8,6 +8,46 @@ import { UIManager } from './utils/UIManager.js';
 import { I18n } from './utils/i18n.js';
 import { StorageManager } from './utils/StorageManager.js';
 
+// Fonction globale pour obtenir une image de bateau basée sur le type
+window.getBoatImageByType = function(type, category) {
+  console.log('🔍 getBoatImageByType appelée avec:', { type, category });
+  
+  const images = {
+    'voilier': 'https://images.unsplash.com/photo-1508599589920-14cfa1c1fe4d?q=80&w=1200&auto=format&fit=crop',
+    'catamaran': 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?q=80&w=1200&auto=format&fit=crop',
+    'yacht': 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?q=80&w=1200&auto=format&fit=crop',
+    'bateau': 'https://images.unsplash.com/photo-1508599589920-14cfa1c1fe4d?q=80&w=1200&auto=format&fit=crop'
+  };
+  
+  // Si c'est un catégorie luxe, utiliser une image plus premium
+  if (category === 'luxe') {
+    console.log('✅ Catégorie luxe détectée, utilisation image premium');
+    return 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?q=80&w=1200&auto=format&fit=crop';
+  }
+  
+  const selectedImage = images[type] || images['bateau'];
+  console.log('✅ Image sélectionnée:', selectedImage);
+  return selectedImage;
+};
+
+// Fonction globale pour gérer les erreurs d'images des cartes de bateaux
+window.handleBoatImageError = function(img, originalSrc) {
+  console.error('❌ Erreur de chargement d\'image de carte:', originalSrc);
+  
+  // Remplacer par un placeholder d'erreur
+  const container = img.closest('.boat-image');
+  if (container) {
+    container.innerHTML = `
+      <div class="boat-image-error">
+        <div class="error-icon">🖼️</div>
+        <div class="error-text">Image non accessible</div>
+      </div>
+      ${container.querySelector('.boat-badge') ? container.querySelector('.boat-badge').outerHTML : ''}
+      ${container.querySelector('.boat-rating') ? container.querySelector('.boat-rating').outerHTML : ''}
+    `;
+  }
+};
+
 /**
  * Classe principale de l'application SailingLoc
  * Gère l'initialisation et la coordination des différents services
@@ -1244,32 +1284,66 @@ class SailingLocApp {
         boatName: boat.name
       });
 
-      // Image de secours si aucune n'est fournie
-      let imgSrc = 'https://images.unsplash.com/photo-1508599589920-14cfa1c1fe4d?q=80&w=1200&auto=format&fit=crop';
+      // Image de couverture - PRIORITÉ ABSOLUE AUX IMAGES UPLOADÉES
+      let imgSrc = null;
       
-      // Essayer différents formats d'images - PRIORITÉ AUX IMAGES UPLOADÉES
+      console.log('🔍 [DEBUG] Recherche d\'image pour:', boat.name, {
+        hasImages: Array.isArray(boat.images) && boat.images.length > 0,
+        hasImageUrls: Array.isArray(boat.imageUrls) && boat.imageUrls.length > 0,
+        hasImageUrl: boat.imageUrl,
+        hasCoverImageUrl: boat.coverImageUrl
+      });
+      
+      // PRIORITÉ 1 : Images uploadées (boat.images)
       if (Array.isArray(boat.images) && boat.images.length > 0) {
-        if (typeof boat.images[0] === 'string') {
-          imgSrc = `https://sailingloc.onrender.com${boat.images[0]}`;
-          console.log('✅ Image trouvée dans images (string):', imgSrc);
-        } else if (boat.images[0]?.url) {
-          imgSrc = `https://sailingloc.onrender.com${boat.images[0].url}`;
-          console.log('✅ Image trouvée dans images (object):', imgSrc);
-        }
-      } else if (Array.isArray(boat.imageUrls) && boat.imageUrls.length > 0) {
-        const imageUrl = boat.imageUrls[0];
-        // Si c'est un objet avec fullUrl, corriger l'URL si elle pointe vers localhost
-        if (imageUrl.fullUrl) {
-          imgSrc = imageUrl.fullUrl.replace('http://localhost:3000', 'https://sailingloc.onrender.com');
+        // Chercher l'image principale (isMain: true)
+        const mainImage = boat.images.find(i => i?.isMain);
+        if (mainImage) {
+          if (typeof mainImage === 'string') {
+            imgSrc = mainImage.startsWith('http') ? mainImage : `https://sailingloc.onrender.com${mainImage}`;
+          } else if (mainImage.url) {
+            imgSrc = mainImage.url.startsWith('http') ? mainImage.url : `https://sailingloc.onrender.com${mainImage.url}`;
+          }
+          console.log('✅ Image principale trouvée:', imgSrc);
         } else {
-          imgSrc = `https://sailingloc.onrender.com${imageUrl.url || imageUrl}`;
+          // Sinon prendre la première image
+          const firstImage = boat.images[0];
+          if (firstImage) {
+            if (typeof firstImage === 'string') {
+              imgSrc = firstImage.startsWith('http') ? firstImage : `https://sailingloc.onrender.com${firstImage}`;
+            } else if (firstImage.url) {
+              imgSrc = firstImage.url.startsWith('http') ? firstImage.url : `https://sailingloc.onrender.com${firstImage.url}`;
+            }
+            console.log('✅ Première image trouvée:', imgSrc);
+          }
+        }
+      } 
+      // PRIORITÉ 2 : imageUrls (legacy)
+      else if (Array.isArray(boat.imageUrls) && boat.imageUrls.length > 0) {
+        const imageUrl = boat.imageUrls[0];
+        if (typeof imageUrl === 'string') {
+          imgSrc = imageUrl.startsWith('http') ? imageUrl : `https://sailingloc.onrender.com${imageUrl}`;
+        } else if (imageUrl.fullUrl) {
+          imgSrc = imageUrl.fullUrl.replace('http://localhost:3000', 'https://sailingloc.onrender.com');
+        } else if (imageUrl.url) {
+          imgSrc = imageUrl.url.startsWith('http') ? imageUrl.url : `https://sailingloc.onrender.com${imageUrl.url}`;
         }
         console.log('✅ Image trouvée dans imageUrls:', imgSrc);
-      } else if (boat.imageUrl) {
+      }
+      // PRIORITÉ 3 : imageUrl (legacy)
+      else if (boat.imageUrl) {
         imgSrc = boat.imageUrl.startsWith('http') ? boat.imageUrl : `https://sailingloc.onrender.com${boat.imageUrl}`;
         console.log('✅ Image trouvée dans imageUrl:', imgSrc);
-      } else {
-        console.log('⚠️ Aucune image trouvée, utilisation de l\'image par défaut');
+      }
+      // PRIORITÉ 4 : coverImageUrl (si disponible)
+      else if (boat.coverImageUrl) {
+        imgSrc = boat.coverImageUrl;
+        console.log('✅ Image trouvée dans coverImageUrl:', imgSrc);
+      }
+      // DERNIER RECOURS : image par défaut (seulement si vraiment aucune image)
+      else {
+        console.log('⚠️ Aucune image uploadée trouvée, utilisation image par défaut');
+        imgSrc = window.getBoatImageByType(boat.type, boat.category);
       }
 
       const priceHtml = dailyRate != null
@@ -1291,7 +1365,7 @@ class SailingLocApp {
       card.dataset.id = id;
       card.innerHTML = `
         <div class="boat-image">
-          <img src="${imgSrc}" alt="${name}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1508599589920-14cfa1c1fe4d?q=80&w=1200&auto=format&fit=crop'">
+          <img src="${imgSrc || ''}" alt="${name}" loading="lazy" onerror="handleBoatImageError(this, '${imgSrc || ''}')">
           ${category ? `<span class="boat-badge">${category}</span>` : ''}
           <div class="boat-rating">⭐ 4.8</div>
         </div>
@@ -1388,6 +1462,26 @@ class SailingLocApp {
     }
     
     return stars;
+  }
+
+  /**
+   * Gestion des erreurs d'images des cartes de bateaux
+   */
+  handleBoatImageError(img, originalSrc) {
+    console.error('❌ Erreur de chargement d\'image de carte:', originalSrc);
+    
+    // Remplacer par un placeholder d'erreur
+    const container = img.closest('.boat-image');
+    if (container) {
+      container.innerHTML = `
+        <div class="boat-image-error">
+          <div class="error-icon">🖼️</div>
+          <div class="error-text">Image non accessible</div>
+        </div>
+        ${container.querySelector('.boat-badge') ? container.querySelector('.boat-badge').outerHTML : ''}
+        ${container.querySelector('.boat-rating') ? container.querySelector('.boat-rating').outerHTML : ''}
+      `;
+    }
   }
 
   /**
@@ -2490,37 +2584,51 @@ class SailingLocApp {
       boatName: boat.name
     });
     
-    // Gestion des images pour la carte de gestion
-    let mainImage = 'boat-icon.svg';
+    // Gestion des images pour la carte de gestion - PRIORITÉ AUX IMAGES UPLOADÉES
+    let mainImage = null;
     
-    // PRIORITÉ AUX IMAGES UPLOADÉES (boat.images)
+    // PRIORITÉ AUX IMAGES UPLOADÉES - CORRECTION DES URLs
     if (Array.isArray(boat.images) && boat.images.length > 0) {
-      if (typeof boat.images[0] === 'string') {
-        mainImage = `https://sailingloc.onrender.com${boat.images[0]}`;
-        console.log('✅ Image de gestion trouvée dans images (string):', mainImage);
-      } else if (boat.images[0]?.url) {
-        mainImage = `https://sailingloc.onrender.com${boat.images[0].url}`;
-        console.log('✅ Image de gestion trouvée dans images (object):', mainImage);
+      // Chercher l'image principale (isMain: true)
+      const mainImg = boat.images.find(i => i?.isMain);
+      if (mainImg && mainImg.url) {
+        mainImage = `https://sailingloc.onrender.com${mainImg.url}`;
+        console.log('✅ Image principale trouvée pour la gestion:', mainImage);
+      } else {
+        // Sinon prendre la première image
+        const firstImg = boat.images[0];
+        if (firstImg && firstImg.url) {
+          mainImage = `https://sailingloc.onrender.com${firstImg.url}`;
+          console.log('✅ Première image trouvée pour la gestion:', mainImage);
+        }
       }
-    } else if (Array.isArray(boat.imageUrls) && boat.imageUrls.length > 0) {
+    }
+    // FALLBACK : imageUrls (comme avant)
+    else if (Array.isArray(boat.imageUrls) && boat.imageUrls.length > 0) {
       const imageUrl = boat.imageUrls[0];
-      // Si c'est un objet avec fullUrl, corriger l'URL si elle pointe vers localhost
       if (imageUrl.fullUrl) {
         mainImage = imageUrl.fullUrl.replace('http://localhost:3000', 'https://sailingloc.onrender.com');
+      } else if (imageUrl.url) {
+        mainImage = `https://sailingloc.onrender.com${imageUrl.url}`;
       } else {
-        mainImage = `https://sailingloc.onrender.com${imageUrl.url || imageUrl}`;
+        mainImage = `https://sailingloc.onrender.com${imageUrl}`;
       }
-      console.log('✅ Image de gestion trouvée dans imageUrls:', mainImage);
-    } else if (boat.imageUrl) {
+      console.log('✅ Image trouvée dans imageUrls pour la gestion:', mainImage);
+    }
+    // FALLBACK : imageUrl (legacy)
+    else if (boat.imageUrl) {
       mainImage = boat.imageUrl.startsWith('http') ? boat.imageUrl : `https://sailingloc.onrender.com${boat.imageUrl}`;
-      console.log('✅ Image de gestion trouvée dans imageUrl:', mainImage);
-    } else {
-      console.log('⚠️ Aucune image trouvée pour la gestion, utilisation de l\'icône par défaut');
+      console.log('✅ Image trouvée dans imageUrl pour la gestion:', mainImage);
+    }
+    // FALLBACK : image par défaut
+    else {
+      console.log('⚠️ Aucune image trouvée pour la gestion, utilisation image par défaut');
+      mainImage = window.getBoatImageByType(boat.type, boat.category);
     }
 
     return `
       <div class="boat-management-card ${!boat.isActive ? 'inactive' : ''}" data-boat-id="${boat._id}">
-        <img src="${mainImage}" alt="${boat.name}" class="boat-card-image" onerror="this.src='boat-icon.svg'">
+        <img src="${mainImage || window.getBoatImageByType(boat.type, boat.category)}" alt="${boat.name}" class="boat-card-image">
         <div class="boat-card-content">
           <div class="boat-card-header">
             <div>
