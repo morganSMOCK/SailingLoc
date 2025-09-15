@@ -1,6 +1,9 @@
 import { stripeService } from './services/StripeService.js';
 import { AppStateService } from './services/AppStateService.js';
 
+// Créer une instance d'AppStateService
+const appState = new AppStateService();
+
 // Récupération des paramètres URL
 const urlParams = new URLSearchParams(window.location.search);
 const boatId = urlParams.get('boatId');
@@ -50,11 +53,16 @@ async function initializePage() {
   // Attendre que l'AppStateService soit initialisé
   console.log('🔄 Vérification de l\'authentification...');
   
+  // Initialiser l'AppStateService s'il ne l'est pas déjà
+  if (!appState.isInitialized) {
+    await appState.initialize();
+  }
+  
   // Attendre que l'AppStateService soit complètement initialisé
-  await AppStateService.waitForInitialization();
+  await appState.waitForInitialization();
   
   // Vérifier l'authentification via AppStateService
-  if (!AppStateService.isAuthenticated()) {
+  if (!appState.isAuthenticated()) {
     console.log('❌ Utilisateur non authentifié, redirection vers login');
     showError('Vous devez être connecté pour effectuer un paiement.');
     setTimeout(() => {
@@ -191,7 +199,7 @@ function setupPaymentButton() {
 async function processPayment() {
   try {
     // Vérifier à nouveau l'authentification via AppStateService
-    if (!AppStateService.isAuthenticated()) {
+    if (!appState.isAuthenticated()) {
       console.log('❌ Session expirée lors du paiement');
       showError('Session expirée. Veuillez vous reconnecter.');
       setTimeout(() => {
