@@ -1,10 +1,20 @@
 // Service Stripe pour la gestion des paiements
 export class StripeService {
   constructor(appStateService = null) {
+  constructor(appStateService = null) {
     this.stripe = null;
     this.elements = null;
     this.paymentElement = null;
     this.isInitialized = false;
+    this.appStateService = appStateService;
+  }
+
+  // Récupérer le token d'authentification
+  getAuthToken() {
+    if (this.appStateService) {
+      return this.appStateService.getAuthToken();
+    }
+    return localStorage.getItem('authToken');
     this.appStateService = appStateService;
   }
 
@@ -63,6 +73,7 @@ export class StripeService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
           'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(bookingData)
