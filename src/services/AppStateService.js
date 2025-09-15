@@ -86,6 +86,15 @@ export class AppStateService {
   }
 
   /**
+   * Déconnexion locale sans appel API (pour éviter les boucles infinies)
+   */
+  clearAuthData() {
+    this.currentUser = null;
+    this.authService.clearAuthData();
+    this.notifyListeners();
+  }
+
+  /**
    * Vérifier si l'utilisateur est connecté
    */
   isAuthenticated() {

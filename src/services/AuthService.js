@@ -113,6 +113,14 @@ export class AuthService {
   async logout() {
     try {
       const token = this.getAuthToken();
+      
+      // Si pas de token ou token expiré, déconnexion locale seulement
+      if (!token || this.isTokenExpired(token)) {
+        console.log('🚪 AuthService.logout - Token expiré, déconnexion locale');
+        this.clearAuthData();
+        return { success: true, message: 'Déconnexion locale' };
+      }
+      
       const logoutUrl = `${this.authEndpoint}/logout`;
       console.log('🚪 AuthService.logout appelé');
       console.log('📍 URL:', logoutUrl);
@@ -121,7 +129,7 @@ export class AuthService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+          'Authorization': `Bearer ${token}`
         }
       });
 
