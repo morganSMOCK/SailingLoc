@@ -1,0 +1,1 @@
+import"./AuthService-DvEDo84p.js";/* empty css              */import"./main-B4IL1XOF.js";document.addEventListener("DOMContentLoaded",()=>{setTimeout(()=>{window.app?(console.log("✅ Application trouvée, initialisation de la gestion des bateaux"),window.app.initBoatManagement()):console.error("❌ Application non trouvée")},100)});

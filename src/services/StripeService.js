@@ -1,30 +1,11 @@
 // Service Stripe pour la gestion des paiements
 export class StripeService {
   constructor(appStateService = null) {
-  constructor(appStateService = null) {
     this.stripe = null;
     this.elements = null;
     this.paymentElement = null;
     this.isInitialized = false;
     this.appStateService = appStateService;
-  }
-
-  // Récupérer le token d'authentification
-  getAuthToken() {
-    if (this.appStateService) {
-      return this.appStateService.getAuthToken();
-    }
-    return localStorage.getItem('authToken');
-    this.appStateService = appStateService;
-  }
-
-  // Récupérer le token d'authentification
-  getAuthToken() {
-    if (this.appStateService) {
-      return this.appStateService.getAuthToken();
-    }
-    return localStorage.getItem('authToken');
-=======
     
     // URL de base de l'API (auto-détection env)
     const envBase = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_BASE) ? import.meta.env.VITE_API_BASE : '';
@@ -38,7 +19,14 @@ export class StripeService {
     } else {
       this.baseURL = 'https://sailingloc.onrender.com/api'; // URL complète en production
     }
+  }
 
+  // Récupérer le token d'authentification
+  getAuthToken() {
+    if (this.appStateService) {
+      return this.appStateService.getAuthToken();
+    }
+    return localStorage.getItem('authToken');
   }
 
   // Initialiser Stripe
@@ -62,7 +50,6 @@ export class StripeService {
       // Initialiser Stripe avec la clé publique
       this.stripe = window.Stripe('pk_live_51RrIXsCOaiVcTD9sZVaREYZc3QTQNeU8VQZ5VUDddHUNiPGVpMN1oiREmM3UcCBqdTfXF2SjO9YjGKsVy7iinX9n00bQXl4cig');
       this.isInitialized = true;
-      
       console.log('✅ Stripe initialisé avec succès');
     } catch (error) {
       console.error('❌ Erreur lors de l\'initialisation de Stripe:', error);
@@ -73,7 +60,6 @@ export class StripeService {
   // Créer une session de paiement
   async createPaymentSession(bookingData) {
     try {
-
       // Vérifier l'authentification avant l'appel
       const token = this.getAuthToken();
       console.log('🔑 Token récupéré:', token ? 'Présent' : 'Absent');
@@ -85,14 +71,10 @@ export class StripeService {
 
       console.log('📤 Données envoyées au serveur:', bookingData);
       
-      const response = await fetch('https://sailingloc.onrender.com/api/payments/create-session', {
-=======
       const response = await fetch(`${this.baseURL}/payments/create-session`, {
-
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
           'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(bookingData)
@@ -113,26 +95,11 @@ export class StripeService {
         throw new Error(errorMessage);
       }
 
-      const session = await response.json();
-      return session;
+      const data = await response.json();
+      console.log('✅ Session de paiement créée:', data);
+      return data;
     } catch (error) {
       console.error('❌ Erreur lors de la création de la session de paiement:', error);
-      throw error;
-    }
-  }
-
-  // Rediriger vers Stripe Checkout
-  async redirectToCheckout(sessionId) {
-    try {
-      const { error } = await this.stripe.redirectToCheckout({
-        sessionId: sessionId
-      });
-
-      if (error) {
-        throw new Error(error.message);
-      }
-    } catch (error) {
-      console.error('❌ Erreur lors de la redirection vers Stripe:', error);
       throw error;
     }
   }
@@ -151,68 +118,87 @@ export class StripeService {
         throw new Error(`Erreur HTTP: ${response.status}`);
       }
 
-      const result = await response.json();
-      return result;
+      const data = await response.json();
+      console.log('✅ Session vérifiée:', data);
+      return data;
     } catch (error) {
       console.error('❌ Erreur lors de la vérification de la session:', error);
       throw error;
     }
   }
 
-  // Créer un élément de paiement (pour les paiements intégrés)
-  async createPaymentElement(clientSecret, containerId) {
+  // Créer les éléments de paiement
+  async createPaymentElements(clientSecret) {
     try {
-      await this.initialize();
-      
+      if (!this.stripe) {
+        await this.initialize();
+      }
+
       const elements = this.stripe.elements({
         clientSecret: clientSecret,
         appearance: {
           theme: 'stripe',
           variables: {
-            colorPrimary: '#667eea',
+            colorPrimary: '#2f7fe0',
             colorBackground: '#ffffff',
-            colorText: '#1e293b',
-            colorDanger: '#dc2626',
+            colorText: '#30313d',
+            colorDanger: '#df1b41',
             fontFamily: 'Inter, system-ui, sans-serif',
             spacingUnit: '4px',
-            borderRadius: '12px',
+            borderRadius: '8px',
           }
         }
       });
 
       this.paymentElement = elements.create('payment');
-      this.paymentElement.mount(`#${containerId}`);
-      
       return this.paymentElement;
     } catch (error) {
-      console.error('❌ Erreur lors de la création de l\'élément de paiement:', error);
+      console.error('❌ Erreur lors de la création des éléments de paiement:', error);
       throw error;
     }
   }
 
   // Confirmer le paiement
-  async confirmPayment(clientSecret, paymentMethodData = {}) {
+  async confirmPayment(clientSecret, returnUrl) {
     try {
+      if (!this.stripe || !this.paymentElement) {
+        throw new Error('Stripe non initialisé');
+      }
+
       const { error, paymentIntent } = await this.stripe.confirmPayment({
-        elements: this.elements,
-        clientSecret: clientSecret,
+        elements: this.stripe.elements({ clientSecret }),
         confirmParams: {
-          return_url: `${window.location.origin}/booking-confirmation.html`,
-          ...paymentMethodData
-        }
+          return_url: returnUrl,
+        },
+        redirect: 'if_required'
       });
 
       if (error) {
+        console.error('❌ Erreur de paiement:', error);
         throw new Error(error.message);
       }
 
+      console.log('✅ Paiement confirmé:', paymentIntent);
       return paymentIntent;
     } catch (error) {
       console.error('❌ Erreur lors de la confirmation du paiement:', error);
       throw error;
     }
   }
-}
 
-// Instance singleton
-export const stripeService = new StripeService();
+  // Récupérer le statut d'un paiement
+  async retrievePaymentIntent(paymentIntentId) {
+    try {
+      if (!this.stripe) {
+        await this.initialize();
+      }
+
+      const paymentIntent = await this.stripe.retrievePaymentIntent(paymentIntentId);
+      console.log('✅ PaymentIntent récupéré:', paymentIntent);
+      return paymentIntent;
+    } catch (error) {
+      console.error('❌ Erreur lors de la récupération du PaymentIntent:', error);
+      throw error;
+    }
+  }
+}

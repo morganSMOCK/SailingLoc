@@ -1,6 +1,7 @@
 
 import { StripeService } from './services/StripeService.js';
 import { AppStateService } from './services/AppStateService.js';
+import { getApiBaseUrl } from './utils/apiConfig.js';
 
 // Créer une instance d'AppStateService
 const appState = new AppStateService();

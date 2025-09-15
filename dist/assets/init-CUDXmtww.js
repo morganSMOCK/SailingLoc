@@ -1,0 +1,81 @@
+import{A as c}from"./AuthService-DvEDo84p.js";class u{constructor(){this.authService=new c,this.currentUser=null,this.isInitialized=!1,this.listeners=new Set}async initialize(){if(!this.isInitialized)try{this.authService.isAuthenticated()&&await this.loadCurrentUser(),this.isInitialized=!0,this.notifyListeners(),console.log("✅ AppStateService initialisé")}catch(e){console.error("❌ Erreur lors de l'initialisation de AppStateService:",e),this.currentUser=null,this.isInitialized=!0,this.notifyListeners()}}async waitForInitialization(){if(!this.isInitialized)return new Promise(e=>{const t=()=>{this.isInitialized?e():setTimeout(t,50)};t()})}async loadCurrentUser(){try{const e=await this.authService.getCurrentUser();this.currentUser=e,console.log("✅ Utilisateur chargé:",e)}catch(e){console.error("❌ Erreur lors du chargement de l'utilisateur:",e),this.currentUser=null,this.authService.clearAuthData()}}async login(e){try{const t=await this.authService.login(e);return await this.loadCurrentUser(),this.notifyListeners(),t}catch(t){throw console.error("❌ Erreur lors de la connexion:",t),t}}async logout(){try{await this.authService.logout(),this.currentUser=null,this.notifyListeners()}catch(e){console.error("❌ Erreur lors de la déconnexion:",e),this.currentUser=null,this.authService.clearAuthData(),this.notifyListeners()}}clearAuthData(){this.currentUser=null,this.authService.clearAuthData(),this.notifyListeners()}isAuthenticated(){return this.authService.isAuthenticated()&&this.currentUser!==null}getCurrentUser(){return this.currentUser}getAuthToken(){return this.authService.getAuthToken()}addListener(e){return this.listeners.add(e),()=>this.listeners.delete(e)}notifyListeners(){this.listeners.forEach(e=>{try{e({isAuthenticated:this.isAuthenticated(),currentUser:this.currentUser,isInitialized:this.isInitialized})}catch(t){console.error("❌ Erreur dans un listener:",t)}})}async refreshAuthState(){this.authService.isAuthenticated()?await this.loadCurrentUser():this.currentUser=null,this.notifyListeners()}}const r=new u;class d{constructor(){this.headerElement=null,this.isInitialized=!1}async initialize(){if(!this.isInitialized){if(await r.initialize(),this.headerElement=document.querySelector("nav#navbar"),!this.headerElement){console.warn("⚠️ Header non trouvé dans le DOM");return}this.unsubscribe=r.addListener(e=>{this.updateHeader(e)}),this.updateHeader({isAuthenticated:r.isAuthenticated(),currentUser:r.getCurrentUser(),isInitialized:r.isInitialized}),this.isInitialized=!0,console.log("✅ HeaderComponent initialisé")}}updateHeader(e){if(!this.headerElement)return;const{isAuthenticated:t,currentUser:i}=e,s=this.headerElement.querySelector(".nav-auth");s&&(s.innerHTML="",t&&i?this.renderUserMenu(s,i):this.renderAuthButtons(s))}renderAuthButtons(e){e.innerHTML=`
+      <button id="login-btn" class="btn-secondary">Connexion</button>
+      <button id="register-btn" class="btn-primary">Inscription</button>
+    `,this.setupAuthButtons()}renderUserMenu(e,t){const i=this.getUserInitials(t),s=t.firstName&&t.lastName?`${t.firstName} ${t.lastName}`:t.email||"Utilisateur";e.innerHTML=`
+      <div class="user-menu" style="position: relative; display: flex; align-items: center; gap: 12px;">
+        <div class="user-avatar" style="
+          width: 40px; 
+          height: 40px; 
+          border-radius: 50%; 
+          background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); 
+          color: white; 
+          display: flex; 
+          align-items: center; 
+          justify-content: center; 
+          font-weight: 700; 
+          font-size: 14px;
+          cursor: pointer;
+        " title="${s}">
+          ${i}
+        </div>
+        <div class="user-dropdown" style="
+          position: absolute;
+          top: 100%;
+          right: 0;
+          background: white;
+          border: 1px solid #e2e8f0;
+          border-radius: 12px;
+          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+          padding: 8px 0;
+          min-width: 200px;
+          z-index: 1000;
+          display: none;
+        ">
+          <div style="padding: 12px 16px; border-bottom: 1px solid #f1f5f9;">
+            <div style="font-weight: 700; color: #1e293b; margin-bottom: 4px;">${s}</div>
+            <div style="font-size: 0.875rem; color: #64748b;">${t.email}</div>
+          </div>
+          <a href="/profile.html" style="
+            display: block; 
+            padding: 12px 16px; 
+            color: #374151; 
+            text-decoration: none; 
+            transition: background-color 0.2s;
+          " onmouseover="this.style.backgroundColor='#f8fafc'" onmouseout="this.style.backgroundColor='transparent'">
+            Mon profil
+          </a>
+          <a href="/my-bookings.html" style="
+            display: block; 
+            padding: 12px 16px; 
+            color: #374151; 
+            text-decoration: none; 
+            transition: background-color 0.2s;
+          " onmouseover="this.style.backgroundColor='#f8fafc'" onmouseout="this.style.backgroundColor='transparent'">
+            Mes réservations
+          </a>
+          <a href="/boat-management.html" style="
+            display: block; 
+            padding: 12px 16px; 
+            color: #374151; 
+            text-decoration: none; 
+            transition: background-color 0.2s;
+          " onmouseover="this.style.backgroundColor='#f8fafc'" onmouseout="this.style.backgroundColor='transparent'">
+            Gérer mes bateaux
+          </a>
+          <div style="border-top: 1px solid #f1f5f9; margin: 8px 0;"></div>
+          <button onclick="headerComponent.logout()" style="
+            display: block; 
+            width: 100%; 
+            padding: 12px 16px; 
+            color: #dc2626; 
+            background: none; 
+            border: none; 
+            text-align: left; 
+            cursor: pointer; 
+            transition: background-color 0.2s;
+          " onmouseover="this.style.backgroundColor='#fef2f2'" onmouseout="this.style.backgroundColor='transparent'">
+            Déconnexion
+          </button>
+        </div>
+      </div>
+    `,this.setupUserMenuEvents()}setupAuthButtons(){const e=this.headerElement.querySelector("#login-btn"),t=this.headerElement.querySelector("#register-btn");e&&e.addEventListener("click",()=>{window.location.href="/login.html"}),t&&t.addEventListener("click",()=>{window.location.href="/register.html"})}setupUserMenuEvents(){const e=this.headerElement.querySelector(".user-menu"),t=this.headerElement.querySelector(".user-dropdown");!e||!t||(e.addEventListener("click",i=>{i.stopPropagation();const s=t.style.display==="block";t.style.display=s?"none":"block"}),document.addEventListener("click",i=>{e.contains(i.target)||(t.style.display="none")}))}getUserInitials(e){return e.firstName&&e.lastName?`${e.firstName[0]}${e.lastName[0]}`.toUpperCase():e.email?e.email[0].toUpperCase():"U"}async logout(){try{await r.logout(),window.location.href="/"}catch(e){console.error("❌ Erreur lors de la déconnexion:",e),window.location.href="/"}}destroy(){this.unsubscribe&&this.unsubscribe(),this.isInitialized=!1}}const o=new d;window.appState=r;window.headerComponent=o;async function a(){try{console.log("🚀 Initialisation de l'application..."),await r.initialize(),await o.initialize(),console.log("✅ Application initialisée avec succès")}catch(n){console.error("❌ Erreur lors de l'initialisation de l'application:",n)}}function h(){document.addEventListener("click",async n=>{const e=n.target.closest("a[href]");if(!e)return;const t=e.getAttribute("href");if((t.startsWith("/")||t.startsWith("./")||t.startsWith("../"))&&["/boat-management.html","/my-bookings.html","/profile.html"].some(l=>t.includes(l))&&!r.isAuthenticated()){n.preventDefault(),window.location.href="/login.html";return}})}function p(){const n=window.fetch;let e=!1;window.fetch=async(...t)=>{try{const i=await n(...t);return i.status===401&&!e&&(console.warn("⚠️ Session expirée, déconnexion..."),e=!0,r.clearAuthData(),window.location.pathname.includes("login.html")||(window.location.href="/login.html")),i}catch(i){throw console.error("❌ Erreur fetch:",i),i}}}function f(){setInterval(async()=>{r.isAuthenticated()&&await r.refreshAuthState()},5*60*1e3)}function g(){const n=document.querySelector(".navbar");if(!n)return;let e=!1;function t(){window.scrollY>100?n.classList.add("scrolled"):n.classList.remove("scrolled"),e=!1}function i(){e||(requestAnimationFrame(t),e=!0)}window.addEventListener("scroll",i)}document.readyState==="loading"?document.addEventListener("DOMContentLoaded",a):a();h();p();f();g();typeof window<"u"&&(window.debugApp={appState:r,headerComponent:o,refreshAuth:()=>r.refreshAuthState(),logout:()=>r.logout()});export{u as A};
