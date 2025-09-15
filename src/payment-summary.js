@@ -46,6 +46,17 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 // Initialiser la page
 async function initializePage() {
+  // Vérifier l'authentification d'abord
+  const token = localStorage.getItem('authToken');
+  if (!token) {
+    showError('Vous devez être connecté pour effectuer un paiement.');
+    // Rediriger vers la page de connexion
+    setTimeout(() => {
+      window.location.href = '/login.html';
+    }, 3000);
+    return;
+  }
+
   // Vérifier les paramètres requis
   if (!boatId || !startDate || !endDate || !passengers) {
     showError('Paramètres de réservation manquants. Veuillez recommencer.');
@@ -171,6 +182,16 @@ function setupPaymentButton() {
 // Traiter le paiement
 async function processPayment() {
   try {
+    // Vérifier à nouveau l'authentification
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      showError('Session expirée. Veuillez vous reconnecter.');
+      setTimeout(() => {
+        window.location.href = '/login.html';
+      }, 2000);
+      return;
+    }
+
     // Désactiver le bouton
     elements.payButton.disabled = true;
     elements.payButtonText.textContent = 'Traitement en cours...';
@@ -189,7 +210,16 @@ async function processPayment() {
     
   } catch (error) {
     console.error('❌ Erreur lors du traitement du paiement:', error);
-    showError(error.message || 'Une erreur est survenue lors du paiement.');
+    
+    // Gestion spécifique des erreurs d'authentification
+    if (error.message.includes('connecté') || error.message.includes('authentification')) {
+      showError('Session expirée. Veuillez vous reconnecter.');
+      setTimeout(() => {
+        window.location.href = '/login.html';
+      }, 2000);
+    } else {
+      showError(error.message || 'Une erreur est survenue lors du paiement.');
+    }
     
     // Réactiver le bouton
     elements.payButton.disabled = false;

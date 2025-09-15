@@ -8,6 +8,7 @@ export class AuthService {
     const envBase = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_BASE) ? import.meta.env.VITE_API_BASE : '';
     this.baseURL = envBase || 'https://sailingloc.onrender.com/api';
     this.authEndpoint = `${this.baseURL}/auth`;
+    this.isLoggingOut = false; // Flag pour éviter les appels multiples
   }
 
   /**
@@ -112,12 +113,20 @@ export class AuthService {
    */
   async logout() {
     try {
+      // Éviter les appels multiples
+      if (this.isLoggingOut) {
+        console.log('🚪 AuthService.logout - Déconnexion déjà en cours');
+        return { success: true, message: 'Déconnexion en cours' };
+      }
+
+      this.isLoggingOut = true;
       const token = this.getAuthToken();
       
       // Si pas de token ou token expiré, déconnexion locale seulement
       if (!token || this.isTokenExpired(token)) {
         console.log('🚪 AuthService.logout - Token expiré, déconnexion locale');
         this.clearAuthData();
+        this.isLoggingOut = false;
         return { success: true, message: 'Déconnexion locale' };
       }
       
@@ -146,11 +155,13 @@ export class AuthService {
 
       // Nettoyer les données locales après une déconnexion réussie
       this.clearAuthData();
+      this.isLoggingOut = false;
       return data;
     } catch (error) {
       console.error('Erreur lors de la déconnexion:', error);
       // Nettoyer localement même si l'API échoue, pour éviter une session fantôme
       this.clearAuthData();
+      this.isLoggingOut = false;
       throw error;
     }
   }
