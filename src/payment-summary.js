@@ -140,10 +140,20 @@ function calculateBookingDetails() {
     subtotal: subtotal,
     serviceFee: serviceFee,
     total: total,
-    currency: boat.pricing.currency || 'EUR'
+    currency: boat.pricing.currency || 'EUR',
+    customerEmail: appState.currentUser?.email,
+    customerName: `${appState.currentUser?.firstName} ${appState.currentUser?.lastName}`
   };
   
   console.log('✅ Détails de la réservation calculés:', bookingData);
+  console.log('🔍 Vérification des champs requis:');
+  console.log('🔍 boatId:', bookingData.boatId ? '✅' : '❌');
+  console.log('🔍 boatName:', bookingData.boatName ? '✅' : '❌');
+  console.log('🔍 startDate:', bookingData.startDate ? '✅' : '❌');
+  console.log('🔍 endDate:', bookingData.endDate ? '✅' : '❌');
+  console.log('🔍 total:', bookingData.total ? '✅' : '❌');
+  console.log('🔍 customerEmail:', bookingData.customerEmail ? '✅' : '❌');
+  console.log('🔍 customerName:', bookingData.customerName ? '✅' : '❌');
 }
 
 // Mettre à jour le breadcrumb

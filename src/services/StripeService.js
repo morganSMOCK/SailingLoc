@@ -57,6 +57,8 @@ export class StripeService {
         throw new Error('Vous devez être connecté pour effectuer un paiement');
       }
 
+      console.log('📤 Données envoyées au serveur:', bookingData);
+      
       const response = await fetch('https://sailingloc.onrender.com/api/payments/create-session', {
         method: 'POST',
         headers: {
@@ -66,8 +68,19 @@ export class StripeService {
         body: JSON.stringify(bookingData)
       });
 
+      console.log('📥 Réponse du serveur:', response.status, response.statusText);
+
       if (!response.ok) {
-        throw new Error(`Erreur HTTP: ${response.status}`);
+        // Récupérer le message d'erreur détaillé
+        let errorMessage = `Erreur HTTP: ${response.status}`;
+        try {
+          const errorData = await response.json();
+          console.log('📥 Détails de l\'erreur:', errorData);
+          errorMessage = errorData.message || errorMessage;
+        } catch (e) {
+          console.log('📥 Impossible de parser la réponse d\'erreur');
+        }
+        throw new Error(errorMessage);
       }
 
       const session = await response.json();
