@@ -23,12 +23,22 @@ const processBoatImages = (boat) => {
   const boatObj = boat.toObject ? boat.toObject() : boat;
   const baseUrl = process.env.BASE_URL || 'https://sailingloc.onrender.com';
   
+  // Fonction utilitaire pour nettoyer les URLs
+  const cleanUrl = (url) => {
+    if (!url) return url;
+    if (url.startsWith('http')) return url;
+    // S'assurer que l'URL commence par / et que baseUrl ne finit pas par /
+    const cleanBaseUrl = baseUrl.replace(/\/$/, '');
+    const cleanPath = url.startsWith('/') ? url : `/${url}`;
+    return `${cleanBaseUrl}${cleanPath}`;
+  };
+  
   // Traiter les images si elles existent
   if (boatObj.images && Array.isArray(boatObj.images)) {
     boatObj.images = boatObj.images.map(img => ({
       ...img,
-      url: img.url.startsWith('http') ? img.url : `${baseUrl}${img.url}`,
-      fullUrl: img.url.startsWith('http') ? img.url : `${baseUrl}${img.url}`
+      url: cleanUrl(img.url),
+      fullUrl: cleanUrl(img.url)
     }));
     
     // Ajouter coverImageUrl
@@ -45,21 +55,21 @@ const processBoatImages = (boat) => {
     boatObj.imageUrls = boatObj.imageUrls.map(img => {
       if (typeof img === 'string') {
         return {
-          url: img.startsWith('http') ? img : `${baseUrl}${img}`,
-          fullUrl: img.startsWith('http') ? img : `${baseUrl}${img}`
+          url: cleanUrl(img),
+          fullUrl: cleanUrl(img)
         };
       }
       return {
         ...img,
-        url: img.url ? (img.url.startsWith('http') ? img.url : `${baseUrl}${img.url}`) : img,
-        fullUrl: img.fullUrl ? img.fullUrl.replace('http://localhost:3000', baseUrl).replace('//', '/') : (img.url ? `${baseUrl}${img.url}` : img)
+        url: img.url ? cleanUrl(img.url) : img,
+        fullUrl: img.fullUrl ? cleanUrl(img.fullUrl) : (img.url ? cleanUrl(img.url) : img)
       };
     });
   }
   
   // Traiter imageUrl pour compatibilité legacy
   if (boatObj.imageUrl) {
-    boatObj.imageUrl = boatObj.imageUrl.startsWith('http') ? boatObj.imageUrl : `${baseUrl}${boatObj.imageUrl}`;
+    boatObj.imageUrl = cleanUrl(boatObj.imageUrl);
   }
   
   return boatObj;
@@ -809,12 +819,30 @@ exports.getOwnerBoats = async (req, res) => {
 exports.checkAvailability = async (req, res) => {
   try {
     const { id } = req.params;
-    const { startDate, endDate } = req.query;
+    const { startDate, endDate, month } = req.query;
 
-    if (!startDate || !endDate) {
+    // Si un mois est fourni, générer les dates de début et fin du mois
+    let startDateToCheck, endDateToCheck;
+    
+    if (month) {
+      // Format attendu: YYYY-MM
+      const [year, monthNum] = month.split('-');
+      if (!year || !monthNum) {
+        return res.status(400).json({
+          success: false,
+          message: 'Format de mois invalide. Utilisez YYYY-MM'
+        });
+      }
+      
+      startDateToCheck = new Date(year, monthNum - 1, 1);
+      endDateToCheck = new Date(year, monthNum, 0); // Dernier jour du mois
+    } else if (startDate && endDate) {
+      startDateToCheck = new Date(startDate);
+      endDateToCheck = new Date(endDate);
+    } else {
       return res.status(400).json({
         success: false,
-        message: 'Dates de début et de fin requises'
+        message: 'Dates de début et de fin requises, ou paramètre month (YYYY-MM)'
       });
     }
 
@@ -826,17 +854,33 @@ exports.checkAvailability = async (req, res) => {
       });
     }
 
-    const isAvailable = boat.isAvailable(startDate, endDate);
-    const pricing = boat.calculateTotalPrice(startDate, endDate);
+    // Pour les requêtes par mois, retourner la disponibilité générale
+    if (month) {
+      // Vérifier si le bateau est actif et disponible
+      const isAvailable = boat.isActive && boat.status === 'available';
+      
+      res.json({
+        success: true,
+        data: {
+          available: isAvailable,
+          month: month,
+          message: isAvailable ? 'Bateau disponible ce mois' : 'Bateau non disponible ce mois'
+        }
+      });
+    } else {
+      // Vérification détaillée avec dates spécifiques
+      const isAvailable = boat.isAvailable(startDateToCheck, endDateToCheck);
+      const pricing = boat.calculateTotalPrice(startDateToCheck, endDateToCheck);
 
-    res.json({
-      success: true,
-      data: {
-        available: isAvailable,
-        pricing: isAvailable ? pricing : null,
-        message: isAvailable ? 'Bateau disponible' : 'Bateau non disponible pour ces dates'
-      }
-    });
+      res.json({
+        success: true,
+        data: {
+          available: isAvailable,
+          pricing: isAvailable ? pricing : null,
+          message: isAvailable ? 'Bateau disponible' : 'Bateau non disponible pour ces dates'
+        }
+      });
+    }
 
   } catch (error) {
     console.error('Erreur lors de la vérification de disponibilité:', error);
