@@ -69,7 +69,7 @@ class BookingManager {
       }
 
       // Charger les données du bateau
-      const response = await fetch(`https://sailingloc.onrender.com/api/boats/${boatId}`);
+      const response = await fetch(`/api/boats/${boatId}`);
       if (!response.ok) {
         throw new Error('Bateau non trouvé');
       }
