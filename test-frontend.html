@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Images Frontend</title>
+</head>
+<body>
+    <h1>Test de chargement des images</h1>
+    <div id="test-results"></div>
+    
+    <script>
+        async function testImageLoading() {
+            const results = document.getElementById('test-results');
+            
+            try {
+                // Test de l'API
+                const response = await fetch('/api/boats');
+                const data = await response.json();
+                
+                if (data.success && data.data.boats.length > 0) {
+                    const boat = data.data.boats[0];
+                    results.innerHTML += `<h2>Bateau: ${boat.name}</h2>`;
+                    results.innerHTML += `<p>Images trouvées: ${boat.images?.length || 0}</p>`;
+                    
+                    if (boat.images && boat.images.length > 0) {
+                        results.innerHTML += '<h3>Images:</h3>';
+                        boat.images.forEach((img, index) => {
+                            const fullUrl = img.url.startsWith('http') ? img.url : `https://sailingloc.onrender.com${img.url}`;
+                            results.innerHTML += `
+                                <div style="margin: 10px 0; padding: 10px; border: 1px solid #ccc;">
+                                    <p><strong>Image ${index + 1}:</strong></p>
+                                    <p>URL: ${img.url}</p>
+                                    <p>Full URL: ${fullUrl}</p>
+                                    <p>IsMain: ${img.isMain}</p>
+                                    <img src="${fullUrl}" style="max-width: 200px; height: auto;" onerror="this.style.border='2px solid red'; this.alt='ERREUR DE CHARGEMENT';">
+                                </div>
+                            `;
+                        });
+                    }
+                }
+            } catch (error) {
+                results.innerHTML += `<p style="color: red;">Erreur: ${error.message}</p>`;
+            }
+        }
+        
+        testImageLoading();
+    </script>
+</body>
+</html>

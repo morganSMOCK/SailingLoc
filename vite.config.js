@@ -20,8 +20,8 @@ export default defineConfig({
         'test-boat-card': resolve(__dirname, 'test-boat-card.html'),
         'clear-cache': resolve(__dirname, 'clear-cache.html'),
         'test-index': resolve(__dirname, 'test-index.html'),
-        'boat': resolve(__dirname, 'boat.html')
-
+        'boat': resolve(__dirname, 'boat.html'),
+        'reserve': resolve(__dirname, 'reserve.html')
       }
     }
   },
