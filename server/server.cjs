@@ -33,22 +33,48 @@ connectDB();
 // CORS avant les routes
 const allowedOrigins = [
   process.env.FRONTEND_URL || 'https://sailing-loc.vercel.app',
-  'http://localhost:5173'
+  'https://dsp-dev-o23-g2.vercel.app', // Domaine Vercel actuel
+  'https://sailing-loc.vercel.app', // Domaine de production
+  'http://localhost:5173', // Développement local
+  'http://localhost:3000' // Développement local alternatif
 ];
 
 app.use(cors({
   origin: function(origin, callback) {
     // Autoriser les outils sans origin (ex: cURL, Postman)
     if (!origin) return callback(null, true);
+    
+    // Vérifier si l'origine est dans la liste autorisée
     if (allowedOrigins.includes(origin)) return callback(null, true);
+    
+    // Autoriser tous les domaines Vercel (pour les déploiements de preview)
+    if (origin && origin.includes('.vercel.app')) {
+      console.log('✅ Domaine Vercel autorisé:', origin);
+      return callback(null, true);
+    }
+    
+    console.log('❌ Origine non autorisée:', origin);
     return callback(new Error('Origine non autorisée par CORS'));
   },
   methods: ['GET','POST','PUT','DELETE','OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true // Permettre les cookies et headers d'authentification
 }));
 
-// Préflight
-app.options('*', cors());
+// Préflight - gérer toutes les requêtes OPTIONS
+app.options('*', (req, res) => {
+  res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  res.sendStatus(200);
+});
+
+// Middleware de logging pour CORS
+app.use((req, res, next) => {
+  console.log(`🌐 ${req.method} ${req.path} - Origin: ${req.headers.origin || 'No origin'}`);
+  next();
+});
 
 // Parsers
 app.use(express.json());
