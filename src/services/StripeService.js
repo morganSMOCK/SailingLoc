@@ -7,6 +7,11 @@ export class StripeService {
     this.isInitialized = false;
   }
 
+  // Récupérer le token d'authentification
+  getAuthToken() {
+    return localStorage.getItem('authToken');
+  }
+
   // Initialiser Stripe
   async initialize() {
     if (this.isInitialized) return;
@@ -39,10 +44,17 @@ export class StripeService {
   // Créer une session de paiement
   async createPaymentSession(bookingData) {
     try {
+      // Vérifier l'authentification avant l'appel
+      const token = this.getAuthToken();
+      if (!token) {
+        throw new Error('Vous devez être connecté pour effectuer un paiement');
+      }
+
       const response = await fetch('https://sailingloc.onrender.com/api/payments/create-session', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(bookingData)
       });
