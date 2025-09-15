@@ -11,7 +11,9 @@
     "build": "vite build && node post-build.cjs",
     "preview": "vite preview",
     "start": "node server/server.cjs",
-    "postinstall": "echo 'Installation terminée'"
+    "postinstall": "echo 'Installation terminée'",
+    "test-images": "node server/test-image-urls.cjs",
+    "fix-images": "node server/fix-image-urls.cjs"
   },
   "devDependencies": {
     "concurrently": "^9.2.1",

@@ -30,6 +30,25 @@ async function connectDB() {
 // Initialiser la connexion à la base de données
 connectDB();
 
+// Exécuter la correction des URLs d'images au démarrage (en production seulement)
+if (process.env.NODE_ENV === 'production') {
+  setTimeout(async () => {
+    try {
+      console.log('🔧 Vérification des URLs d\'images...');
+      const { exec } = require('child_process');
+      exec('node server/deploy-fix.cjs', (error, stdout, stderr) => {
+        if (error) {
+          console.error('❌ Erreur lors de la correction des URLs:', error);
+        } else {
+          console.log('✅ Correction des URLs terminée');
+        }
+      });
+    } catch (error) {
+      console.error('❌ Erreur lors de la correction des URLs:', error);
+    }
+  }, 5000); // Attendre 5 secondes après le démarrage
+}
+
 // CORS avant les routes
 const allowedOrigins = [
   process.env.FRONTEND_URL || 'https://sailing-loc.vercel.app',
