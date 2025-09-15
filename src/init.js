@@ -61,13 +61,18 @@ function setupNavigationGuards() {
 function setupAuthErrorHandling() {
   // Intercepter les erreurs 401 (non autorisé)
   const originalFetch = window.fetch;
+  let isLoggingOut = false; // Flag pour éviter la boucle infinie
+  
   window.fetch = async (...args) => {
     try {
       const response = await originalFetch(...args);
       
-      if (response.status === 401) {
+      if (response.status === 401 && !isLoggingOut) {
         console.warn('⚠️ Session expirée, déconnexion...');
-        await appState.logout();
+        isLoggingOut = true; // Marquer qu'on est en train de se déconnecter
+        
+        // Déconnexion locale sans appel API pour éviter la boucle
+        appState.clearAuthData();
         
         // Rediriger vers la page de connexion si on n'y est pas déjà
         if (!window.location.pathname.includes('login.html')) {

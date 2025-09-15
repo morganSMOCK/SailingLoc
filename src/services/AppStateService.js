@@ -38,6 +38,24 @@ export class AppStateService {
   }
 
   /**
+   * Attendre que l'AppStateService soit initialisé
+   */
+  async waitForInitialization() {
+    if (this.isInitialized) return;
+    
+    return new Promise((resolve) => {
+      const checkInitialization = () => {
+        if (this.isInitialized) {
+          resolve();
+        } else {
+          setTimeout(checkInitialization, 50);
+        }
+      };
+      checkInitialization();
+    });
+  }
+
+  /**
    * Charger les données de l'utilisateur actuel
    */
   async loadCurrentUser() {
@@ -83,6 +101,15 @@ export class AppStateService {
       this.authService.clearAuthData();
       this.notifyListeners();
     }
+  }
+
+  /**
+   * Déconnexion locale sans appel API (pour éviter les boucles infinies)
+   */
+  clearAuthData() {
+    this.currentUser = null;
+    this.authService.clearAuthData();
+    this.notifyListeners();
   }
 
   /**

@@ -1,5 +1,13 @@
-import { stripeService } from './services/StripeService.js';
+
+import { StripeService } from './services/StripeService.js';
+import { AppStateService } from './services/AppStateService.js';
 import { getApiBaseUrl } from './utils/apiConfig.js';
+
+// Créer une instance d'AppStateService
+const appState = new AppStateService();
+
+// Créer une instance de StripeService avec l'AppStateService
+const stripeService = new StripeService(appState);
 
 // Récupération des paramètres URL
 const urlParams = new URLSearchParams(window.location.search);
@@ -47,6 +55,31 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 // Initialiser la page
 async function initializePage() {
+  // Attendre que l'AppStateService soit initialisé
+  console.log('🔄 Vérification de l\'authentification...');
+  
+  // Initialiser l'AppStateService s'il ne l'est pas déjà
+  if (!appState.isInitialized) {
+    await appState.initialize();
+  }
+  
+  // Attendre que l'AppStateService soit complètement initialisé
+  await appState.waitForInitialization();
+  
+  // Vérifier l'authentification via AppStateService
+  if (!appState.isAuthenticated()) {
+    console.log('❌ Utilisateur non authentifié, redirection vers login');
+    showError('Vous devez être connecté pour effectuer un paiement.');
+    setTimeout(() => {
+      window.location.href = '/login.html';
+    }, 3000);
+    return;
+  }
+  
+  console.log('✅ Utilisateur authentifié, continuation du processus de paiement');
+  console.log('🔑 Token disponible:', appState.getAuthToken() ? 'Oui' : 'Non');
+  console.log('👤 Utilisateur actuel:', appState.currentUser?.firstName || 'Non défini');
+
   // Vérifier les paramètres requis
   if (!boatId || !startDate || !endDate || !passengers) {
     showError('Paramètres de réservation manquants. Veuillez recommencer.');
@@ -103,6 +136,10 @@ function calculateBookingDetails() {
     boatName: boat.name,
     startDate: startDate,
     endDate: endDate,
+    totalPrice: total, // Le backend attend 'totalPrice' et non 'total'
+    customerEmail: appState.currentUser?.email,
+    customerName: `${appState.currentUser?.firstName} ${appState.currentUser?.lastName}`,
+    // Données supplémentaires pour le frontend
     passengers: parseInt(passengers),
     days: days,
     dailyRate: dailyRate,
@@ -113,6 +150,14 @@ function calculateBookingDetails() {
   };
   
   console.log('✅ Détails de la réservation calculés:', bookingData);
+  console.log('🔍 Vérification des champs requis:');
+  console.log('🔍 boatId:', bookingData.boatId ? '✅' : '❌');
+  console.log('🔍 boatName:', bookingData.boatName ? '✅' : '❌');
+  console.log('🔍 startDate:', bookingData.startDate ? '✅' : '❌');
+  console.log('🔍 endDate:', bookingData.endDate ? '✅' : '❌');
+  console.log('🔍 totalPrice:', bookingData.totalPrice ? '✅' : '❌');
+  console.log('🔍 customerEmail:', bookingData.customerEmail ? '✅' : '❌');
+  console.log('🔍 customerName:', bookingData.customerName ? '✅' : '❌');
 }
 
 // Mettre à jour le breadcrumb
@@ -172,6 +217,16 @@ function setupPaymentButton() {
 // Traiter le paiement
 async function processPayment() {
   try {
+    // Vérifier à nouveau l'authentification via AppStateService
+    if (!appState.isAuthenticated()) {
+      console.log('❌ Session expirée lors du paiement');
+      showError('Session expirée. Veuillez vous reconnecter.');
+      setTimeout(() => {
+        window.location.href = '/login.html';
+      }, 2000);
+      return;
+    }
+
     // Désactiver le bouton
     elements.payButton.disabled = true;
     elements.payButtonText.textContent = 'Traitement en cours...';
@@ -190,7 +245,16 @@ async function processPayment() {
     
   } catch (error) {
     console.error('❌ Erreur lors du traitement du paiement:', error);
-    showError(error.message || 'Une erreur est survenue lors du paiement.');
+    
+    // Gestion spécifique des erreurs d'authentification
+    if (error.message.includes('connecté') || error.message.includes('authentification')) {
+      showError('Session expirée. Veuillez vous reconnecter.');
+      setTimeout(() => {
+        window.location.href = '/login.html';
+      }, 2000);
+    } else {
+      showError(error.message || 'Une erreur est survenue lors du paiement.');
+    }
     
     // Réactiver le bouton
     elements.payButton.disabled = false;
